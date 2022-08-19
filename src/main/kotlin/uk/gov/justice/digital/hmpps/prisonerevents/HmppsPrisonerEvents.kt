@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsprisonerevents
+package uk.gov.justice.digital.hmpps.prisonerevents
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

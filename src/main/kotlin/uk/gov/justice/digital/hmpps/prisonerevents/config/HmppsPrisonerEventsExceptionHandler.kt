@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.hmppsprisonerevents.config
+package uk.gov.justice.digital.hmpps.prisonerevents.config
 
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
