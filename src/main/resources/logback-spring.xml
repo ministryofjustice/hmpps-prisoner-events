@@ -35,9 +35,13 @@
         <appender-ref ref="logAppender"/>
     </logger>
 
-    <logger name="org.springframework" additivity="false" level="INFO">
+    <logger name="org.springframework.jms" additivity="false" level="DEBUG">
         <appender-ref ref="logAppender"/>
     </logger>
+
+    <!--<logger name="oracle.jms" additivity="false" level="DEBUG">
+        <appender-ref ref="logAppender"/>
+    </logger>-->
 
     <logger name="com.microsoft.applicationinsights" additivity="false" level="INFO">
         <appender-ref ref="logAppender"/>
@@ -48,7 +52,7 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="org.springframework.boot" additivity="false" level="INFO">
+    <logger name="org.springframework.boot" additivity="false" level="DEBUG">
         <appender-ref ref="logAppender"/>
         <appender-ref ref="consoleAppender"/>
     </logger>

@@ -1,0 +1,7 @@
+spring:
+  datasource:
+    url: ${JDBC_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+source.queue.provider: oracle

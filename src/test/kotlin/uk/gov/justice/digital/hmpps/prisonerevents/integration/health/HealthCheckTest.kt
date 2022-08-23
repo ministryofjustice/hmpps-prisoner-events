@@ -14,8 +14,7 @@ class HealthCheckTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/health")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
   }
@@ -37,8 +36,7 @@ class HealthCheckTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/health/ping")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
   }
@@ -48,8 +46,7 @@ class HealthCheckTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/health/readiness")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
   }
@@ -59,8 +56,7 @@ class HealthCheckTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/health/liveness")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
   }

@@ -13,8 +13,7 @@ class InfoTest : IntegrationTestBase() {
     webTestClient.get()
       .uri("/info")
       .exchange()
-      .expectStatus()
-      .isOk
+      .expectStatus().isOk
       .expectBody()
       .jsonPath("build.name").isEqualTo("hmpps-prisoner-events")
   }
