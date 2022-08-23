@@ -3,7 +3,7 @@
 
 generic-service:
   ingress:
-    host: hmpps-prisoner-events-preprod.hmpps.service.justice.gov.uk
+    host: hmpps-prisoner-events-preprod.aks-live-1.studio-hosting.service.justice.gov.uk
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json

@@ -1,6 +1,41 @@
 server:
   shutdown: immediate
 
+source.queue.provider: localstack
+
 management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
+
+spring:
+  flyway:
+    enabled: true
+
+  datasource:
+    url: 'jdbc:h2:mem:nomis-db;MODE=Oracle'
+
+  test:
+    database:
+      replace: none
+
+offender.events:
+  client:
+    id: offender-events-client
+    secret: clientsecret
+
+hmpps.sqs:
+  provider: localstack
+  queues:
+    prisoneventqueue:
+      queueName: ${random.uuid}
+      dlqName: ${random.uuid}
+      subscribeTopicId: prisoneventtopic
+      subscribeFilter: '{"eventType":[ "OFFENDER_MOVEMENT-RECEPTION", "OFFENDER_MOVEMENT-DISCHARGE" ] }'
+    prisoneventtestqueue:
+      queueName: ${random.uuid}
+      dlqName: ${random.uuid}
+      subscribeTopicId: prisoneventtopic
+      subscribeFilter: '{"eventType":[ "OFFENDER_MOVEMENT-RECEPTION", "OFFENDER_MOVEMENT-DISCHARGE" ] }'
+  topics:
+    prisoneventtopic:
+      arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
