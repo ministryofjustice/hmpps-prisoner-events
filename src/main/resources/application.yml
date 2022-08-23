@@ -24,27 +24,18 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://a-uri.com # ${api.base.url.oauth}/.well-known/jwks.json
-
-#      client:
-#        provider:
-#          hmpps-auth:
-#            token-uri: ${api.base.url.oauth}/oauth/token
+          jwk-set-uri: https://tbc.com # ${api.base.url.oauth}/.well-known/jwks.json
 
   devtools:
     add-properties: false
 
   flyway:
     enabled: false
-#
-#  data:
-#    web:
-#      pageable:
-#        max-page-size: 20000
+
   h2:
     console:
       enabled: false
-#
+
   jpa:
     database-platform: org.hibernate.dialect.Oracle12cDialect
     open-in-view: false
@@ -73,10 +64,6 @@ server:
   shutdown: graceful
   error:
     include-message: always
-
-security:
-  basic.enable: false
-  ignored: /**
 
 management:
   endpoints:
