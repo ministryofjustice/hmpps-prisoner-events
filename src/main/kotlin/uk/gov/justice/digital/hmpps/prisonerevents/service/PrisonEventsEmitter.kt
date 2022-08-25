@@ -69,7 +69,8 @@ class PrisonEventsEmitter(
     return entries.stream().collect(
       Collectors.toMap(
         { (key): Map.Entry<String, Any?> -> key },
-        { (_, value): Map.Entry<String, Any?> -> value.toString() })
+        { (_, value): Map.Entry<String, Any?> -> value.toString() }
+      )
     )
   }
 

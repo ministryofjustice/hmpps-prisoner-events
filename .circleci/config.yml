@@ -6,7 +6,7 @@ orbs:
 parameters:
   alerts-slack-channel:
     type: string
-    default: dps_alerts_security
+    default: syscon-alerts
   releases-slack-channel:
     type: string
     default: dps-releases
@@ -14,10 +14,12 @@ parameters:
 jobs:
   validate:
     executor:
-      name: hmpps/java
-      tag: "17.0"
+      name: hmpps/localstack
+      jdk_tag: "18.0"
+      localstack_tag: "0.14.5"
     steps:
       - checkout
+      - hmpps/wait_till_ready
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}
@@ -52,6 +54,7 @@ workflows:
       - hmpps/deploy_env:
           name: deploy_dev
           env: "dev"
+          jira_update: true
           context: hmpps-common-vars
           filters:
             branches:
@@ -61,18 +64,20 @@ workflows:
             - validate
             - build_docker
             - helm_lint
-#      - request-preprod-approval:
-#          type: approval
-#          requires:
-#            - deploy_dev
-#      - hmpps/deploy_env:
-#          name: deploy_preprod
-#          env: "preprod"
-#          context:
-#            - hmpps-common-vars
-#            - hmpps-prisoner-events-preprod
-#          requires:
-#            - request-preprod-approval
+      - request-preprod-approval:
+          type: approval
+          requires:
+            - deploy_dev
+      - hmpps/deploy_env:
+          name: deploy_preprod
+          env: "preprod"
+          jira_update: true
+          jira_env_type: staging
+          context:
+            - hmpps-common-vars
+            - hmpps-prisoner-events-preprod
+          requires:
+            - request-preprod-approval
 #      - request-prod-approval:
 #          type: approval
 #          requires:
@@ -80,6 +85,8 @@ workflows:
 #      - hmpps/deploy_env:
 #          name: deploy_prod
 #          env: "prod"
+#          jira_update: true
+#          jira_env_type: production
 #          slack_notification: true
 #          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
 #          context:

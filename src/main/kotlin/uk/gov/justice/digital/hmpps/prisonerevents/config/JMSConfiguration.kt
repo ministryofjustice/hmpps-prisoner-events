@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.config
 
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.datasource.DataSourceTransactionManager
@@ -11,24 +11,24 @@ import javax.jms.ConnectionFactory
 import javax.sql.DataSource
 
 @Configuration
-class JMSConfiguration {
-
-  @Autowired
-  lateinit var jmsReceiver: JMSReceiver
+class JMSConfiguration(
+  @Value("\${source.queue.name}") val queueName: String,
+  @Value("\${source.queue.transacted}") val transacted: Boolean
+) {
 
   @Bean
   fun jmsTemplate(conFactory: ConnectionFactory) =
     JmsTemplate().apply {
-      this.isSessionTransacted = true
+      this.isSessionTransacted = transacted
       this.connectionFactory = conFactory
     }
 
   @Bean
-  fun messageListenerContainer(conFactory: ConnectionFactory, dataSource: DataSource) =
+  fun messageListenerContainer(connectionFactory: ConnectionFactory, dataSource: DataSource, jmsReceiver: JMSReceiver) =
     DefaultMessageListenerContainer().apply {
-      this.destinationName = "XTAG.XTAG_DPS"
-      this.isSessionTransacted = true
-      this.connectionFactory = conFactory
+      this.destinationName = queueName
+      this.isSessionTransacted = transacted
+      this.connectionFactory = connectionFactory
 
       val manager = DataSourceTransactionManager()
       manager.dataSource = dataSource

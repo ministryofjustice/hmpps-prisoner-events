@@ -2,6 +2,9 @@ package uk.gov.justice.digital.hmpps.prisonerevents.config
 
 import com.amazon.sqs.javamessaging.ProviderConfiguration
 import com.amazon.sqs.javamessaging.SQSConnectionFactory
+import com.amazonaws.auth.AWSStaticCredentialsProvider
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder
 import oracle.jms.AQjmsFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
@@ -41,5 +44,16 @@ class OracleAQConfiguration {
   @ConditionalOnProperty(name = ["source.queue.provider"], havingValue = "localstack")
   @Bean
   fun connectionFactoryLocalstack(dataSource: DataSource?): QueueConnectionFactory =
-    SQSConnectionFactory(ProviderConfiguration())
+    SQSConnectionFactory(
+      ProviderConfiguration(),
+      AmazonSQSClientBuilder
+        .standard()
+        .withCredentials(
+          AWSStaticCredentialsProvider(
+            BasicAWSCredentials("foo", "bar")
+          )
+        )
+        .withRegion("eu-west-2")
+        .build()
+    )
 }

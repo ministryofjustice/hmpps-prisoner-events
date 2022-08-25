@@ -83,4 +83,8 @@ class XtagContent(private val map: Map<String, String>) {
   val p_event_sub_type by m
   val p_event_status by m
   val p_agy_loc_id by m
+
+  val p_iep_level_seq by m
+  val p_iep_level by m
+  val p_audit_module_name by m
 }
