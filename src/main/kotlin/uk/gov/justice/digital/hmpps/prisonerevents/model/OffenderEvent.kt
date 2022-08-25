@@ -77,5 +77,11 @@ data class OffenderEvent(
   val escortCode: String? = null,
   var fromAgencyLocationId: String? = null,
   var toAgencyLocationId: String? = null,
+
+  // iep data
+  val iepSeq: Long? = null,
+  val iepLevel: String? = null,
+
   val nomisEventType: String? = null,
+  val auditModuleName: String? = null,
 )

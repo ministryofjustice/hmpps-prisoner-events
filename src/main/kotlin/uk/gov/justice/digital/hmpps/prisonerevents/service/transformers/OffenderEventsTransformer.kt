@@ -16,7 +16,6 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
-import java.util.Optional
 
 @Component
 class OffenderEventsTransformer @Autowired constructor() {
@@ -58,7 +57,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "SCHEDULE_INT_APP-CHANGED" -> offenderIndividualScheduleChanged(xtag)
         "OFF_RECEP_OASYS" -> offenderMovementReceptionEventOf(xtag)
         "OFF_DISCH_OASYS" -> offenderMovementDischargeEventOf(xtag)
-        "M1_RESULT", "M1_UPD_RESULT" -> externalMovementRecordEventOf(xtag, Optional.of(externalMovementEventOf(xtag)))
+        "M1_RESULT", "M1_UPD_RESULT" -> externalMovementRecordEventOf(xtag, externalMovementEventOf(xtag))
         "OFF_UPD_OASYS" -> if (!Strings.isNullOrEmpty(xtag.content.p_offender_book_id)) offenderBookingChangedEventOf(
           xtag
         ) else offenderDetailsChangedEventOf(xtag)
@@ -136,7 +135,10 @@ class OffenderEventsTransformer @Autowired constructor() {
         "BED_ASSIGNMENT_HISTORY-INSERTED" -> offenderBedAssignmentEventOf(xtag)
         "CONFIRMED_RELEASE_DATE-CHANGED" -> confirmedReleaseDateOf(xtag)
         "OFFENDER-INSERTED", "OFFENDER-UPDATED", "OFFENDER-DELETED" -> offenderUpdatedOf(xtag)
-        "EXTERNAL_MOVEMENT-CHANGED" -> externalMovementRecordEventOf(xtag, Optional.empty())
+        "EXTERNAL_MOVEMENT-CHANGED" -> externalMovementRecordEventOf(xtag, null)
+
+        "OFFENDER_IEP_LEVEL-UPDATED" -> iepUpdatedEventOf(xtag)
+
         else -> OffenderEvent(
           eventType = xtag.eventType,
           eventDatetime = xtag.nomisTimestamp,
@@ -150,31 +152,31 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   private fun offenderTransferOutOfLidsEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_TRANSFER-OUT_OF_LIDS",
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderBedAssignmentEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "BED_ASSIGNMENT_HISTORY-INSERTED",
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    bedAssignmentSeq = integerOf(xtag.content.p_bed_assign_seq),
-    livingUnitId = longOf(xtag.content.p_living_unit_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    bedAssignmentSeq = xtag.content.p_bed_assign_seq?.toInt(),
+    livingUnitId = xtag.content.p_living_unit_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun courtSentenceChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "COURT_SENTENCE-CHANGED",
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun alertDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ALERT-DELETED",
-    offenderId = longOf(xtag.content.p_offender_id),
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     alertDateTime = localDateTimeOf(xtag.content.p_alert_date, xtag.content.p_alert_time),
     alertType = xtag.content.p_alert_type,
     alertCode = xtag.content.p_alert_code,
@@ -185,92 +187,92 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   private fun personAddressUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "PERSON_ADDRESS-UPDATED",
-    addressId = longOf(xtag.content.p_address_id),
-    ownerId = longOf(xtag.content.p_owner_id),
+    addressId = xtag.content.p_address_id?.toLong(),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     addressEndDate = localDateOf(xtag.content.p_address_end_date),
     primaryAddressFlag = xtag.content.p_primary_addr_flag,
     mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = longOf(xtag.content.p_person_id),
+    personId = xtag.content.p_person_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderAddressUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_ADDRESS-UPDATED",
-    addressId = longOf(xtag.content.p_address_id),
-    ownerId = longOf(xtag.content.p_owner_id),
+    addressId = xtag.content.p_address_id?.toLong(),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     addressEndDate = localDateOf(xtag.content.p_address_end_date),
     primaryAddressFlag = xtag.content.p_primary_addr_flag,
     mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = longOf(xtag.content.p_person_id),
+    personId = xtag.content.p_person_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun addressUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ADDRESS-UPDATED",
-    addressId = longOf(xtag.content.p_address_id),
-    ownerId = longOf(xtag.content.p_owner_id),
+    addressId = xtag.content.p_address_id?.toLong(),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     addressEndDate = localDateOf(xtag.content.p_address_end_date),
     primaryAddressFlag = xtag.content.p_primary_addr_flag,
     mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = longOf(xtag.content.p_person_id),
+    personId = xtag.content.p_person_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun personAddressDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "PERSON_ADDRESS-DELETED",
-    addressId = longOf(xtag.content.p_address_id),
-    ownerId = longOf(xtag.content.p_owner_id),
+    addressId = xtag.content.p_address_id?.toLong(),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     addressEndDate = localDateOf(xtag.content.p_address_end_date),
     primaryAddressFlag = xtag.content.p_primary_addr_flag,
     mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = longOf(xtag.content.p_person_id),
+    personId = xtag.content.p_person_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderAddressDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_ADDRESS-DELETED",
-    addressId = longOf(xtag.content.p_address_id),
-    ownerId = longOf(xtag.content.p_owner_id),
+    addressId = xtag.content.p_address_id?.toLong(),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     addressEndDate = localDateOf(xtag.content.p_address_end_date),
     primaryAddressFlag = xtag.content.p_primary_addr_flag,
     mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = longOf(xtag.content.p_person_id),
+    personId = xtag.content.p_person_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun addressDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ADDRESS-DELETED",
-    addressId = longOf(xtag.content.p_address_id),
-    ownerId = longOf(xtag.content.p_owner_id),
+    addressId = xtag.content.p_address_id?.toLong(),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     addressEndDate = localDateOf(xtag.content.p_address_end_date),
     primaryAddressFlag = xtag.content.p_primary_addr_flag,
     mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = longOf(xtag.content.p_person_id),
+    personId = xtag.content.p_person_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun personAddressInserted(xtag: Xtag) = OffenderEvent(
     eventType = "PERSON_ADDRESS-INSERTED",
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
-    addressId = longOf(xtag.content.p_address_id),
-    ownerId = longOf(xtag.content.p_owner_id),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    addressId = xtag.content.p_address_id?.toLong(),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     addressEndDate = localDateOf(xtag.content.p_address_end_date),
     primaryAddressFlag = xtag.content.p_primary_addr_flag,
     mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = longOf(xtag.content.p_person_id),
+    personId = xtag.content.p_person_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
@@ -278,26 +280,26 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun hdcFineInserted(xtag: Xtag) = OffenderEvent(
     eventType = "HDC_FINE-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    sentenceSeq = longOf(xtag.content.p_sentence_seq),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    sentenceSeq = xtag.content.p_sentence_seq?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun hdcConditionChanged(xtag: Xtag) = OffenderEvent(
     eventType = "HDC_CONDITION-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    sentenceSeq = longOf(xtag.content.p_sentence_seq),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    sentenceSeq = xtag.content.p_sentence_seq?.toLong(),
     conditionCode = xtag.content.p_condition_code,
-    offenderSentenceConditionId = longOf(xtag.content.p_offender_sent_calculation_id),
+    offenderSentenceConditionId = xtag.content.p_offender_sent_calculation_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderIndividualScheduleChanged(xtag: Xtag) = OffenderEvent(
     eventType = "APPOINTMENT_CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    scheduleEventId = longOf(xtag.content.p_event_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    scheduleEventId = xtag.content.p_event_id?.toLong(),
     scheduledStartTime = localDateTimeOf(xtag.content.p_event_date, xtag.content.p_start_time),
     scheduledEndTime =
     if (xtag.content.p_end_time == null) null else localDateTimeOf(
@@ -315,27 +317,27 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderEmploymentInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_EMPLOYMENT-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderEmploymentUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_EMPLOYMENT-UPDATED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderEmploymentDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_EMPLOYMENT-DELETED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun phoneInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "PHONE-INSERTED",
-    ownerId = longOf(xtag.content.p_owner_id),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
@@ -343,7 +345,7 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   private fun phoneUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "PHONE-UPDATED",
-    ownerId = longOf(xtag.content.p_owner_id),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
@@ -351,7 +353,7 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   private fun phoneDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "PHONE-DELETED",
-    ownerId = longOf(xtag.content.p_owner_id),
+    ownerId = xtag.content.p_owner_id?.toLong(),
     ownerClass = xtag.content.p_owner_class,
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
@@ -359,21 +361,21 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   private fun hearingResultChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "HEARING_RESULT-CHANGED",
-    oicHearingId = longOf(xtag.content.p_oic_hearing_id),
-    resultSeq = longOf(xtag.content.p_result_seq),
-    agencyIncidentId = longOf(xtag.content.p_agency_incident_id),
-    chargeSeq = longOf(xtag.content.p_charge_seq),
+    oicHearingId = xtag.content.p_oic_hearing_id?.toLong(),
+    resultSeq = xtag.content.p_result_seq?.toLong(),
+    agencyIncidentId = xtag.content.p_agency_incident_id?.toLong(),
+    chargeSeq = xtag.content.p_charge_seq?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
 
   private fun hearingResultDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "HEARING_RESULT-DELETED",
-    oicHearingId = longOf(xtag.content.p_oic_hearing_id),
-    resultSeq = longOf(xtag.content.p_result_seq),
-    agencyIncidentId = longOf(xtag.content.p_agency_incident_id),
-    chargeSeq = longOf(xtag.content.p_charge_seq),
-    oicOffenceId = longOf(xtag.content.p_oic_offence_id),
+    oicHearingId = xtag.content.p_oic_hearing_id?.toLong(),
+    resultSeq = xtag.content.p_result_seq?.toLong(),
+    agencyIncidentId = xtag.content.p_agency_incident_id?.toLong(),
+    chargeSeq = xtag.content.p_charge_seq?.toLong(),
+    oicOffenceId = xtag.content.p_oic_offence_id?.toLong(),
     pleaFindingCode = xtag.content.p_plea_finding_code,
     findingCode = xtag.content.p_finding_code,
     eventDatetime = xtag.nomisTimestamp,
@@ -382,7 +384,7 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   private fun hearingDateChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "HEARING_DATE-CHANGED",
-    oicHearingId = longOf(xtag.content.p_oic_hearing_id),
+    oicHearingId = xtag.content.p_oic_hearing_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
@@ -390,22 +392,22 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun sentenceCalculationDateChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "SENTENCE_CALCULATION_DATES-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun sentenceDatesChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "SENTENCE_DATES-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    sentenceCalculationId = longOf(xtag.content.p_offender_sent_calculation_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    sentenceCalculationId = xtag.content.p_offender_sent_calculation_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun sentencingChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
     nomisEventType = xtag.eventType,
   )
@@ -413,23 +415,23 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderProfileUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_PROFILE_DETAILS-UPDATED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderProfileDetailInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_PROFILE_DETAILS-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun alertInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ALERT-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    alertSeq = longOf(xtag.content.p_alert_seq),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    alertSeq = xtag.content.p_alert_seq?.toLong(),
     alertDateTime = localDateTimeOf(xtag.content.p_alert_date, xtag.content.p_alert_time),
     alertType = xtag.content.p_alert_type,
     alertCode = xtag.content.p_alert_code,
@@ -439,9 +441,9 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun alertUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ALERT-UPDATED",
     eventDatetime = xtag.nomisTimestamp,
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    alertSeq = longOf(xtag.content.p_alert_seq),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    alertSeq = xtag.content.p_alert_seq?.toLong(),
     alertDateTime = localDateTimeOf(xtag.content.p_old_alert_date, xtag.content.p_old_alert_time),
     alertType = xtag.content.p_alert_type,
     alertCode = xtag.content.p_alert_code,
@@ -451,23 +453,23 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun assessmentChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ASSESSMENT-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    assessmentSeq = longOf(xtag.content.p_assessment_seq),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    assessmentSeq = xtag.content.p_assessment_seq?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun imprisonmentStatusChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "IMPRISONMENT_STATUS-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    imprisonmentStatusSeq = longOf(xtag.content.p_imprison_status_seq),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    imprisonmentStatusSeq = xtag.content.p_imprison_status_seq?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun incidentInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "INCIDENT-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    incidentCaseId = longOf(xtag.content.p_incident_case_id),
+    incidentCaseId = xtag.content.p_incident_case_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
@@ -477,11 +479,11 @@ class OffenderEventsTransformer @Autowired constructor() {
     return OffenderEvent(
       eventType = "INCIDENT-$v",
       eventDatetime = xtag.nomisTimestamp,
-      incidentCaseId = longOf(xtag.content.p_incident_case_id),
-      incidentPartySeq = longOf(xtag.content.p_party_seq),
-      incidentRequirementSeq = longOf(xtag.content.p_requirement_seq),
-      incidentQuestionSeq = longOf(xtag.content.p_question_seq),
-      incidentResponseSeq = longOf(xtag.content.p_response_seq),
+      incidentCaseId = xtag.content.p_incident_case_id?.toLong(),
+      incidentPartySeq = xtag.content.p_party_seq?.toLong(),
+      incidentRequirementSeq = xtag.content.p_requirement_seq?.toLong(),
+      incidentQuestionSeq = xtag.content.p_question_seq?.toLong(),
+      incidentResponseSeq = xtag.content.p_response_seq?.toLong(),
       nomisEventType = xtag.eventType,
     )
   }
@@ -489,8 +491,8 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderIdentifierInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_IDENTIFIER-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     identifierType = xtag.content.p_identifier_type,
     identifierValue = xtag.content.p_identifier_value,
     nomisEventType = xtag.eventType,
@@ -499,8 +501,8 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderIdentifierDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_IDENTIFIER-DELETED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     identifierType = xtag.content.p_identifier_type,
     nomisEventType = xtag.eventType,
   )
@@ -508,69 +510,69 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun educationLevelInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "EDUCATION_LEVEL-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun educationLevelUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "EDUCATION_LEVEL-UPDATED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun educationLevelDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "EDUCATION_LEVEL-DELETED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun contactPersonInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "CONTACT_PERSON-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    personId = longOf(xtag.content.p_person_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    personId = xtag.content.p_person_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun contactPersonUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "CONTACT_PERSON-UPDATED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    personId = longOf(xtag.content.p_person_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    personId = xtag.content.p_person_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun contactPersonDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "CONTACT_PERSON-DELETED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    personId = longOf(xtag.content.p_person_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    personId = xtag.content.p_person_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER-UPDATED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderAliasChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_ALIAS-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
-    aliasOffenderId = longOf(xtag.content.p_alias_offender_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    aliasOffenderId = xtag.content.p_alias_offender_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun addressUsageInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ADDRESS_USAGE-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    addressId = longOf(xtag.content.p_address_id),
+    addressId = xtag.content.p_address_id?.toLong(),
     addressUsage = xtag.content.p_address_usage,
     nomisEventType = xtag.eventType,
   )
@@ -578,7 +580,7 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun addressUsageUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ADDRESS_USAGE-UPDATED",
     eventDatetime = xtag.nomisTimestamp,
-    addressId = longOf(xtag.content.p_address_id),
+    addressId = xtag.content.p_address_id?.toLong(),
     addressUsage = xtag.content.p_address_usage,
     nomisEventType = xtag.eventType,
   )
@@ -586,7 +588,7 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun addressUsageDeletedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "ADDRESS_USAGE-DELETED",
     eventDatetime = xtag.nomisTimestamp,
-    addressId = longOf(xtag.content.p_address_id),
+    addressId = xtag.content.p_address_id?.toLong(),
     addressUsage = xtag.content.p_address_usage,
     nomisEventType = xtag.eventType,
   )
@@ -594,17 +596,17 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderDetailsChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_DETAILS-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderBookingInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_BOOKING-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     identifierType = xtag.content.p_identifier_type,
     nomisEventType = xtag.eventType,
   )
@@ -612,26 +614,26 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderBookingChangedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_BOOKING-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    rootOffenderId = longOf(xtag.content.p_root_offender_id),
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderBookingReassignedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_BOOKING-REASSIGNED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    previousOffenderId = longOf(xtag.content.p_old_offender_id),
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    previousOffenderId = xtag.content.p_old_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
-  fun externalMovementRecordEventOf(xtag: Xtag, overrideEventType: Optional<String>) = OffenderEvent(
-    eventType = overrideEventType.orElse(xtag.eventType),
+  fun externalMovementRecordEventOf(xtag: Xtag, overrideEventType: String?) = OffenderEvent(
+    eventType = overrideEventType ?: xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    movementSeq = longOf(xtag.content.p_movement_seq),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    movementSeq = xtag.content.p_movement_seq?.toLong(),
     movementDateTime = localDateTimeOf(xtag.content.p_movement_date, xtag.content.p_movement_time),
     movementType = xtag.content.p_movement_type,
     movementReasonCode = xtag.content.p_movement_reason_code,
@@ -645,80 +647,84 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderMovementDischargeEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_MOVEMENT-DISCHARGE",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    movementSeq = longOf(xtag.content.p_movement_seq),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    movementSeq = xtag.content.p_movement_seq?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderMovementReceptionEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_MOVEMENT-RECEPTION",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    movementSeq = longOf(xtag.content.p_movement_seq),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    movementSeq = xtag.content.p_movement_seq?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun maternityStatusInsertedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "MATERNITY_STATUS-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun maternityStatusUpdatedEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "MATERNITY_STATUS-UPDATED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun riskScoreEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "RISK_SCORE-" + if (xtag.content.p_delete_flag == "N") "CHANGED" else "DELETED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    riskPredictorId = longOf(xtag.content.p_offender_risk_predictor_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    riskPredictorId = xtag.content.p_offender_risk_predictor_id?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun offenderSanctionEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "OFFENDER_SANCTION-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
-    sanctionSeq = longOf(xtag.content.p_sanction_seq),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    sanctionSeq = xtag.content.p_sanction_seq?.toLong(),
     nomisEventType = xtag.eventType,
   )
 
   private fun bookingNumberEventOf(xtag: Xtag) = OffenderEvent(
     eventType = "BOOKING_NUMBER-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     bookingNumber = xtag.content.p_new_prison_num,
     previousBookingNumber =
-    Optional.ofNullable<String>(xtag.content.p_old_prison_num)
-      .orElse(
-        Optional.ofNullable<String>(xtag.content.p_old_prision_num)
-          .orElse(xtag.content.p_old_prison_number)
-      ),
+    xtag.content.p_old_prison_num ?: xtag.content.p_old_prision_num ?: xtag.content.p_old_prison_number,
     nomisEventType = xtag.eventType,
   )
 
   private fun confirmedReleaseDateOf(xtag: Xtag) = OffenderEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = longOf(xtag.content.p_offender_book_id),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
   )
 
   private fun offenderUpdatedOf(xtag: Xtag) = OffenderEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = longOf(xtag.content.p_offender_id),
+    offenderId = xtag.content.p_offender_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
   )
 
-  private fun longOf(num: String?): Long? = num?.toLong()
-
-  private fun integerOf(num: String?): Int? = num?.toInt()
+  private fun iepUpdatedEventOf(xtag: Xtag) = OffenderEvent(
+    eventType = "IEP_UPSERTED",
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    agencyLocationId = xtag.content.p_agy_loc_id,
+    iepSeq = xtag.content.p_iep_level_seq?.toLong(),
+    iepLevel = xtag.content.p_iep_level,
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
 
   companion object {
     private val log = LoggerFactory.getLogger(OffenderEventsTransformer::class.java)
@@ -738,7 +744,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     }
 
     fun externalMovementEventOf(xtag: Xtag): String {
-      return when (Optional.ofNullable(xtag.content.p_record_deleted).orElse("")) {
+      return when (xtag.content.p_record_deleted) {
         "N" -> "EXTERNAL_MOVEMENT_RECORD-INSERTED"
         "Y" -> "EXTERNAL_MOVEMENT_RECORD-DELETED"
         else -> "EXTERNAL_MOVEMENT_RECORD-UPDATED"
@@ -748,41 +754,36 @@ class OffenderEventsTransformer @Autowired constructor() {
     fun localDateOf(date: String?): LocalDate? {
       val pattern = "[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd][dd-MMM-yyyy][dd-MMM-yy]"
       try {
-        return Optional.ofNullable(date)
-          .map { d: String? ->
-            LocalDate.parse(
-              d,
-              DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(pattern).toFormatter()
-            )
-          }
-          .orElse(null)
+        return date?.let {
+          LocalDate.parse(
+            it,
+            DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(pattern).toFormatter()
+          )
+        }
       } catch (dtpe: DateTimeParseException) {
         log.error("Unable to parse {} into a LocalDate using pattern {}", date, pattern)
       }
       return null
     }
 
-    private fun localTimeOf(dateTime: String?): LocalTime? {
+    fun localTimeOf(dateTime: String?): LocalTime? {
       val pattern = "[yyyy-MM-dd ]HH:mm:ss"
       try {
-        return Optional.ofNullable(dateTime)
-          .map { d: String? -> LocalTime.parse(d, DateTimeFormatter.ofPattern(pattern)) }
-          .orElse(null)
+        return dateTime?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern(pattern)) }
       } catch (dtpe: DateTimeParseException) {
         log.error("Unable to parse {} into a LocalTime using pattern {}", dateTime, pattern)
       }
       return null
     }
 
-    fun localDateTimeOf(date: String?, time: String?): LocalDateTime? {
-      val maybeLocalDate = Optional.ofNullable(localDateOf(date))
-      val maybeLocalTime = Optional.ofNullable(localTimeOf(time))
-      return maybeLocalDate
-        .map { ld: LocalDate ->
-          maybeLocalTime.map { lt: LocalTime -> lt.atDate(ld) }
-            .orElse(ld.atStartOfDay())
+    fun localDateTimeOf(date: String?, time: String?): LocalDateTime? =
+      localDateOf(date)?.let {
+        val t = localTimeOf(time)
+        if (t == null) {
+          it.atStartOfDay()
+        } else {
+          t.atDate(it)
         }
-        .orElse(null)
-    }
+      }
   }
 }

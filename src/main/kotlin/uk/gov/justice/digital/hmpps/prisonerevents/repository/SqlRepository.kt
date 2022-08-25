@@ -77,10 +77,10 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
 data class Movement(
   val offenderNo: String?,
-  val fromAgency: String?,
-  val toAgency: String?,
-  val movementType: String?,
-  val directionCode: String?,
-  val movementDate: LocalDate?,
-  val movementTime: LocalTime?,
+  val fromAgency: String? = null,
+  val toAgency: String? = null,
+  val movementType: String? = null,
+  val directionCode: String? = null,
+  val movementDate: LocalDate? = null,
+  val movementTime: LocalTime? = null,
 )

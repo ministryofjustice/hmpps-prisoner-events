@@ -4,4 +4,6 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
-source.queue.provider: oracle
+source.queue:
+  provider: oracle
+  transacted: true

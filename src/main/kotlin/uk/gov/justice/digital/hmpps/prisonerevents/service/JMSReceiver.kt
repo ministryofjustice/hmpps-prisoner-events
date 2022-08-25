@@ -15,12 +15,11 @@ class JMSReceiver(
 ) : MessageListener {
 
   override fun onMessage(message: Message) {
-    log.info("JMS Text Message received: " + message)
-    val txtMessage = message as AQjmsMapMessage
+    log.info("JMS AQ Message received: $message")
 
     xtagEventsService.addAdditionalEventData(
       offenderEventsTransformer.offenderEventOf(
-        txtMessage
+        message as AQjmsMapMessage
       )
     )?.also {
 

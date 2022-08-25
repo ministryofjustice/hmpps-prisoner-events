@@ -1,7 +1,9 @@
 server:
   shutdown: immediate
 
-source.queue.provider: localstack
+source.queue:
+  provider: localstack
+  transacted: false
 
 management.endpoint:
   health.cache.time-to-live: 0
