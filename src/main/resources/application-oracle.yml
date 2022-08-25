@@ -7,3 +7,4 @@ spring:
 source.queue:
   provider: oracle
   transacted: true
+  name: XTAG.XTAG_DPS

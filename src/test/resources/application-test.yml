@@ -4,6 +4,7 @@ server:
 source.queue:
   provider: localstack
   transacted: false
+  name: xtagdps
 
 management.endpoint:
   health.cache.time-to-live: 0
@@ -25,19 +26,16 @@ offender.events:
     id: offender-events-client
     secret: clientsecret
 
+aws:
+  provider: localstack
+  region: eu-west-2
+
 hmpps.sqs:
   provider: localstack
+  localstackUrl: http://localhost:4566
   queues:
-    prisoneventqueue:
-      queueName: ${random.uuid}
-      dlqName: ${random.uuid}
-      subscribeTopicId: prisoneventtopic
-      subscribeFilter: '{"eventType":[ "OFFENDER_MOVEMENT-RECEPTION", "OFFENDER_MOVEMENT-DISCHARGE" ] }'
-    prisoneventtestqueue:
-      queueName: ${random.uuid}
-      dlqName: ${random.uuid}
-      subscribeTopicId: prisoneventtopic
-      subscribeFilter: '{"eventType":[ "OFFENDER_MOVEMENT-RECEPTION", "OFFENDER_MOVEMENT-DISCHARGE" ] }'
+    xtagdps:
+      queueName: xtagdps
   topics:
     prisoneventtopic:
       arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}

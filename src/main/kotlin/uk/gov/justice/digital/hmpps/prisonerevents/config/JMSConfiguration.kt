@@ -11,7 +11,10 @@ import javax.jms.ConnectionFactory
 import javax.sql.DataSource
 
 @Configuration
-class JMSConfiguration(@Value("\${source.queue.transacted}") val transacted: Boolean) {
+class JMSConfiguration(
+  @Value("\${source.queue.name}") val queueName: String,
+  @Value("\${source.queue.transacted}") val transacted: Boolean
+) {
 
   @Bean
   fun jmsTemplate(conFactory: ConnectionFactory) =
@@ -23,7 +26,7 @@ class JMSConfiguration(@Value("\${source.queue.transacted}") val transacted: Boo
   @Bean
   fun messageListenerContainer(connectionFactory: ConnectionFactory, dataSource: DataSource, jmsReceiver: JMSReceiver) =
     DefaultMessageListenerContainer().apply {
-      this.destinationName = "XTAG.XTAG_DPS"
+      this.destinationName = queueName
       this.isSessionTransacted = transacted
       this.connectionFactory = connectionFactory
 
