@@ -265,6 +265,7 @@ class OffenderEventsTransformerTest {
             "p_end_time" to "16:30:00",
             "p_event_class" to "INT_MOV",
             "p_event_type" to "APP",
+            "p_record_deleted" to "Y",
           )
         )
       )
@@ -280,6 +281,7 @@ class OffenderEventsTransformerTest {
     assertThat(event?.scheduleEventType).isEqualTo("APP")
     assertThat(event?.scheduleEventSubType).isEqualTo("CALA")
     assertThat(event?.scheduleEventClass).isEqualTo("INT_MOV")
+    assertThat(event?.recordDeleted).isEqualTo(true)
   }
 
   @Test
