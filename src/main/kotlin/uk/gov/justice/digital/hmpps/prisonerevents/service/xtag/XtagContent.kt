@@ -87,4 +87,6 @@ class XtagContent(private val map: Map<String, String>) {
   val p_iep_level_seq by m
   val p_iep_level by m
   val p_audit_module_name by m
+
+  override fun toString(): String = map.toString()
 }
