@@ -1,10 +1,15 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.4.2"
   kotlin("plugin.spring") version "1.7.10"
+  id("org.unbroken-dome.test-sets") version "4.0.0"
 }
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
+}
+
+testSets {
+  "testSmoke"()
 }
 
 dependencies {
@@ -20,7 +25,7 @@ dependencies {
 
   implementation("com.zaxxer:HikariCP:5.0.1")
   runtimeOnly("com.h2database:h2:2.1.214")
-  implementation("com.oracle.database.jdbc:ojdbc10:19.15.0.0.1")
+  implementation("com.oracle.database.jdbc:ojdbc10:19.16.0.0")
   implementation("com.oracle.database.messaging:aqapi:21.3.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")

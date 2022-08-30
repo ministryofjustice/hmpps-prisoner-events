@@ -16,6 +16,7 @@ data class OffenderEvent(
   val scheduleEventType: String? = null,
   val scheduleEventSubType: String? = null,
   val scheduleEventStatus: String? = null,
+  val recordDeleted: Boolean? = null,
   val rootOffenderId: Long? = null,
   val offenderId: Long? = null,
   val aliasOffenderId: Long? = null,

@@ -310,6 +310,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     scheduleEventType = xtag.content.p_event_type,
     scheduleEventSubType = xtag.content.p_event_sub_type,
     scheduleEventStatus = xtag.content.p_event_status,
+    recordDeleted = "Y".equals(xtag.content.p_record_deleted),
     agencyLocationId = xtag.content.p_agy_loc_id,
     nomisEventType = xtag.eventType,
   )
