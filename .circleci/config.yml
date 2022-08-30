@@ -64,10 +64,16 @@ workflows:
             - validate
             - build_docker
             - helm_lint
+      - hmpps/smoke_test:
+          context: hmpps-smoketest-common-vars
+          name: smoke_test
+          jdk_tag: "18.0"
+          requires:
+            - deploy_dev
       - request-preprod-approval:
           type: approval
           requires:
-            - deploy_dev
+            - smoke_test
       - hmpps/deploy_env:
           name: deploy_preprod
           env: "preprod"

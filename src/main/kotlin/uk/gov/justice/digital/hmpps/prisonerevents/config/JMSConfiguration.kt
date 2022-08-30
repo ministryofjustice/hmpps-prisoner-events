@@ -17,10 +17,10 @@ class JMSConfiguration(
 ) {
 
   @Bean
-  fun jmsTemplate(conFactory: ConnectionFactory) =
+  fun jmsTemplate(connectionFactory: ConnectionFactory) =
     JmsTemplate().apply {
       this.isSessionTransacted = transacted
-      this.connectionFactory = conFactory
+      this.connectionFactory = connectionFactory
     }
 
   @Bean
