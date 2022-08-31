@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 
+import oracle.jms.AQjmsMapMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.externalMovementEventOf
@@ -16,6 +17,25 @@ import java.util.UUID
 
 class OffenderEventsTransformerTest {
   private val offenderEventsTransformer = OffenderEventsTransformer()
+
+  @Test
+  fun offenderEventOfAQ() {
+
+    val summerMessage = AQjmsMapMessage().apply {
+      setString("p_offender_book_id", "12345")
+      jmsType = "test"
+      jmsTimestamp = 1661949223123 // Wednesday, 31 August 2022 13:33:43.123 BST
+    }
+
+    val winterMessage = AQjmsMapMessage().apply {
+      setString("p_offender_book_id", "12345")
+      jmsType = "test"
+      jmsTimestamp = 1645939200000 // Sunday, 27 February 2022 05:20:00 GMT or 6:20 BST
+    }
+
+    assertThat(offenderEventsTransformer.offenderEventOf(summerMessage)?.eventDatetime).isEqualTo(LocalDateTime.parse("2022-08-31T13:33:43.123"))
+    assertThat(offenderEventsTransformer.offenderEventOf(winterMessage)?.eventDatetime).isEqualTo(LocalDateTime.parse("2022-02-27T05:20:00.000"))
+  }
 
   @Test
   fun xtagEnqueueTimestampIsSeasonallyAdjustedIntoDaylightSavings() {
@@ -86,9 +106,8 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun externalMovementRecordEventOfHandlesAgyLocIdsAsStrings() {
-    val transformer = OffenderEventsTransformer()
     assertThat(
-      transformer.externalMovementRecordEventOf(
+      offenderEventsTransformer.externalMovementRecordEventOf(
         Xtag(
           content = XtagContent(
             mapOf(
@@ -113,10 +132,9 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun unknownEventTypesAreHandledAppropriately() {
-    val transformer = OffenderEventsTransformer()
-    assertThat(transformer.offenderEventOf(null as Xtag?)).isNull()
-    assertThat(transformer.offenderEventOf(Xtag(content = XtagContent(mapOf())))).isNull()
-    assertThat(transformer.offenderEventOf(Xtag(content = XtagContent(mapOf()), eventType = "meh"))).isNotNull()
+    assertThat(offenderEventsTransformer.offenderEventOf(null as Xtag?)).isNull()
+    assertThat(offenderEventsTransformer.offenderEventOf(Xtag(content = XtagContent(mapOf())))).isNull()
+    assertThat(offenderEventsTransformer.offenderEventOf(Xtag(content = XtagContent(mapOf()), eventType = "meh"))).isNotNull()
   }
 
   @Test
@@ -265,7 +283,7 @@ class OffenderEventsTransformerTest {
             "p_end_time" to "16:30:00",
             "p_event_class" to "INT_MOV",
             "p_event_type" to "APP",
-            "p_record_deleted" to "Y",
+            "p_delete_flag" to "Y",
           )
         )
       )
