@@ -19,6 +19,10 @@ import java.time.format.DateTimeParseException
 
 @Component
 class OffenderEventsTransformer @Autowired constructor() {
+
+  // Xtag events are in British Summer Time all year round at rest in Oracle.
+  private val BST = ZoneOffset.ofHours(1)
+
   fun offenderEventOf(xtagEvent: AQjmsMapMessage): OffenderEvent? {
 
     val map = mutableMapOf<String, String>()
@@ -26,15 +30,13 @@ class OffenderEventsTransformer @Autowired constructor() {
       map[name as String] = xtagEvent.getString(name)
     }
 
+    val seconds = xtagEvent.jmsTimestamp / 1000
+    val nanos = (xtagEvent.jmsTimestamp % 1000 * 1000000).toInt()
     return offenderEventOf(
       Xtag(
         eventType = xtagEvent.jmsType,
         nomisTimestamp = xtagFudgedTimestampOf(
-          LocalDateTime.ofEpochSecond(
-            xtagEvent.jmsTimestamp / 1000,
-            0,
-            ZoneOffset.UTC
-          )
+          LocalDateTime.ofEpochSecond(seconds, nanos, BST)
         ),
         content = XtagContent(map)
       )
@@ -310,7 +312,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     scheduleEventType = xtag.content.p_event_type,
     scheduleEventSubType = xtag.content.p_event_sub_type,
     scheduleEventStatus = xtag.content.p_event_status,
-    recordDeleted = "Y".equals(xtag.content.p_record_deleted),
+    recordDeleted = "Y".equals(xtag.content.p_delete_flag),
     agencyLocationId = xtag.content.p_agy_loc_id,
     nomisEventType = xtag.eventType,
   )
