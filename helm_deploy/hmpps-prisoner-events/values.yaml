@@ -38,6 +38,3 @@ generic-service:
 
   # Disabled for DSO AKS cluster
   allowlist: null
-
-generic-prometheus-alerts:
-  targetApplication: hmpps-prisoner-events

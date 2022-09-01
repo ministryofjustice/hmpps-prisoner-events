@@ -84,22 +84,22 @@ workflows:
             - hmpps-prisoner-events-preprod
           requires:
             - request-preprod-approval
-#      - request-prod-approval:
-#          type: approval
-#          requires:
-#            - deploy_preprod
-#      - hmpps/deploy_env:
-#          name: deploy_prod
-#          env: "prod"
-#          jira_update: true
-#          jira_env_type: production
-#          slack_notification: true
-#          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
-#          context:
-#            - hmpps-common-vars
-#            - hmpps-prisoner-events-prod
-#          requires:
-#            - request-prod-approval
+      - request-prod-approval:
+          type: approval
+          requires:
+            - deploy_preprod
+      - hmpps/deploy_env:
+          name: deploy_prod
+          env: "prod"
+          jira_update: true
+          jira_env_type: production
+          slack_notification: true
+          slack_channel_name: << pipeline.parameters.releases-slack-channel >>
+          context:
+            - hmpps-common-vars
+            - hmpps-prisoner-events-prod
+          requires:
+            - request-prod-approval
 
   security:
     triggers:
@@ -138,5 +138,3 @@ workflows:
           context:
             - veracode-credentials
             - hmpps-common-vars
-
-
