@@ -32,7 +32,8 @@ class OracleAQConfiguration {
     ds.setPassword(password)
     ds.url = connectionstring
     ds.implicitCachingEnabled = true
-    ds.fastConnectionFailoverEnabled = true
+    // Do not reconnect from scratch for each poll:
+    ds.connectionCachingEnabled = true
     return ds
   }
 
