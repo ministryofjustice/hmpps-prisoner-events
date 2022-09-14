@@ -15,8 +15,6 @@ class JMSReceiver(
 ) : MessageListener {
 
   override fun onMessage(message: Message) {
-    log.info("JMS AQ Message received: $message")
-
     xtagEventsService.addAdditionalEventData(
       offenderEventsTransformer.offenderEventOf(
         message as AQjmsMapMessage

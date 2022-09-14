@@ -29,6 +29,7 @@ class JMSConfiguration(
       this.destinationName = queueName
       this.isSessionTransacted = transacted
       this.connectionFactory = connectionFactory
+      this.cacheLevel = DefaultMessageListenerContainer.CACHE_SESSION
 
       val manager = DataSourceTransactionManager()
       manager.dataSource = dataSource
