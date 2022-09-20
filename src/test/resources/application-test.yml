@@ -39,3 +39,7 @@ hmpps.sqs:
   topics:
     prisoneventtopic:
       arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
+
+jms.events:
+  start: "2022-09-14T06:00:00"
+  end: "2999-09-14T06:00:00"
