@@ -20,9 +20,6 @@ import java.time.format.DateTimeParseException
 @Component
 class OffenderEventsTransformer @Autowired constructor() {
 
-  // Xtag events are in British Summer Time all year round at rest in Oracle.
-  private val BST = ZoneOffset.ofHours(1)
-
   fun offenderEventOf(xtagEvent: AQjmsMapMessage): OffenderEvent? {
 
     val map = mutableMapOf<String, String>()
@@ -731,6 +728,9 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   companion object {
     private val log = LoggerFactory.getLogger(OffenderEventsTransformer::class.java)
+
+    // Xtag events are in British Summer Time all year round at rest in Oracle.
+    val BST = ZoneOffset.ofHours(1)
 
     private val INCIDENT_TABLE_MAP = java.util.Map.of(
       "incident_cases", "CASES",

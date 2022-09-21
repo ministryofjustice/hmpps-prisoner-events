@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer
@@ -32,11 +33,17 @@ class JMSReceiverTest {
   @Captor
   private lateinit var captor: ArgumentCaptor<OffenderEvent>
 
+  var START = 1667653847000
+  var END = 1667653857000
+  var ONE_SECOND = 1000
+
   @BeforeEach
   fun setup() {
     service = JMSReceiver(
       OffenderEventsTransformer(),
-      xtagEventsService, eventsEmitter
+      xtagEventsService, eventsEmitter,
+      "2022-11-05T13:10:47",
+      "2022-11-05T13:10:57"
     )
   }
 
@@ -48,13 +55,64 @@ class JMSReceiverTest {
     val message = AQjmsMapMessage().apply {
       this.setString("p_offender_book_id", "12345")
       this.jmsType = "test"
+      this.jmsTimestamp = START
     }
 
     service.onMessage(message)
 
     verify(xtagEventsService).addAdditionalEventData(captor.capture())
+    verify(eventsEmitter).sendEvent(OffenderEvent(eventId = "abc"))
 
     assertThat(captor.value.eventType).isEqualTo("test")
+  }
+
+  @Test
+  fun `will get message if in JMS range`() {
+    whenever(xtagEventsService.addAdditionalEventData(any()))
+      .thenReturn(OffenderEvent(eventId = "abc"))
+
+    val message = AQjmsMapMessage().apply {
+      this.setString("p_offender_book_id", "12345")
+      this.jmsType = "test"
+      this.jmsTimestamp = END - ONE_SECOND
+    }
+
+    service.onMessage(message)
+
+    verify(xtagEventsService).addAdditionalEventData(captor.capture())
+    verify(eventsEmitter).sendEvent(OffenderEvent(eventId = "abc"))
+
+    assertThat(captor.value.eventType).isEqualTo("test")
+  }
+
+  @Test
+  fun `will only log message if before JMS timestamp range`() {
+    whenever(xtagEventsService.addAdditionalEventData(any()))
+      .thenReturn(OffenderEvent(eventId = "abc"))
+
+    val message = AQjmsMapMessage().apply {
+      this.jmsType = "test"
+      this.jmsTimestamp = START - ONE_SECOND
+    }
+
+    service.onMessage(message)
+
+    verifyNoInteractions(eventsEmitter)
+  }
+
+  @Test
+  fun `will only log message if after JMS timestamp range`() {
+    whenever(xtagEventsService.addAdditionalEventData(any()))
+      .thenReturn(OffenderEvent(eventId = "abc"))
+
+    val message = AQjmsMapMessage().apply {
+      this.jmsType = "test"
+      this.jmsTimestamp = END
+    }
+
+    service.onMessage(message)
+
+    verifyNoInteractions(eventsEmitter)
   }
 
   @Test
