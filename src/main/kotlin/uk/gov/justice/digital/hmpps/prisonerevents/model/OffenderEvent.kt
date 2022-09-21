@@ -83,6 +83,9 @@ data class OffenderEvent(
   val iepSeq: Long? = null,
   val iepLevel: String? = null,
 
+  // visit data
+  val visitId: Long? = null,
+
   val nomisEventType: String? = null,
   val auditModuleName: String? = null,
 )
