@@ -137,6 +137,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "EXTERNAL_MOVEMENT-CHANGED" -> externalMovementRecordEventOf(xtag, null)
 
         "OFFENDER_IEP_LEVEL-UPDATED" -> iepUpdatedEventOf(xtag)
+        "OFFENDER_VISIT-UPDATED" -> visitCancelledEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -724,6 +725,17 @@ class OffenderEventsTransformer @Autowired constructor() {
     iepLevel = xtag.content.p_iep_level,
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun visitCancelledEventOf(xtag: Xtag) = OffenderEvent(
+    eventType = ("VISIT_CANCELLED"),
+    eventDatetime = (xtag.nomisTimestamp),
+    bookingId = (xtag.content.p_offender_book_id?.toLong()),
+    offenderIdDisplay = (xtag.content.p_offender_id_display),
+    agencyLocationId = (xtag.content.p_agy_loc_id),
+    nomisEventType = (xtag.eventType),
+    visitId = (xtag.content.p_offender_visit_id?.toLong()),
+    auditModuleName = (xtag.content.p_audit_module_name),
   )
 
   companion object {

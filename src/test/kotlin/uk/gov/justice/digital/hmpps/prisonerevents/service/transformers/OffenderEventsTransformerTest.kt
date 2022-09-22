@@ -134,7 +134,14 @@ class OffenderEventsTransformerTest {
   fun unknownEventTypesAreHandledAppropriately() {
     assertThat(offenderEventsTransformer.offenderEventOf(null as Xtag?)).isNull()
     assertThat(offenderEventsTransformer.offenderEventOf(Xtag(content = XtagContent(mapOf())))).isNull()
-    assertThat(offenderEventsTransformer.offenderEventOf(Xtag(content = XtagContent(mapOf()), eventType = "meh"))).isNotNull()
+    assertThat(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          content = XtagContent(mapOf()),
+          eventType = "meh"
+        )
+      )
+    ).isNotNull()
   }
 
   @Test
@@ -360,5 +367,35 @@ class OffenderEventsTransformerTest {
     assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
     assertThat(event?.agencyLocationId).isEqualTo("MDI")
     assertThat(event?.auditModuleName).isEqualTo("transfer")
+  }
+
+  @Test
+  fun visitCancelledMappedCorrectly() {
+    val now = LocalDateTime.now()
+    val event = offenderEventsTransformer.offenderEventOf(
+      Xtag(
+        eventType = ("OFFENDER_VISIT-UPDATED"),
+        nomisTimestamp = (now),
+        content = XtagContent(
+          mapOf(
+            "p_agy_loc_id" to "MDI",
+            "p_offender_visit_id" to "4",
+            "p_event_id" to ("2323"),
+            "p_event_date" to ("2022-08-23"),
+            "p_offender_book_id" to ("434"),
+            "p_offender_id_display" to ("AF123"),
+            "p_audit_module_name" to ("visit_screen")
+          )
+        )
+      )
+    )
+    assertThat(event?.eventType).isEqualTo("VISIT_CANCELLED")
+    assertThat(event?.bookingId).isEqualTo(434L)
+    assertThat(event?.eventDatetime).isEqualTo(now)
+    assertThat(event?.agencyLocationId).isEqualTo("MDI")
+    assertThat(event?.visitId).isEqualTo(4)
+    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
+    assertThat(event?.agencyLocationId).isEqualTo("MDI")
+    assertThat(event?.auditModuleName).isEqualTo("visit_screen")
   }
 }
