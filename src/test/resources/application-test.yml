@@ -30,15 +30,23 @@ aws:
   provider: localstack
   region: eu-west-2
 
-hmpps.sqs:
-  provider: localstack
-  localstackUrl: http://localhost:4566
-  queues:
-    xtagdps:
-      queueName: xtagdps
-  topics:
-    prisoneventtopic:
-      arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
+hmpps:
+  sqs:
+    provider: localstack
+    localstackUrl: http://localhost:4566
+    queues:
+      xtagdps:
+        queueName: xtagdps
+      prisoneventtestqueue:
+        queueName: ${random.uuid}
+        subscribeTopicId: prisoneventtopic
+        subscribeFilter: '{"eventType":[ "OFFENDER_MOVEMENT-RECEPTION", "OFFENDER_MOVEMENT-DISCHARGE" ] }'
+    topics:
+      prisoneventtopic:
+        arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
+
+  oracle:
+    delayMillis: 10
 
 jms.events:
   start: "2022-09-14T06:00:00"
