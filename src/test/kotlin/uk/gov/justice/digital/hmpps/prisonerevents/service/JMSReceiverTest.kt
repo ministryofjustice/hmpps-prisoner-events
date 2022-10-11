@@ -42,6 +42,7 @@ class JMSReceiverTest {
     service = JMSReceiver(
       OffenderEventsTransformer(),
       xtagEventsService, eventsEmitter,
+      5,
       "2022-11-05T13:10:47",
       "2022-11-05T13:10:57"
     )
