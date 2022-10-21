@@ -716,7 +716,7 @@ class OffenderEventsTransformer @Autowired constructor() {
   )
 
   private fun iepUpdatedEventOf(xtag: Xtag) = OffenderEvent(
-    eventType = "IEP_UPSERTED",
+    eventType = "IEP_" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,

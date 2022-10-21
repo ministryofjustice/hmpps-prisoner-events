@@ -354,11 +354,45 @@ class OffenderEventsTransformerTest {
             "p_offender_book_id" to "434",
             "p_offender_id_display" to "AF123",
             "p_audit_module_name" to "transfer",
+            "p_delete_flag" to "N",
           )
         )
       )
     )
     assertThat(event?.eventType).isEqualTo("IEP_UPSERTED")
+    assertThat(event?.bookingId).isEqualTo(434L)
+    assertThat(event?.eventDatetime).isEqualTo(now)
+    assertThat(event?.agencyLocationId).isEqualTo("MDI")
+    assertThat(event?.iepSeq).isEqualTo(3)
+    assertThat(event?.iepLevel).isEqualTo("STD")
+    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
+    assertThat(event?.agencyLocationId).isEqualTo("MDI")
+    assertThat(event?.auditModuleName).isEqualTo("transfer")
+  }
+
+  @Test
+  fun offenderIepDeletedMappedCorrectly() {
+    val now = LocalDateTime.now()
+    val event = offenderEventsTransformer.offenderEventOf(
+      Xtag(
+        eventType = "OFFENDER_IEP_LEVEL-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_agy_loc_id" to "MDI",
+            "p_iep_level" to "STD",
+            "p_iep_level_seq" to "3",
+            "p_event_id" to "2323",
+            "p_event_date" to "2022-08-23",
+            "p_offender_book_id" to "434",
+            "p_offender_id_display" to "AF123",
+            "p_audit_module_name" to "transfer",
+            "p_delete_flag" to "Y",
+          )
+        )
+      )
+    )
+    assertThat(event?.eventType).isEqualTo("IEP_DELETED")
     assertThat(event?.bookingId).isEqualTo(434L)
     assertThat(event?.eventDatetime).isEqualTo(now)
     assertThat(event?.agencyLocationId).isEqualTo("MDI")
