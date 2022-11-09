@@ -30,8 +30,6 @@ class JMSConfiguration(
       this.isSessionTransacted = transacted
       this.connectionFactory = connectionFactory
       this.cacheLevel = DefaultMessageListenerContainer.CACHE_SESSION
-      this.maxConcurrentConsumers = 20
-      this.idleTaskExecutionLimit = 2
 
       val manager = DataSourceTransactionManager()
       manager.dataSource = dataSource

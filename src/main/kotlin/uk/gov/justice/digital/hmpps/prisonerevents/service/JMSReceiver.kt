@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer
-import java.lang.Thread.sleep
 import java.time.LocalDateTime
 import javax.jms.Message
 import javax.jms.MessageListener
@@ -15,8 +14,6 @@ class JMSReceiver(
   private val offenderEventsTransformer: OffenderEventsTransformer,
   private val xtagEventsService: XtagEventsService,
   private val eventsEmitter: PrisonEventsEmitter,
-  @Value("\${hmpps.oracle.delayMillis}")
-  private val delayMillis: Long,
   @Value("\${jms.events.start}")
   private val startString: String,
   @Value("\${jms.events.end}")
@@ -27,7 +24,6 @@ class JMSReceiver(
   val end = LocalDateTime.parse(endString)
 
   override fun onMessage(message: Message) {
-    sleep(delayMillis) // Give time for the replica db to catch up
     xtagEventsService.addAdditionalEventData(
       offenderEventsTransformer.offenderEventOf(
         message as AQjmsMapMessage

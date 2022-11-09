@@ -28,7 +28,6 @@ generic-service:
     SPRING_PROFILES_ACTIVE: "oracle"
     APPLICATIONINSIGHTS_CONNECTION_STRING: "InstrumentationKey=$(APPINSIGHTS_INSTRUMENTATIONKEY)"
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.json
-    HMPPS_ORACLE_DELAYMILLIS: 2000
 
   namespace_secrets:
     hmpps-prisoner-events:
