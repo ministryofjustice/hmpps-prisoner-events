@@ -14,7 +14,9 @@ class XtagEventsService(
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.offenderId!!)
           .firstOrNull()
 
-      "BED_ASSIGNMENT_HISTORY-INSERTED", "OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION", "CONFIRMED_RELEASE_DATE-CHANGED", "SENTENCE_DATES-CHANGED" ->
+      "BED_ASSIGNMENT_HISTORY-INSERTED", "OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION",
+      "CONFIRMED_RELEASE_DATE-CHANGED", "SENTENCE_DATES-CHANGED",
+      "OFFENDER_CASE_NOTES-INSERTED", "OFFENDER_CASE_NOTES-UPDATED", "OFFENDER_CASE_NOTES-DELETED" ->
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromBooking(oe.bookingId!!)
           .firstOrNull()
 

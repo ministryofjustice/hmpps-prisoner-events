@@ -409,16 +409,16 @@ class OffenderEventsTransformerTest {
     val event = offenderEventsTransformer.offenderEventOf(
       Xtag(
         eventType = ("OFFENDER_VISIT-UPDATED"),
-        nomisTimestamp = (now),
+        nomisTimestamp = now,
         content = XtagContent(
           mapOf(
             "p_agy_loc_id" to "MDI",
             "p_offender_visit_id" to "4",
-            "p_event_id" to ("2323"),
-            "p_event_date" to ("2022-08-23"),
-            "p_offender_book_id" to ("434"),
-            "p_offender_id_display" to ("AF123"),
-            "p_audit_module_name" to ("visit_screen")
+            "p_event_id" to "2323",
+            "p_event_date" to "2022-08-23",
+            "p_offender_book_id" to "434",
+            "p_offender_id_display" to "AF123",
+            "p_audit_module_name" to "visit_screen"
           )
         )
       )
@@ -431,5 +431,30 @@ class OffenderEventsTransformerTest {
     assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
     assertThat(event?.agencyLocationId).isEqualTo("MDI")
     assertThat(event?.auditModuleName).isEqualTo("visit_screen")
+  }
+
+  @Test
+  fun caseNotesMappedCorrectly() {
+    val now = LocalDateTime.now()
+    val event = offenderEventsTransformer.offenderEventOf(
+      Xtag(
+        eventType = "OFFENDER_CASE_NOTES-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "12345",
+            "p_case_note_id" to "456789",
+            "p_case_note_type" to "CHAP",
+            "p_case_note_sub_type" to "FAITH",
+          )
+        )
+      )
+    )
+    assertThat(event?.eventType).isEqualTo("OFFENDER_CASE_NOTES-INSERTED")
+    assertThat(event?.bookingId).isEqualTo(12345L)
+    assertThat(event?.eventDatetime).isEqualTo(now)
+    assertThat(event?.caseNoteId).isEqualTo(456789L)
+    assertThat(event?.caseNoteType).isEqualTo("CHAP")
+    assertThat(event?.caseNoteSubType).isEqualTo("FAITH")
   }
 }

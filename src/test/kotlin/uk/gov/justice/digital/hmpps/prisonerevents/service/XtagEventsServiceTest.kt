@@ -122,7 +122,13 @@ class XtagEventsServiceTest {
   }
 
   @ParameterizedTest
-  @ValueSource(strings = ["OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION", "BED_ASSIGNMENT_HISTORY-INSERTED", "CONFIRMED_RELEASE_DATE-CHANGED", "SENTENCE_DATES-CHANGED"])
+  @ValueSource(
+    strings = [
+      "OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION", "BED_ASSIGNMENT_HISTORY-INSERTED",
+      "CONFIRMED_RELEASE_DATE-CHANGED", "SENTENCE_DATES-CHANGED",
+      "OFFENDER_CASE_NOTES-INSERTED", "OFFENDER_CASE_NOTES-UPDATED", "OFFENDER_CASE_NOTES-DELETED"
+    ]
+  )
   fun shouldDecorateWithOffenderDisplayNoUsingBookingId(eventType: String) {
     assertEventIsDecoratedWithOffenderDisplayNoUsingBookingId(eventType)
   }

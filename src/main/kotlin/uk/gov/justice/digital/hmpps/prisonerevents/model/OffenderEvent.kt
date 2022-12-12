@@ -88,4 +88,7 @@ data class OffenderEvent(
 
   val nomisEventType: String? = null,
   val auditModuleName: String? = null,
+
+  val caseNoteType: String? = null,
+  val caseNoteSubType: String? = null,
 )
