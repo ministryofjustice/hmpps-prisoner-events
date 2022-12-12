@@ -4,7 +4,3 @@
 generic-service:
   ingress:
     host: prisoner-events.aks-live-1.studio-hosting.service.justice.gov.uk
-
-  env:
-    JMS_EVENTS_START: 2022-10-04T05:04:17
-    JMS_EVENTS_END: 2023-10-03T00:00:00
