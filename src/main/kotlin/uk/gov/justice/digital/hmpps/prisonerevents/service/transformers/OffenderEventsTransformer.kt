@@ -114,19 +114,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "D5_RESULT" -> hdcConditionChanged(xtag)
         "D4_RESULT" -> hdcFineInserted(xtag)
         "ADDR_INS" -> personAddressInserted(xtag)
-        "ADDR_UPD" -> {
-          if (xtag.content.p_owner_class == "PER") {
-            if (xtag.content.p_address_deleted == "N") personAddressUpdatedEventOf(xtag) else personAddressDeletedEventOf(
-              xtag
-            )
-          } else if (xtag.content.p_owner_class == "OFF") {
-            if (xtag.content.p_address_deleted == "N") offenderAddressUpdatedEventOf(xtag) else offenderAddressDeletedEventOf(
-              xtag
-            )
-          } else {
-            if (xtag.content.p_address_deleted == "N") addressUpdatedEventOf(xtag) else addressDeletedEventOf(xtag)
-          }
-        }
+        "ADDR_UPD" -> addressUpdatedOrDeleted(xtag)
 
         "OFF_SENT_OASYS" -> sentenceCalculationDateChangedEventOf(xtag)
         "C_NOTIFICATION" -> courtSentenceChangedEventOf(xtag)
@@ -138,6 +126,10 @@ class OffenderEventsTransformer @Autowired constructor() {
 
         "OFFENDER_IEP_LEVEL-UPDATED" -> iepUpdatedEventOf(xtag)
         "OFFENDER_VISIT-UPDATED" -> visitCancelledEventOf(xtag)
+
+        "OFFENDER_CASE_NOTES-INSERTED",
+        "OFFENDER_CASE_NOTES-UPDATED",
+        "OFFENDER_CASE_NOTES-DELETED" -> caseNotesEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -276,6 +268,19 @@ class OffenderEventsTransformer @Autowired constructor() {
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
+
+  private fun addressUpdatedOrDeleted(xtag: Xtag) =
+    if (xtag.content.p_owner_class == "PER") {
+      if (xtag.content.p_address_deleted == "N") personAddressUpdatedEventOf(xtag) else personAddressDeletedEventOf(
+        xtag
+      )
+    } else if (xtag.content.p_owner_class == "OFF") {
+      if (xtag.content.p_address_deleted == "N") offenderAddressUpdatedEventOf(xtag) else offenderAddressDeletedEventOf(
+        xtag
+      )
+    } else {
+      if (xtag.content.p_address_deleted == "N") addressUpdatedEventOf(xtag) else addressDeletedEventOf(xtag)
+    }
 
   private fun hdcFineInserted(xtag: Xtag) = OffenderEvent(
     eventType = "HDC_FINE-INSERTED",
@@ -728,14 +733,24 @@ class OffenderEventsTransformer @Autowired constructor() {
   )
 
   private fun visitCancelledEventOf(xtag: Xtag) = OffenderEvent(
-    eventType = ("VISIT_CANCELLED"),
-    eventDatetime = (xtag.nomisTimestamp),
-    bookingId = (xtag.content.p_offender_book_id?.toLong()),
-    offenderIdDisplay = (xtag.content.p_offender_id_display),
-    agencyLocationId = (xtag.content.p_agy_loc_id),
-    nomisEventType = (xtag.eventType),
-    visitId = (xtag.content.p_offender_visit_id?.toLong()),
-    auditModuleName = (xtag.content.p_audit_module_name),
+    eventType = "VISIT_CANCELLED",
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    agencyLocationId = xtag.content.p_agy_loc_id,
+    nomisEventType = xtag.eventType,
+    visitId = xtag.content.p_offender_visit_id?.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun caseNotesEventOf(xtag: Xtag) = OffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    caseNoteId = xtag.content.p_case_note_id?.toLong(),
+    caseNoteType = xtag.content.p_case_note_type,
+    caseNoteSubType = xtag.content.p_case_note_sub_type,
+    recordDeleted = "Y".equals(xtag.content.p_delete_flag),
   )
 
   companion object {

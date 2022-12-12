@@ -7,5 +7,3 @@ generic-service:
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
-    JMS_EVENTS_START: 2022-09-28T09:04:17
-    JMS_EVENTS_END: 2023-10-03T00:00:00
