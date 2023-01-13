@@ -1,10 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.config
 
-import com.amazon.sqs.javamessaging.ProviderConfiguration
-import com.amazon.sqs.javamessaging.SQSConnectionFactory
-import com.amazonaws.auth.AWSStaticCredentialsProvider
-import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder
 import oracle.jms.AQjmsFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty

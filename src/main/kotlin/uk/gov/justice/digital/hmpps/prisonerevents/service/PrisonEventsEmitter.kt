@@ -1,14 +1,14 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
-import com.amazonaws.services.sns.AmazonSNSAsync
-import com.amazonaws.services.sns.model.MessageAttributeValue
-import com.amazonaws.services.sns.model.PublishRequest
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import software.amazon.awssdk.services.sns.SnsAsyncClient
+import software.amazon.awssdk.services.sns.model.PublishRequest
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
@@ -21,9 +21,9 @@ import java.util.stream.Collectors
 class PrisonEventsEmitter(
   hmppsQueueService: HmppsQueueService,
   objectMapper: ObjectMapper,
-  telemetryClient: TelemetryClient
+  telemetryClient: TelemetryClient,
 ) {
-  private val prisonEventTopicSnsClient: AmazonSNSAsync
+  private val prisonEventTopicSnsClient: SnsAsyncClient
   private val topicArn: String
   private val objectMapper: ObjectMapper
   private val telemetryClient: TelemetryClient
@@ -31,16 +31,19 @@ class PrisonEventsEmitter(
   init {
     val prisonEventTopic: HmppsTopic? = hmppsQueueService.findByTopicId("prisoneventtopic")
     topicArn = prisonEventTopic!!.arn
-    prisonEventTopicSnsClient = prisonEventTopic.snsClient as AmazonSNSAsync
+    prisonEventTopicSnsClient = prisonEventTopic.snsClient
     this.objectMapper = objectMapper
     this.telemetryClient = telemetryClient
   }
 
   fun sendEvent(payload: OffenderEvent) {
     try {
-      prisonEventTopicSnsClient.publishAsync(
-        PublishRequest(topicArn, objectMapper.writeValueAsString(payload))
-          .withMessageAttributes(metaData(payload))
+      prisonEventTopicSnsClient.publish(
+        PublishRequest.builder()
+          .topicArn(topicArn)
+          .message(objectMapper.writeValueAsString(payload))
+          .messageAttributes(metaData(payload))
+          .build()
       )
       telemetryClient.trackEvent(payload.eventType, asTelemetryMap(payload), null)
     } catch (e: JsonProcessingException) {
@@ -50,14 +53,14 @@ class PrisonEventsEmitter(
 
   private fun metaData(payload: OffenderEvent): Map<String, MessageAttributeValue> {
     val messageAttributes: MutableMap<String, MessageAttributeValue> = HashMap()
-    messageAttributes["eventType"] = MessageAttributeValue().withDataType("String").withStringValue(payload.eventType)
-    messageAttributes["publishedAt"] = MessageAttributeValue().withDataType("String").withStringValue(
+    messageAttributes["eventType"] = MessageAttributeValue.builder().dataType("String").stringValue(payload.eventType).build()
+    messageAttributes["publishedAt"] = MessageAttributeValue.builder().dataType("String").stringValue(
       OffsetDateTime.now().format(
         DateTimeFormatter.ISO_OFFSET_DATE_TIME
       )
-    )
+    ).build()
     Optional.ofNullable(buildOptionalCode(payload)).ifPresent { code: String? ->
-      messageAttributes["code"] = MessageAttributeValue().withDataType("String").withStringValue(code)
+      messageAttributes["code"] = MessageAttributeValue.builder().dataType("String").stringValue(code).build()
     }
     return messageAttributes
   }
