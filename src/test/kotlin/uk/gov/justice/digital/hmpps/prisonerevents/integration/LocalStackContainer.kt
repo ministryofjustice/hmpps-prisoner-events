@@ -25,7 +25,7 @@ object LocalStackContainer {
     if (localstackIsRunning()) return null
     val logConsumer = Slf4jLogConsumer(log).withPrefix("localstack")
     return LocalStackContainer(
-      DockerImageName.parse("localstack/localstack").withTag("0.14.5")
+      DockerImageName.parse("localstack/localstack").withTag("1.3")
     ).apply {
       withServices(LocalStackContainer.Service.SQS, LocalStackContainer.Service.SNS)
       withEnv("HOSTNAME_EXTERNAL", "localhost")
