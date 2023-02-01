@@ -91,4 +91,7 @@ data class OffenderEvent(
 
   val caseNoteType: String? = null,
   val caseNoteSubType: String? = null,
+
+  // sentence and key date adjustments
+  val adjustmentId: Long? = null,
 )

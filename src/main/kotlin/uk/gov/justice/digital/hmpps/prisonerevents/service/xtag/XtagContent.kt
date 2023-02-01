@@ -94,5 +94,8 @@ class XtagContent(private val map: Map<String, String>) {
   val p_case_note_type by m
   val p_case_note_sub_type by m
 
+  val p_offender_key_date_adjust_id by m
+  val p_offender_sentence_adjust_id by m
+
   override fun toString(): String = map.toString()
 }

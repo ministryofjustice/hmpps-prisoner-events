@@ -125,6 +125,8 @@ class OffenderEventsTransformer @Autowired constructor() {
         "EXTERNAL_MOVEMENT-CHANGED" -> externalMovementRecordEventOf(xtag, null)
 
         "OFFENDER_IEP_LEVEL-UPDATED" -> iepUpdatedEventOf(xtag)
+        "OFF_KEY_DATES_ADJ-UPDATED" -> keyDateAdjustmentUpdatedEventOf(xtag)
+        "OFF_SENT_ADJ-UPDATED" -> sentenceAdjustmentUpdatedEventOf(xtag)
         "OFFENDER_VISIT-UPDATED" -> visitCancelledEventOf(xtag)
 
         "OFFENDER_CASE_NOTES-INSERTED",
@@ -728,6 +730,27 @@ class OffenderEventsTransformer @Autowired constructor() {
     agencyLocationId = xtag.content.p_agy_loc_id,
     iepSeq = xtag.content.p_iep_level_seq?.toLong(),
     iepLevel = xtag.content.p_iep_level,
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun keyDateAdjustmentUpdatedEventOf(xtag: Xtag) = OffenderEvent(
+    eventType = "KEY_DATE_ADJUSTMENT_" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    adjustmentId = xtag.content.p_offender_key_date_adjust_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun sentenceAdjustmentUpdatedEventOf(xtag: Xtag) = OffenderEvent(
+    eventType = "SENTENCE_ADJUSTMENT_" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    adjustmentId = xtag.content.p_offender_sentence_adjust_id?.toLong(),
+    sentenceSeq = xtag.content.p_sentence_seq?.toLong(),
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
   )
