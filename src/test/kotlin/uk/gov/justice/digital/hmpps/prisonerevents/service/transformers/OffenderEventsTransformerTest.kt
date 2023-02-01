@@ -404,6 +404,108 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
+  fun offenderKeyDateAdjustmentUpdatedMappedCorrectly() {
+    val now = LocalDateTime.now()
+    val event = offenderEventsTransformer.offenderEventOf(
+      Xtag(
+        eventType = "OFF_KEY_DATES_ADJ-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_offender_id_display" to "AF123",
+            "p_offender_key_date_adjust_id" to "987",
+            "p_audit_module_name" to "SENTDATES",
+          )
+        )
+      )
+    )
+    assertThat(event?.eventType).isEqualTo("KEY_DATE_ADJUSTMENT_UPSERTED")
+    assertThat(event?.bookingId).isEqualTo(434L)
+    assertThat(event?.adjustmentId).isEqualTo(987)
+    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
+    assertThat(event?.auditModuleName).isEqualTo("SENTDATES")
+  }
+
+  @Test
+  fun offenderKeyDateAdjustmentDeletedMappedCorrectly() {
+    val now = LocalDateTime.now()
+    val event = offenderEventsTransformer.offenderEventOf(
+      Xtag(
+        eventType = "OFF_KEY_DATES_ADJ-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_offender_id_display" to "AF123",
+            "p_offender_key_date_adjust_id" to "987",
+            "p_audit_module_name" to "SENTDATES",
+            "p_delete_flag" to "Y",
+          )
+        )
+      )
+    )
+    assertThat(event?.eventType).isEqualTo("KEY_DATE_ADJUSTMENT_DELETED")
+    assertThat(event?.bookingId).isEqualTo(434L)
+    assertThat(event?.adjustmentId).isEqualTo(987)
+    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
+    assertThat(event?.auditModuleName).isEqualTo("SENTDATES")
+  }
+
+  @Test
+  fun offenderSentenceAdjustmentUpdatedMappedCorrectly() {
+    val now = LocalDateTime.now()
+    val event = offenderEventsTransformer.offenderEventOf(
+      Xtag(
+        eventType = "OFF_SENT_ADJ-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_offender_id_display" to "AF123",
+            "p_sentence_seq" to "2",
+            "p_offender_sentence_adjust_id" to "987",
+            "p_audit_module_name" to "SENTDATES",
+          )
+        )
+      )
+    )
+    assertThat(event?.eventType).isEqualTo("SENTENCE_ADJUSTMENT_UPSERTED")
+    assertThat(event?.bookingId).isEqualTo(434L)
+    assertThat(event?.adjustmentId).isEqualTo(987)
+    assertThat(event?.sentenceSeq).isEqualTo(2)
+    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
+    assertThat(event?.auditModuleName).isEqualTo("SENTDATES")
+  }
+
+  @Test
+  fun offenderSentenceAdjustmentDeletedMappedCorrectly() {
+    val now = LocalDateTime.now()
+    val event = offenderEventsTransformer.offenderEventOf(
+      Xtag(
+        eventType = "OFF_SENT_ADJ-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_offender_id_display" to "AF123",
+            "p_sentence_seq" to "2",
+            "p_offender_sentence_adjust_id" to "987",
+            "p_audit_module_name" to "SENTDATES",
+            "p_delete_flag" to "Y",
+          )
+        )
+      )
+    )
+    assertThat(event?.eventType).isEqualTo("SENTENCE_ADJUSTMENT_DELETED")
+    assertThat(event?.bookingId).isEqualTo(434L)
+    assertThat(event?.adjustmentId).isEqualTo(987)
+    assertThat(event?.sentenceSeq).isEqualTo(2)
+    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
+    assertThat(event?.auditModuleName).isEqualTo("SENTDATES")
+  }
+
+  @Test
   fun visitCancelledMappedCorrectly() {
     val now = LocalDateTime.now()
     val event = offenderEventsTransformer.offenderEventOf(
