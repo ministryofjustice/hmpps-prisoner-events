@@ -17,6 +17,7 @@ import java.util.UUID
 
 class OffenderEventsTransformerTest {
   private val offenderEventsTransformer = OffenderEventsTransformer()
+  private val fixedEventTime = LocalDateTime.now()
 
   @Test
   fun offenderEventOfAQ() {
@@ -558,5 +559,56 @@ class OffenderEventsTransformerTest {
     assertThat(event?.caseNoteId).isEqualTo(456789L)
     assertThat(event?.caseNoteType).isEqualTo("CHAP")
     assertThat(event?.caseNoteSubType).isEqualTo("FAITH")
+  }
+
+  @Test
+  fun `offender physical attributes changes mapped correctly`() {
+    with(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFF_PHYS_ATTR-CHANGED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(mapOf("p_offender_id_display" to "A123BC"))
+        )
+      )!!
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+    }
+  }
+
+  @Test
+  fun `offender physical characteristics changes mapped correctly`() {
+    with(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFF_PROFILE_DETS-CHANGED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(mapOf("p_offender_id_display" to "A123BC"))
+        )
+      )!!
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+    }
+  }
+
+  @Test
+  fun `offender physical marks changes mapped correctly`() {
+    with(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFF_IDENT_MARKS-CHANGED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(mapOf("p_offender_id_display" to "A123BC"))
+        )
+      )!!
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+    }
   }
 }
