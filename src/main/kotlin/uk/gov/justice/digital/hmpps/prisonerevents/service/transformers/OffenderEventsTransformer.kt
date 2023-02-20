@@ -122,6 +122,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "BED_ASSIGNMENT_HISTORY-INSERTED" -> offenderBedAssignmentEventOf(xtag)
         "CONFIRMED_RELEASE_DATE-CHANGED" -> confirmedReleaseDateOf(xtag)
         "OFFENDER-INSERTED", "OFFENDER-UPDATED", "OFFENDER-DELETED" -> offenderUpdatedOf(xtag)
+        "OFF_IDENT_MARKS-CHANGED", "OFF_PROFILE_DETS-CHANGED", "OFF_PHYS_ATTR-CHANGED" -> offenderUpdatedOf(xtag)
         "EXTERNAL_MOVEMENT-CHANGED" -> externalMovementRecordEventOf(xtag, null)
 
         "OFFENDER_IEP_LEVEL-UPDATED" -> iepUpdatedEventOf(xtag)
