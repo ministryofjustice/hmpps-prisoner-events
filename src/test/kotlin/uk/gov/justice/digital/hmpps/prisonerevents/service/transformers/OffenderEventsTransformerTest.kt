@@ -572,7 +572,7 @@ class OffenderEventsTransformerTest {
         )
       )!!
     ) {
-      assertThat(eventType).isEqualTo("OFF_PHYS_ATTR-CHANGED")
+      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
@@ -589,7 +589,7 @@ class OffenderEventsTransformerTest {
         )
       )!!
     ) {
-      assertThat(eventType).isEqualTo("OFF_PROFILE_DETS-CHANGED")
+      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
@@ -606,7 +606,7 @@ class OffenderEventsTransformerTest {
         )
       )!!
     ) {
-      assertThat(eventType).isEqualTo("OFF_IDENT_MARKS-CHANGED")
+      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
