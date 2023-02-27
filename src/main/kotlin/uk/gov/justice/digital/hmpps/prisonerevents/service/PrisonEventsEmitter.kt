@@ -38,13 +38,18 @@ class PrisonEventsEmitter(
 
   fun sendEvent(payload: OffenderEvent) {
     try {
-      prisonEventTopicSnsClient.publishAsync(
+      prisonEventTopicSnsClient.publish(
         PublishRequest(topicArn, objectMapper.writeValueAsString(payload))
           .withMessageAttributes(metaData(payload))
       )
       telemetryClient.trackEvent(payload.eventType, asTelemetryMap(payload), null)
     } catch (e: JsonProcessingException) {
-      log.error("Failed to convert payload {} to json", payload)
+      log.error("Failed to convert payload {} to json", payload, e)
+      telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
+    } catch (e: Exception) {
+      log.error("Failed to publish message {}", payload, e)
+      telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
+      throw e
     }
   }
 
