@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
 import com.amazonaws.services.sns.AmazonSNSAsync
+import com.amazonaws.services.sns.model.AuthorizationErrorException
 import com.amazonaws.services.sns.model.MessageAttributeValue
 import com.amazonaws.services.sns.model.PublishRequest
 import com.fasterxml.jackson.core.JsonProcessingException
@@ -38,6 +39,10 @@ class PrisonEventsEmitter(
 
   fun sendEvent(payload: OffenderEvent) {
     try {
+      // TODO SDIT-641 remove this and please don't deploy to environments beyond T3!
+      if (payload.eventType == "OFFENDER_CASE_NOTES-INSERTED") {
+        throw AuthorizationErrorException("Testing publishing failures")
+      }
       prisonEventTopicSnsClient.publish(
         PublishRequest(topicArn, objectMapper.writeValueAsString(payload))
           .withMessageAttributes(metaData(payload))
