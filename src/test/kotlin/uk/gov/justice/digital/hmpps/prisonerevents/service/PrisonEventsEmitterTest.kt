@@ -2,19 +2,27 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service
 
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.amazonaws.services.sns.model.PublishRequest
+import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers
 import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
@@ -58,7 +66,7 @@ class PrisonEventsEmitterTest {
       bookingId = 12345L,
     )
     service.sendEvent(payload)
-    verify(prisonEventSnsClient).publishAsync(publishRequestCaptor.capture())
+    verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
     assertThat(request).extracting("message")
@@ -75,7 +83,7 @@ class PrisonEventsEmitterTest {
       )
     )
 
-    verify(prisonEventSnsClient).publishAsync(publishRequestCaptor.capture())
+    verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
     assertThat(objectMapper.readTree(request.message)).isEqualTo(
@@ -127,7 +135,7 @@ class PrisonEventsEmitterTest {
       )
     )
 
-    verify(prisonEventSnsClient).publishAsync(publishRequestCaptor.capture())
+    verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
     assertThat(request.messageAttributes["code"]).satisfies(
@@ -146,7 +154,7 @@ class PrisonEventsEmitterTest {
       )
     )
 
-    verify(prisonEventSnsClient).publishAsync(publishRequestCaptor.capture())
+    verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
     assertThat(request.messageAttributes["code"]).isNull()
@@ -162,7 +170,7 @@ class PrisonEventsEmitterTest {
       )
     )
 
-    verify(prisonEventSnsClient).publishAsync(publishRequestCaptor.capture())
+    verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
     assertThat(request.messageAttributes["eventType"]).satisfies(
@@ -182,7 +190,7 @@ class PrisonEventsEmitterTest {
       )
     )
 
-    verify(prisonEventSnsClient).publishAsync(publishRequestCaptor.capture())
+    verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
     assertThat(request.messageAttributes["publishedAt"]).isNotNull.satisfies(
@@ -191,5 +199,41 @@ class PrisonEventsEmitterTest {
           .isCloseTo(LocalDateTime.now(), Assertions.within(10, SECONDS))
       }
     )
+  }
+
+  @Test
+  fun `will send telemetry for bad JSON`() {
+    whenever(prisonEventSnsClient.publish(any())).doAnswer { throw JsonParseException(mock(), "Bad JSON") }
+
+    assertDoesNotThrow {
+      service.sendEvent(
+        OffenderEvent(
+          eventType = "my-event-type",
+          alertCode = "alert-code",
+          bookingId = 12345L,
+        )
+      )
+    }
+
+    verify(telemetryClient, never()).trackEvent(eq("my-event-type"), any(), isNull())
+    verify(telemetryClient).trackEvent(eq("my-event-type_FAILED"), any(), isNull())
+  }
+
+  @Test
+  fun `will throw and send telemetry if publishing fails`() {
+    whenever(prisonEventSnsClient.publish(any())).thenThrow(RuntimeException::class.java)
+
+    assertThatThrownBy {
+      service.sendEvent(
+        OffenderEvent(
+          eventType = "my-event-type",
+          alertCode = "alert-code",
+          bookingId = 12345L,
+        )
+      )
+    }.isInstanceOf(RuntimeException::class.java)
+
+    verify(telemetryClient, never()).trackEvent(eq("my-event-type"), any(), isNull())
+    verify(telemetryClient).trackEvent(eq("my-event-type_FAILED"), any(), isNull())
   }
 }
