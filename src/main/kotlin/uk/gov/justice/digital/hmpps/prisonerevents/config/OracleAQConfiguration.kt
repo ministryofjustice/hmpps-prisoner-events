@@ -51,10 +51,10 @@ class OracleAQConfiguration {
         .standard()
         .withCredentials(
           AWSStaticCredentialsProvider(
-            BasicAWSCredentials("foo", "bar")
-          )
+            BasicAWSCredentials("foo", "bar"),
+          ),
         )
         .withRegion("eu-west-2")
-        .build()
+        .build(),
     )
 }

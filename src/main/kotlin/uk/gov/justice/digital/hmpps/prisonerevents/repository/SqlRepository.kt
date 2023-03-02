@@ -13,14 +13,14 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
   fun getNomsIdFromOffender(offenderId: Long): Collection<String> {
     return jdbcTemplate.query(
       GET_OFFENDER,
-      MapSqlParameterSource().addValue("offenderId", offenderId)
+      MapSqlParameterSource().addValue("offenderId", offenderId),
     ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
   }
 
   fun getNomsIdFromBooking(bookingId: Long): Collection<String> {
     return jdbcTemplate.query(
       GET_BOOKING,
-      MapSqlParameterSource().addValue("bookingId", bookingId)
+      MapSqlParameterSource().addValue("bookingId", bookingId),
     ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
   }
 
@@ -29,7 +29,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       GET_MOVEMENT_BY_BOOKING_AND_SEQUENCE,
       MapSqlParameterSource()
         .addValue("bookingId", bookingId)
-        .addValue("sequenceNumber", sequenceNumber)
+        .addValue("sequenceNumber", sequenceNumber),
     ) { resultSet: ResultSet, _: Int ->
       Movement(
         resultSet.getString("OFFENDER_NO"),

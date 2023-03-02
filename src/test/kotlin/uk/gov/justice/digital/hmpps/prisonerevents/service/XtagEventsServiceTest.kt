@@ -40,7 +40,6 @@ class XtagEventsServiceTest {
 
   @Test
   fun shouldDecorateWithExternalMovementData() {
-
     whenever(repository.getMovement(1L, 2)).thenReturn(
       listOf(
         Movement(
@@ -51,16 +50,16 @@ class XtagEventsServiceTest {
           movementTime = (MOVEMENT_TIME.toLocalDateTime().toLocalTime()),
           offenderNo = ("A2345GB"),
           directionCode = "IN",
-        )
-      )
+        ),
+      ),
     )
 
     val offenderEvent = service.addAdditionalEventData(
       OffenderEvent(
         bookingId = 1L,
         movementSeq = 2L,
-        eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED"
-      )
+        eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED",
+      ),
     )
 
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
@@ -74,14 +73,15 @@ class XtagEventsServiceTest {
   @Test
   fun shouldDecorateWithExternalMovementDataHandlesNullableFields() {
     whenever(repository.getMovement(1L, 2)).thenReturn(
-      listOf(Movement(offenderNo = ("A2345GB")))
+      listOf(Movement(offenderNo = ("A2345GB"))),
     )
 
     val offenderEvent = service.addAdditionalEventData(
       OffenderEvent(
-        bookingId = 1L, movementSeq = 2L,
-        eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED"
-      )
+        bookingId = 1L,
+        movementSeq = 2L,
+        eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED",
+      ),
     )
 
     assertThat(offenderEvent?.bookingId).isEqualTo(1L)
@@ -102,8 +102,8 @@ class XtagEventsServiceTest {
       OffenderEvent(
         bookingId = 1L,
         movementSeq = 2L,
-        eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED"
-      )
+        eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED",
+      ),
     )
 
     assertThat(offenderEvent?.bookingId).isEqualTo(1L)
@@ -126,8 +126,8 @@ class XtagEventsServiceTest {
     strings = [
       "OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION", "BED_ASSIGNMENT_HISTORY-INSERTED",
       "CONFIRMED_RELEASE_DATE-CHANGED", "SENTENCE_DATES-CHANGED",
-      "OFFENDER_CASE_NOTES-INSERTED", "OFFENDER_CASE_NOTES-UPDATED", "OFFENDER_CASE_NOTES-DELETED"
-    ]
+      "OFFENDER_CASE_NOTES-INSERTED", "OFFENDER_CASE_NOTES-UPDATED", "OFFENDER_CASE_NOTES-DELETED",
+    ],
   )
   fun shouldDecorateWithOffenderDisplayNoUsingBookingId(eventType: String) {
     assertEventIsDecoratedWithOffenderDisplayNoUsingBookingId(eventType)
@@ -136,7 +136,7 @@ class XtagEventsServiceTest {
   @Test
   fun sentenceDateChangedDecorationFailureShouldNotPreventEventBeingRaised() {
     val offenderEvent = service.addAdditionalEventData(
-      OffenderEvent(bookingId = 1234L, offenderId = 1L, eventType = "SENTENCE_DATES-CHANGED-INSERTED")
+      OffenderEvent(bookingId = 1234L, offenderId = 1L, eventType = "SENTENCE_DATES-CHANGED-INSERTED"),
     )
 
     assertThat(offenderEvent?.bookingId).isEqualTo(1234L)
@@ -152,7 +152,7 @@ class XtagEventsServiceTest {
     whenever(repository.getNomsIdFromBooking(1234L)).thenReturn(listOf())
 
     val offenderEvent = service.addAdditionalEventData(
-      OffenderEvent(bookingId = 1234L, offenderId = 1L, eventType = "CONFIRMED_RELEASE_DATE-CHANGED")
+      OffenderEvent(bookingId = 1234L, offenderId = 1L, eventType = "CONFIRMED_RELEASE_DATE-CHANGED"),
     )
 
     assertThat(offenderEvent?.bookingId).isEqualTo(1234L)
@@ -162,7 +162,7 @@ class XtagEventsServiceTest {
     whenever(repository.getNomsIdFromOffender(1L)).thenReturn(listOf("A2345GB"))
 
     val offenderEvent = service.addAdditionalEventData(
-      OffenderEvent(offenderId = 1L, eventType = eventName)
+      OffenderEvent(offenderId = 1L, eventType = eventName),
     )
 
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
@@ -173,7 +173,7 @@ class XtagEventsServiceTest {
     whenever(repository.getNomsIdFromBooking(1234L)).thenReturn(listOf("A2345GB"))
 
     val offenderEvent = service.addAdditionalEventData(
-      OffenderEvent(bookingId = 1234L, offenderId = 1L, eventType = eventName)
+      OffenderEvent(bookingId = 1234L, offenderId = 1L, eventType = eventName),
     )
 
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
