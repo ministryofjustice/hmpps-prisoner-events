@@ -6,7 +6,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 
 @Service
 class XtagEventsService(
-  private val sqlRepository: SqlRepository
+  private val sqlRepository: SqlRepository,
 ) {
   fun addAdditionalEventData(oe: OffenderEvent?): OffenderEvent? {
     when (oe?.eventType) {
@@ -16,7 +16,8 @@ class XtagEventsService(
 
       "BED_ASSIGNMENT_HISTORY-INSERTED", "OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION",
       "CONFIRMED_RELEASE_DATE-CHANGED", "SENTENCE_DATES-CHANGED",
-      "OFFENDER_CASE_NOTES-INSERTED", "OFFENDER_CASE_NOTES-UPDATED", "OFFENDER_CASE_NOTES-DELETED" ->
+      "OFFENDER_CASE_NOTES-INSERTED", "OFFENDER_CASE_NOTES-UPDATED", "OFFENDER_CASE_NOTES-DELETED",
+      ->
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromBooking(oe.bookingId!!)
           .firstOrNull()
 

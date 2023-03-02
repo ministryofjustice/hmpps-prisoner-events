@@ -62,8 +62,8 @@ class SqlRepositoryTest : IntegrationTestBase() {
         movementType = "TRN",
         directionCode = "OUT",
         movementDate = LocalDate.parse("2022-08-24"),
-        movementTime = LocalTime.parse("13:45:00")
-      )
+        movementTime = LocalTime.parse("13:45:00"),
+      ),
     )
     assertThat(data).hasSize(1)
 
@@ -88,7 +88,7 @@ class SqlRepositoryTest : IntegrationTestBase() {
           SYSDATE,
           'key',
           'A1234AA'
-          )"""
+          )""",
     )
   }
 
@@ -107,7 +107,7 @@ class SqlRepositoryTest : IntegrationTestBase() {
           SYSDATE,
           'IN',
           'CODE',
-          1)"""
+          1)""",
     )
   }
 
@@ -130,7 +130,7 @@ class SqlRepositoryTest : IntegrationTestBase() {
           'AAA',
           'BBB',
           'OUT',
-          'TRN')"""
+          'TRN')""",
     )
   }
 }

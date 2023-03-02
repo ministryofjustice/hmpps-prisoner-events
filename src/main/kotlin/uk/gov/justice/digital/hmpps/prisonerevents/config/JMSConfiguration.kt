@@ -13,7 +13,7 @@ import javax.sql.DataSource
 @Configuration
 class JMSConfiguration(
   @Value("\${source.queue.name}") val queueName: String,
-  @Value("\${source.queue.transacted}") val transacted: Boolean
+  @Value("\${source.queue.transacted}") val transacted: Boolean,
 ) {
 
   @Bean
