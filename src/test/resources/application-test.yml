@@ -4,7 +4,7 @@ server:
 source.queue:
   provider: localstack
   transacted: false
-  name: xtagdps
+  name: XTAG.xtagdps
 
 management.endpoint:
   health.cache.time-to-live: 0
@@ -20,6 +20,11 @@ spring:
   test:
     database:
       replace: none
+
+api:
+  base:
+    url:
+      oauth: http://localhost:8090/auth
 
 offender.events:
   client:
