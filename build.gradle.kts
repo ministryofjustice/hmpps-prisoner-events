@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.4-beta-2"
   kotlin("plugin.spring") version "1.8.10"
   id("org.unbroken-dome.test-sets") version "4.0.0"
 }
@@ -29,7 +29,7 @@ dependencies {
 
   implementation("com.zaxxer:HikariCP:5.0.1")
   runtimeOnly("com.h2database:h2:2.1.214")
-  implementation("com.oracle.database.jdbc:ojdbc10:19.17.0.0")
+  implementation("com.oracle.database.jdbc:ojdbc10:19.18.0.0")
   implementation("com.oracle.database.messaging:aqapi:21.3.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
@@ -38,13 +38,13 @@ dependencies {
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("org.mockito:mockito-inline:5.1.1")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.11")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.12")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:localstack:1.17.6")
 }
 
 java {
-  toolchain.languageVersion.set(JavaLanguageVersion.of(18))
+  toolchain.languageVersion.set(JavaLanguageVersion.of(19))
 }
 repositories {
   mavenCentral()
@@ -53,7 +53,7 @@ repositories {
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-      jvmTarget = "18"
+      jvmTarget = "19"
     }
   }
 }

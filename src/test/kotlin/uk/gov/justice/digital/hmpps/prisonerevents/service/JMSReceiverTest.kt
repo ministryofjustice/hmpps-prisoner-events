@@ -36,7 +36,8 @@ class JMSReceiverTest {
   fun setup() {
     service = JMSReceiver(
       OffenderEventsTransformer(),
-      xtagEventsService, eventsEmitter
+      xtagEventsService,
+      eventsEmitter,
     )
   }
 

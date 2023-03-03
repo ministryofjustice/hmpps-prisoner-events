@@ -21,7 +21,6 @@ import java.time.format.DateTimeParseException
 class OffenderEventsTransformer @Autowired constructor() {
 
   fun offenderEventOf(xtagEvent: AQjmsMapMessage): OffenderEvent? {
-
     val map = mutableMapOf<String, String>()
     xtagEvent.mapNames.iterator().forEach { name ->
       map[name as String] = xtagEvent.getString(name)
@@ -33,10 +32,10 @@ class OffenderEventsTransformer @Autowired constructor() {
       Xtag(
         eventType = xtagEvent.jmsType,
         nomisTimestamp = xtagFudgedTimestampOf(
-          LocalDateTime.ofEpochSecond(seconds, nanos, BST)
+          LocalDateTime.ofEpochSecond(seconds, nanos, BST),
         ),
-        content = XtagContent(map)
-      )
+        content = XtagContent(map),
+      ),
     )
   }
 
@@ -57,38 +56,64 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_RECEP_OASYS" -> offenderMovementReceptionEventOf(xtag)
         "OFF_DISCH_OASYS" -> offenderMovementDischargeEventOf(xtag)
         "M1_RESULT", "M1_UPD_RESULT" -> externalMovementRecordEventOf(xtag, externalMovementEventOf(xtag))
-        "OFF_UPD_OASYS" -> if (!Strings.isNullOrEmpty(xtag.content.p_offender_book_id)) offenderBookingChangedEventOf(
-          xtag
-        ) else offenderDetailsChangedEventOf(xtag)
+        "OFF_UPD_OASYS" -> if (!Strings.isNullOrEmpty(xtag.content.p_offender_book_id)) {
+          offenderBookingChangedEventOf(
+            xtag,
+          )
+        } else {
+          offenderDetailsChangedEventOf(xtag)
+        }
 
         "ADDR_USG_INS" -> addressUsageInsertedEventOf(xtag)
-        "ADDR_USG_UPD" -> if (xtag.content.p_address_deleted == "Y") addressUsageDeletedEventOf(xtag) else addressUsageUpdatedEventOf(
-          xtag
-        )
+        "ADDR_USG_UPD" -> if (xtag.content.p_address_deleted == "Y") {
+          addressUsageDeletedEventOf(xtag)
+        } else {
+          addressUsageUpdatedEventOf(
+            xtag,
+          )
+        }
 
         "P4_RESULT" -> offenderAliasChangedEventOf(xtag)
         "P2_RESULT" -> offenderUpdatedEventOf(xtag)
         "OFF_BKB_INS" -> offenderBookingInsertedEventOf(xtag)
         "OFF_BKB_UPD" -> offenderBookingReassignedEventOf(xtag)
         "OFF_CONT_PER_INS" -> contactPersonInsertedEventOf(xtag)
-        "OFF_CONT_PER_UPD" -> if (xtag.content.p_address_deleted == "Y") contactPersonDeletedEventOf(xtag) else contactPersonUpdatedEventOf(
-          xtag
-        )
+        "OFF_CONT_PER_UPD" -> if (xtag.content.p_address_deleted == "Y") {
+          contactPersonDeletedEventOf(xtag)
+        } else {
+          contactPersonUpdatedEventOf(
+            xtag,
+          )
+        }
 
         "OFF_EDUCATION_INS" -> educationLevelInsertedEventOf(xtag)
         "OFF_EDUCATION_UPD" -> educationLevelUpdatedEventOf(xtag)
         "OFF_EDUCATION_DEL" -> educationLevelDeletedEventOf(xtag)
-        "P3_RESULT" -> if (xtag.content.p_identifier_type == "NOMISP3") offenderBookingInsertedEventOf(xtag) else if (!Strings.isNullOrEmpty(
-            xtag.content.p_identifier_value
+        "P3_RESULT" -> if (xtag.content.p_identifier_type == "NOMISP3") {
+          offenderBookingInsertedEventOf(xtag)
+        } else if (!Strings.isNullOrEmpty(
+            xtag.content.p_identifier_value,
           )
-        ) offenderIdentifierInsertedEventOf(xtag) else offenderIdentifierDeletedEventOf(xtag)
+        ) {
+          offenderIdentifierInsertedEventOf(xtag)
+        } else {
+          offenderIdentifierDeletedEventOf(xtag)
+        }
 
-        "S1_RESULT" -> if (!Strings.isNullOrEmpty(xtag.content.p_imprison_status_seq)) imprisonmentStatusChangedEventOf(
-          xtag
-        ) else if (!Strings.isNullOrEmpty(xtag.content.p_assessment_seq)) assessmentChangedEventOf(xtag) else if (!Strings.isNullOrEmpty(
-            xtag.content.p_alert_date
+        "S1_RESULT" -> if (!Strings.isNullOrEmpty(xtag.content.p_imprison_status_seq)) {
+          imprisonmentStatusChangedEventOf(
+            xtag,
           )
-        ) alertUpdatedEventOf(xtag) else alertInsertedEventOf(xtag)
+        } else if (!Strings.isNullOrEmpty(xtag.content.p_assessment_seq)) {
+          assessmentChangedEventOf(xtag)
+        } else if (!Strings.isNullOrEmpty(
+            xtag.content.p_alert_date,
+          )
+        ) {
+          alertUpdatedEventOf(xtag)
+        } else {
+          alertInsertedEventOf(xtag)
+        }
 
         "OFF_ALERT_INSERT" -> alertInsertedEventOf(xtag)
         "OFF_ALERT_UPDATE" -> alertUpdatedEventOf(xtag)
@@ -101,9 +126,13 @@ class OffenderEventsTransformer @Autowired constructor() {
         "S2_RESULT" -> sentenceDatesChangedEventOf(xtag)
         "SENTENCING-CHANGED" -> sentencingChangedEventOf(xtag)
         "A2_CALLBACK" -> hearingDateChangedEventOf(xtag)
-        "A2_RESULT" -> if ("Y" == xtag.content.p_delete_flag) hearingResultDeletedEventOf(xtag) else hearingResultChangedEventOf(
-          xtag
-        )
+        "A2_RESULT" -> if ("Y" == xtag.content.p_delete_flag) {
+          hearingResultDeletedEventOf(xtag)
+        } else {
+          hearingResultChangedEventOf(
+            xtag,
+          )
+        }
 
         "PHONES_INS" -> phoneInsertedEventOf(xtag)
         "PHONES_UPD" -> phoneUpdatedEventOf(xtag)
@@ -132,7 +161,8 @@ class OffenderEventsTransformer @Autowired constructor() {
 
         "OFFENDER_CASE_NOTES-INSERTED",
         "OFFENDER_CASE_NOTES-UPDATED",
-        "OFFENDER_CASE_NOTES-DELETED" -> caseNotesEventOf(xtag)
+        "OFFENDER_CASE_NOTES-DELETED",
+        -> caseNotesEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -274,13 +304,21 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   private fun addressUpdatedOrDeleted(xtag: Xtag) =
     if (xtag.content.p_owner_class == "PER") {
-      if (xtag.content.p_address_deleted == "N") personAddressUpdatedEventOf(xtag) else personAddressDeletedEventOf(
-        xtag
-      )
+      if (xtag.content.p_address_deleted == "N") {
+        personAddressUpdatedEventOf(xtag)
+      } else {
+        personAddressDeletedEventOf(
+          xtag,
+        )
+      }
     } else if (xtag.content.p_owner_class == "OFF") {
-      if (xtag.content.p_address_deleted == "N") offenderAddressUpdatedEventOf(xtag) else offenderAddressDeletedEventOf(
-        xtag
-      )
+      if (xtag.content.p_address_deleted == "N") {
+        offenderAddressUpdatedEventOf(xtag)
+      } else {
+        offenderAddressDeletedEventOf(
+          xtag,
+        )
+      }
     } else {
       if (xtag.content.p_address_deleted == "N") addressUpdatedEventOf(xtag) else addressDeletedEventOf(xtag)
     }
@@ -310,10 +348,14 @@ class OffenderEventsTransformer @Autowired constructor() {
     scheduleEventId = xtag.content.p_event_id?.toLong(),
     scheduledStartTime = localDateTimeOf(xtag.content.p_event_date, xtag.content.p_start_time),
     scheduledEndTime =
-    if (xtag.content.p_end_time == null) null else localDateTimeOf(
-      xtag.content.p_event_date,
-      xtag.content.p_end_time
-    ),
+    if (xtag.content.p_end_time == null) {
+      null
+    } else {
+      localDateTimeOf(
+        xtag.content.p_event_date,
+        xtag.content.p_end_time,
+      )
+    },
     scheduleEventClass = xtag.content.p_event_class,
     scheduleEventType = xtag.content.p_event_type,
     scheduleEventSubType = xtag.content.p_event_sub_type,
@@ -791,17 +833,23 @@ class OffenderEventsTransformer @Autowired constructor() {
     val BST = ZoneOffset.ofHours(1)
 
     private val INCIDENT_TABLE_MAP = java.util.Map.of(
-      "incident_cases", "CASES",
-      "incident_case_parties", "PARTIES",
-      "incident_case_responses", "RESPONSES",
-      "incident_case_requirements", "REQUIREMENTS"
+      "incident_cases",
+      "CASES",
+      "incident_case_parties",
+      "PARTIES",
+      "incident_case_responses",
+      "RESPONSES",
+      "incident_case_requirements",
+      "REQUIREMENTS",
     )
 
     fun xtagFudgedTimestampOf(xtagEnqueueTime: LocalDateTime): LocalDateTime {
       val london: ZoneId = ZoneId.of("Europe/London")
       return if (london.rules.isDaylightSavings(xtagEnqueueTime.atZone(london).toInstant())) {
         xtagEnqueueTime
-      } else xtagEnqueueTime.minusHours(1L)
+      } else {
+        xtagEnqueueTime.minusHours(1L)
+      }
     }
 
     fun externalMovementEventOf(xtag: Xtag): String {
@@ -818,7 +866,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         return date?.let {
           LocalDate.parse(
             it,
-            DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(pattern).toFormatter()
+            DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(pattern).toFormatter(),
           )
         }
       } catch (dtpe: DateTimeParseException) {

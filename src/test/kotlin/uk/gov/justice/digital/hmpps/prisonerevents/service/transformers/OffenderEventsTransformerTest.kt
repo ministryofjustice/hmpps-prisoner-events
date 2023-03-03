@@ -21,7 +21,6 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun offenderEventOfAQ() {
-
     val summerMessage = AQjmsMapMessage().apply {
       setString("p_offender_book_id", "12345")
       jmsType = "test"
@@ -58,18 +57,18 @@ class OffenderEventsTransformerTest {
   fun externalMovementDescriptorBehavesAppropriately() {
     assertThat(
       externalMovementEventOf(
-        Xtag(content = XtagContent(mapOf("p_record_deleted" to "Y")))
-      )
+        Xtag(content = XtagContent(mapOf("p_record_deleted" to "Y"))),
+      ),
     ).isEqualTo("EXTERNAL_MOVEMENT_RECORD-DELETED")
     assertThat(
       externalMovementEventOf(
-        Xtag(content = XtagContent(mapOf("p_record_deleted" to "N")))
-      )
+        Xtag(content = XtagContent(mapOf("p_record_deleted" to "N"))),
+      ),
     ).isEqualTo("EXTERNAL_MOVEMENT_RECORD-INSERTED")
     assertThat(
       externalMovementEventOf(
-        Xtag(content = XtagContent(mapOf("p_record_deleted" to UUID.randomUUID().toString())))
-      )
+        Xtag(content = XtagContent(mapOf("p_record_deleted" to UUID.randomUUID().toString()))),
+      ),
     ).isEqualTo("EXTERNAL_MOVEMENT_RECORD-UPDATED")
     assertThat(externalMovementEventOf(Xtag(content = XtagContent(mapOf()))))
       .isEqualTo("EXTERNAL_MOVEMENT_RECORD-UPDATED")
@@ -113,21 +112,21 @@ class OffenderEventsTransformerTest {
           content = XtagContent(
             mapOf(
               "p_from_agy_loc_id" to "BARBECUE",
-              "p_to_agy_loc_id" to "SAUCE"
-            )
-          )
+              "p_to_agy_loc_id" to "SAUCE",
+            ),
+          ),
         ),
         externalMovementEventOf(
           Xtag(
             content = XtagContent(
               mapOf(
                 "p_from_agy_loc_id" to "BARBECUE",
-                "p_to_agy_loc_id" to "SAUCE"
-              )
-            )
-          )
-        )
-      )
+                "p_to_agy_loc_id" to "SAUCE",
+              ),
+            ),
+          ),
+        ),
+      ),
     ).extracting("fromAgencyLocationId", "toAgencyLocationId").containsOnly("BARBECUE", "SAUCE")
   }
 
@@ -139,9 +138,9 @@ class OffenderEventsTransformerTest {
       offenderEventsTransformer.offenderEventOf(
         Xtag(
           content = XtagContent(mapOf()),
-          eventType = "meh"
-        )
-      )
+          eventType = "meh",
+        ),
+      ),
     ).isNotNull()
   }
 
@@ -153,10 +152,10 @@ class OffenderEventsTransformerTest {
         content = XtagContent(
           mapOf(
             "p_offender_book_id" to "99",
-            "p_offender_sent_calculation_id" to "88"
-          )
-        )
-      )
+            "p_offender_sent_calculation_id" to "88",
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("SENTENCE_DATES-CHANGED")
   }
@@ -167,9 +166,9 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_SENT_OASYS",
         content = XtagContent(
-          mapOf("p_offender_book_id" to "99")
-        )
-      )
+          mapOf("p_offender_book_id" to "99"),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("SENTENCE_CALCULATION_DATES-CHANGED")
   }
@@ -185,10 +184,10 @@ class OffenderEventsTransformerTest {
           mapOf(
             "p_offender_book_id" to "99",
             "p_bed_assign_seq" to "1",
-            "p_living_unit_id" to "34123412"
-          )
-        )
-      )
+            "p_living_unit_id" to "34123412",
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("BED_ASSIGNMENT_HISTORY-INSERTED")
     assertThat(event?.bookingId).isEqualTo(99L)
@@ -216,9 +215,9 @@ class OffenderEventsTransformerTest {
             "p_movement_seq" to "1",
             "p_movement_date" to "2019-02-14",
             "p_movement_time" to "2019-02-14 10:11:12",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("EXTERNAL_MOVEMENT-CHANGED")
     assertThat(event?.bookingId).isEqualTo(232L)
@@ -243,9 +242,9 @@ class OffenderEventsTransformerTest {
           mapOf(
             "p_offender_book_id" to "2322322",
             "p_offender_id_display" to "A1234AA",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("SENTENCING-CHANGED")
     assertThat(event?.bookingId).isEqualTo(2322322L)
@@ -263,9 +262,9 @@ class OffenderEventsTransformerTest {
         content = XtagContent(
           mapOf(
             "p_offender_book_id" to "99",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("CONFIRMED_RELEASE_DATE-CHANGED")
     assertThat(event?.bookingId).isEqualTo(99L)
@@ -292,9 +291,9 @@ class OffenderEventsTransformerTest {
             "p_event_class" to "INT_MOV",
             "p_event_type" to "APP",
             "p_delete_flag" to "Y",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("APPOINTMENT_CHANGED")
     assertThat(event?.bookingId).isEqualTo(52303L)
@@ -328,9 +327,9 @@ class OffenderEventsTransformerTest {
             "p_start_time" to "16:00:00",
             "p_event_class" to "INT_MOV",
             "p_event_type" to "APP",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("APPOINTMENT_CHANGED")
     assertThat(event?.bookingId).isEqualTo(52303L)
@@ -356,9 +355,9 @@ class OffenderEventsTransformerTest {
             "p_offender_id_display" to "AF123",
             "p_audit_module_name" to "transfer",
             "p_delete_flag" to "N",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("IEP_UPSERTED")
     assertThat(event?.bookingId).isEqualTo(434L)
@@ -389,9 +388,9 @@ class OffenderEventsTransformerTest {
             "p_offender_id_display" to "AF123",
             "p_audit_module_name" to "transfer",
             "p_delete_flag" to "Y",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("IEP_DELETED")
     assertThat(event?.bookingId).isEqualTo(434L)
@@ -417,9 +416,9 @@ class OffenderEventsTransformerTest {
             "p_offender_id_display" to "AF123",
             "p_offender_key_date_adjust_id" to "987",
             "p_audit_module_name" to "SENTDATES",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("KEY_DATE_ADJUSTMENT_UPSERTED")
     assertThat(event?.bookingId).isEqualTo(434L)
@@ -442,9 +441,9 @@ class OffenderEventsTransformerTest {
             "p_offender_key_date_adjust_id" to "987",
             "p_audit_module_name" to "SENTDATES",
             "p_delete_flag" to "Y",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("KEY_DATE_ADJUSTMENT_DELETED")
     assertThat(event?.bookingId).isEqualTo(434L)
@@ -467,9 +466,9 @@ class OffenderEventsTransformerTest {
             "p_sentence_seq" to "2",
             "p_offender_sentence_adjust_id" to "987",
             "p_audit_module_name" to "SENTDATES",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("SENTENCE_ADJUSTMENT_UPSERTED")
     assertThat(event?.bookingId).isEqualTo(434L)
@@ -494,9 +493,9 @@ class OffenderEventsTransformerTest {
             "p_offender_sentence_adjust_id" to "987",
             "p_audit_module_name" to "SENTDATES",
             "p_delete_flag" to "Y",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("SENTENCE_ADJUSTMENT_DELETED")
     assertThat(event?.bookingId).isEqualTo(434L)
@@ -521,10 +520,10 @@ class OffenderEventsTransformerTest {
             "p_event_date" to "2022-08-23",
             "p_offender_book_id" to "434",
             "p_offender_id_display" to "AF123",
-            "p_audit_module_name" to "visit_screen"
-          )
-        )
-      )
+            "p_audit_module_name" to "visit_screen",
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("VISIT_CANCELLED")
     assertThat(event?.bookingId).isEqualTo(434L)
@@ -549,9 +548,9 @@ class OffenderEventsTransformerTest {
             "p_case_note_id" to "456789",
             "p_case_note_type" to "CHAP",
             "p_case_note_sub_type" to "FAITH",
-          )
-        )
-      )
+          ),
+        ),
+      ),
     )
     assertThat(event?.eventType).isEqualTo("OFFENDER_CASE_NOTES-INSERTED")
     assertThat(event?.bookingId).isEqualTo(12345L)
@@ -568,9 +567,9 @@ class OffenderEventsTransformerTest {
         Xtag(
           eventType = "OFF_PHYS_ATTR-CHANGED",
           nomisTimestamp = fixedEventTime,
-          content = XtagContent(mapOf("p_offender_id_display" to "A123BC"))
-        )
-      )!!
+          content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        ),
+      )!!,
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
@@ -585,9 +584,9 @@ class OffenderEventsTransformerTest {
         Xtag(
           eventType = "OFF_PROFILE_DETS-CHANGED",
           nomisTimestamp = fixedEventTime,
-          content = XtagContent(mapOf("p_offender_id_display" to "A123BC"))
-        )
-      )!!
+          content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        ),
+      )!!,
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
@@ -602,9 +601,9 @@ class OffenderEventsTransformerTest {
         Xtag(
           eventType = "OFF_IDENT_MARKS-CHANGED",
           nomisTimestamp = fixedEventTime,
-          content = XtagContent(mapOf("p_offender_id_display" to "A123BC"))
-        )
-      )!!
+          content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        ),
+      )!!,
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")

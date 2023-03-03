@@ -80,7 +80,7 @@ class PrisonEventsEmitterTest {
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
-      )
+      ),
     )
 
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
@@ -93,8 +93,8 @@ class PrisonEventsEmitterTest {
         "eventType":"my-event-type",
         "bookingId":12345,
         "alertCode":"alert-code"
-      }"""
-      )
+      }""",
+      ),
     )
   }
 
@@ -105,13 +105,13 @@ class PrisonEventsEmitterTest {
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
-      )
+      ),
     )
 
     verify(telemetryClient).trackEvent(
       ArgumentMatchers.eq("my-event-type"),
       telemetryAttributesCaptor.capture(),
-      ArgumentMatchers.isNull()
+      ArgumentMatchers.isNull(),
     )
     assertThat(telemetryAttributesCaptor.value).containsAllEntriesOf(
       java.util.Map.of(
@@ -120,8 +120,8 @@ class PrisonEventsEmitterTest {
         "bookingId",
         "12345",
         "alertCode",
-        "alert-code"
-      )
+        "alert-code",
+      ),
     )
   }
 
@@ -132,7 +132,7 @@ class PrisonEventsEmitterTest {
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
-      )
+      ),
     )
 
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
@@ -141,7 +141,7 @@ class PrisonEventsEmitterTest {
     assertThat(request.messageAttributes["code"]).satisfies(
       Consumer {
         assertThat(it?.stringValue).isEqualTo("alert-code")
-      }
+      },
     )
   }
 
@@ -151,7 +151,7 @@ class PrisonEventsEmitterTest {
       OffenderEvent(
         eventType = "my-event-type",
         bookingId = 12345L,
-      )
+      ),
     )
 
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
@@ -167,7 +167,7 @@ class PrisonEventsEmitterTest {
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
-      )
+      ),
     )
 
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
@@ -176,7 +176,7 @@ class PrisonEventsEmitterTest {
     assertThat(request.messageAttributes["eventType"]).satisfies(
       Consumer {
         assertThat(it?.stringValue).isEqualTo("my-event-type")
-      }
+      },
     )
   }
 
@@ -187,7 +187,7 @@ class PrisonEventsEmitterTest {
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
-      )
+      ),
     )
 
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
@@ -197,7 +197,7 @@ class PrisonEventsEmitterTest {
       Consumer {
         assertThat(OffsetDateTime.parse(it?.stringValue).toLocalDateTime())
           .isCloseTo(LocalDateTime.now(), Assertions.within(10, SECONDS))
-      }
+      },
     )
   }
 
@@ -211,7 +211,7 @@ class PrisonEventsEmitterTest {
           eventType = "my-event-type",
           alertCode = "alert-code",
           bookingId = 12345L,
-        )
+        ),
       )
     }
 
@@ -229,7 +229,7 @@ class PrisonEventsEmitterTest {
           eventType = "my-event-type",
           alertCode = "alert-code",
           bookingId = 12345L,
-        )
+        ),
       )
     }.isInstanceOf(RuntimeException::class.java)
 

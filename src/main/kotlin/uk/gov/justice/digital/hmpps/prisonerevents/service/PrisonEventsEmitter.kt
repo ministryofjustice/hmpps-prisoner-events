@@ -21,7 +21,7 @@ import java.util.stream.Collectors
 class PrisonEventsEmitter(
   hmppsQueueService: HmppsQueueService,
   objectMapper: ObjectMapper,
-  telemetryClient: TelemetryClient
+  telemetryClient: TelemetryClient,
 ) {
   private val prisonEventTopicSnsClient: AmazonSNSAsync
   private val topicArn: String
@@ -40,7 +40,7 @@ class PrisonEventsEmitter(
     try {
       prisonEventTopicSnsClient.publish(
         PublishRequest(topicArn, objectMapper.writeValueAsString(payload))
-          .withMessageAttributes(metaData(payload))
+          .withMessageAttributes(metaData(payload)),
       )
       telemetryClient.trackEvent(payload.eventType, asTelemetryMap(payload), null)
     } catch (e: JsonProcessingException) {
@@ -58,8 +58,8 @@ class PrisonEventsEmitter(
     messageAttributes["eventType"] = MessageAttributeValue().withDataType("String").withStringValue(payload.eventType)
     messageAttributes["publishedAt"] = MessageAttributeValue().withDataType("String").withStringValue(
       OffsetDateTime.now().format(
-        DateTimeFormatter.ISO_OFFSET_DATE_TIME
-      )
+        DateTimeFormatter.ISO_OFFSET_DATE_TIME,
+      ),
     )
     Optional.ofNullable(buildOptionalCode(payload)).ifPresent { code: String? ->
       messageAttributes["code"] = MessageAttributeValue().withDataType("String").withStringValue(code)
@@ -74,8 +74,8 @@ class PrisonEventsEmitter(
     return entries.stream().collect(
       Collectors.toMap(
         { (key): Map.Entry<String, Any?> -> key },
-        { (_, value): Map.Entry<String, Any?> -> value.toString() }
-      )
+        { (_, value): Map.Entry<String, Any?> -> value.toString() },
+      ),
     )
   }
 
@@ -84,8 +84,9 @@ class PrisonEventsEmitter(
       payload.alertCode
     } else if (payload.movementType != null) {
       payload.movementType + "-" + payload.directionCode
-    } else
+    } else {
       null
+    }
 
   companion object {
     private val log = LoggerFactory.getLogger(PrisonEventsEmitter::class.java)

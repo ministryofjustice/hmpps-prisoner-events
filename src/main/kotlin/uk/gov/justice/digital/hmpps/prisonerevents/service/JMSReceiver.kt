@@ -11,16 +11,15 @@ import javax.jms.MessageListener
 class JMSReceiver(
   private val offenderEventsTransformer: OffenderEventsTransformer,
   private val xtagEventsService: XtagEventsService,
-  private val eventsEmitter: PrisonEventsEmitter
+  private val eventsEmitter: PrisonEventsEmitter,
 ) : MessageListener {
 
   override fun onMessage(message: Message) {
     xtagEventsService.addAdditionalEventData(
       offenderEventsTransformer.offenderEventOf(
-        message as AQjmsMapMessage
-      )
+        message as AQjmsMapMessage,
+      ),
     )?.also {
-
       eventsEmitter.sendEvent(it)
       log.info(it.toString())
     }
