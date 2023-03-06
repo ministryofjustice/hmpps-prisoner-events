@@ -13,13 +13,47 @@ parameters:
 
 jobs:
   validate:
-    executor:
-      name: hmpps/localstack
-      jdk_tag: "19.0"
-      localstack_tag: "1.3"
+    docker:
+      - image: cimg/openjdk:19.0
+      - image: localstack/localstack:1.3
+        environment:
+          - SERVICES=sqs,sns
+          - ES_PORT_EXTERNAL=4571
+          - DEBUG=${DEBUG- }
+          - DATA_DIR=/tmp/localstack/data
+          - DOCKER_HOST=unix:///var/run/docker.sock
+          - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
+          - AWS_EXECUTION_ENV=True
+          - DEFAULT_REGION=eu-west-2
+          - TMPDIR=/private
+      - image: gvenzl/oracle-xe:18-slim
+        environment:
+          - ORACLE_PASSWORD=test
+
+    environment:
+      _JAVA_OPTIONS: -Xmx256m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=1
+    working_directory: ~/app
+    resource_class: medium
+
     steps:
       - checkout
       - hmpps/wait_till_ready
+      - run:
+          name: Wait for Oracle to start
+          command: |
+            set +e
+            RTN=1
+            for i in {1..20}; do
+              curl -4 --connect-timeout 30 http://localhost:1521
+              ERR=$?
+              if [[ $ERR == 0 || $ERR == 52 ]]; then
+                RTN=0
+                break
+              fi
+              sleep 10
+            done
+            exit $RTN
+
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}

@@ -13,5 +13,16 @@ services:
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
 
+# IMPORTANT: for Oracle, colima must be started and environment variables set: see README.md
+  oracle-xe:
+    image: gvenzl/oracle-xe:18-slim
+    networks:
+      - hmpps
+    container_name: oracle-xe-hpe
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_PASSWORD=test
+
 networks:
   hmpps:

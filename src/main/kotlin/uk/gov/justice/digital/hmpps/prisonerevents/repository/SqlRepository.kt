@@ -7,6 +7,8 @@ import java.sql.ResultSet
 import java.time.LocalDate
 import java.time.LocalTime
 
+private const val LIMIT = 100
+
 @Repository
 class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
@@ -43,6 +45,15 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     }
   }
 
+  fun getExceptionMessageIds(): List<String> =
+    jdbcTemplate.query(GET_EXCEPTION_MESSAGES) { resultSet: ResultSet, _: Int ->
+      resultSet.getBytes("MSGID").let {
+        StringBuilder()
+          .apply { for (b in it) { append(String.format("%02X", b)) } }
+          .run { "ID:$this" }
+      }
+    }
+
   companion object {
 
     val GET_OFFENDER = """
@@ -71,6 +82,14 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         INNER JOIN OFFENDERS            ON OFFENDERS.OFFENDER_ID = OB.OFFENDER_ID
       WHERE OEM.MOVEMENT_SEQ = :sequenceNumber
       AND OEM.OFFENDER_BOOK_ID = :bookingId
+    """.trimIndent()
+
+    val GET_EXCEPTION_MESSAGES = """
+      SELECT MSGID
+      FROM XTAG.XTAG_LISTENER_TAB
+      WHERE Q_NAME = 'AQ${'$'}_XTAG_LISTENER_TAB_E' 
+        AND EXCEPTION_QUEUE = 'XTAG_DPS'
+        AND ROWNUM <= $LIMIT
     """.trimIndent()
   }
 }

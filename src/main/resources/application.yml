@@ -24,17 +24,13 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: https://tbc.com # ${api.base.url.oauth}/.well-known/jwks.json
+          jwk-set-uri: ${api.base.url.oauth}/.well-known/jwks.json
 
   devtools:
     add-properties: false
 
   flyway:
     enabled: false
-
-  h2:
-    console:
-      enabled: false
 
   jpa:
     database-platform: org.hibernate.dialect.Oracle12cDialect

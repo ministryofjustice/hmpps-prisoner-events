@@ -26,6 +26,6 @@ class JMSReceiver(
   }
 
   companion object {
-    private val log = LoggerFactory.getLogger(JMSReceiver::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }

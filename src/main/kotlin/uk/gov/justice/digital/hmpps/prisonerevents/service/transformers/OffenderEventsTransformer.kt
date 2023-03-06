@@ -827,7 +827,7 @@ class OffenderEventsTransformer @Autowired constructor() {
   )
 
   companion object {
-    private val log = LoggerFactory.getLogger(OffenderEventsTransformer::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
 
     // Xtag events are in British Summer Time all year round at rest in Oracle.
     val BST = ZoneOffset.ofHours(1)

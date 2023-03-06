@@ -89,6 +89,6 @@ class PrisonEventsEmitter(
     }
 
   companion object {
-    private val log = LoggerFactory.getLogger(PrisonEventsEmitter::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
