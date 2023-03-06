@@ -25,22 +25,29 @@ class AQService(
     val ids = sqlRepository.getExceptionMessageIds()
 
     val queueConnection: QueueConnection = queueConnectionFactory.createQueueConnection()
-    val session = queueConnection.createQueueSession(false, Session.CLIENT_ACKNOWLEDGE) as AQjmsSession
+    val session = queueConnection.createQueueSession(true, Session.AUTO_ACKNOWLEDGE) as AQjmsSession
     val exceptionQueue = session.getQueue(tableOwner, EXCEPTION_QUEUE_NAME)
     queueConnection.start()
     try {
       val dpsQueue = session.getQueue(tableOwner, queueSimpleName)
       val messageConsumer = session.createConsumer(
         exceptionQueue,
-        "JMSMessageID in ${join(ids)}" // MSGID column
+        "JMSMessageID in ${join(ids)}", // MSGID column
       )
       val messageProducer = session.createProducer(dpsQueue)
       while (true) {
+        // TODO does this re-execute the message selector each time and if so is there a more efficient alternative?
         val message = messageConsumer.receiveNoWait() ?: break
+        log.debug("Got message ${message.jmsMessageID}")
 
         messageProducer.send(message)
+        session.commit()
         log.debug("Requeued message ${message.jmsMessageID}")
       }
+    } catch (e: Exception) {
+      log.error("Error requeuing messages", e)
+      session.rollback()
+      throw e
     } finally {
       queueConnection.stop()
       queueConnection.close()
@@ -48,7 +55,7 @@ class AQService(
   }
 
   companion object {
-    private val log = LoggerFactory.getLogger(JMSReceiver::class.java)
+    private val log = LoggerFactory.getLogger(this::class.java)
 
     private fun join(ids: List<String>): String {
       return ids.joinToString(",", "(", ")", truncated = "", transform = { "'$it'" })

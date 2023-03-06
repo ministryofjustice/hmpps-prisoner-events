@@ -21,28 +21,28 @@ class AQResource(private val aqService: AQService) {
   @PreAuthorize("hasRole('ROLE_QUEUE_ADMIN')")
   @GetMapping("/housekeeping")
   @Operation(
-    summary = "Retrieve any messages on the Oracle AQ exception queue and move them back to the main queue to be retried",
+    summary = "Retry messages on the Oracle AQ exception queue",
     description = "Retrieve any messages on the Oracle AQ exception queue and move them back to the main queue to be retried.",
     responses = [
       ApiResponse(
         responseCode = "200",
-        description = "success"
+        description = "success",
       ),
       ApiResponse(
         responseCode = "401",
         description = "Unauthorized to access this endpoint",
         content = [
-          Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
-        ]
+          Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class)),
+        ],
       ),
       ApiResponse(
         responseCode = "403",
         description = "Forbidden to access this endpoint when role not present",
         content = [
-          Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class))
-        ]
+          Content(mediaType = "application/json", schema = Schema(implementation = ErrorResponse::class)),
+        ],
       ),
-    ]
+    ],
   )
   fun requeueExceptions() =
     aqService.requeueExceptions()

@@ -22,7 +22,11 @@ object LocalStackContainer {
       }
 
   private fun startLocalstackIfNotRunning(): LocalStackContainer? {
-    if (localstackIsRunning()) return null
+    if (localstackIsRunning()) {
+      log.warn("Using existing localstack instance")
+      return null
+    }
+    log.info("Creating a localstack instance")
     val logConsumer = Slf4jLogConsumer(log).withPrefix("localstack")
     return LocalStackContainer(
       DockerImageName.parse("localstack/localstack").withTag("1.3"),
@@ -39,10 +43,11 @@ object LocalStackContainer {
   }
 
   private fun localstackIsRunning(): Boolean =
-    try {
-      val serverSocket = ServerSocket(4566)
-      serverSocket.localPort == 0
-    } catch (e: IOException) {
-      true
-    }
+    System.getenv("DOCKER_HOST").contains("colima") ||
+      try {
+        val serverSocket = ServerSocket(4566)
+        serverSocket.localPort == 0
+      } catch (e: IOException) {
+        true
+      }
 }

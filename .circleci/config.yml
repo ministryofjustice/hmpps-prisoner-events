@@ -17,9 +17,15 @@ jobs:
       name: hmpps/localstack
       jdk_tag: "19.0"
       localstack_tag: "1.3"
+    docker:
+      - image: gvenzl/oracle-xe:18-slim
+        environment:
+          ORACLE_PASSWORD=test
     steps:
       - checkout
       - hmpps/wait_till_ready
+      - hmpps/wait_till_ready: # Wait for Oracle to start
+          port: 1521
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}

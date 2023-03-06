@@ -2,9 +2,9 @@ server:
   shutdown: immediate
 
 source.queue:
-  provider: localstack
-  transacted: false
-  name: XTAG.xtagdps
+  provider: oracle
+  transacted: true
+  name: XTAG.XTAG_DPS
 
 management.endpoint:
   health.cache.time-to-live: 0
@@ -13,9 +13,15 @@ management.endpoint:
 spring:
   flyway:
     enabled: true
+    url: jdbc:oracle:thin:@//localhost:1521/XE
+    user: "SYS AS SYSDBA"
+    password: test
+    baseline-on-migrate: true
 
   datasource:
-    url: 'jdbc:h2:mem:nomis-db;MODE=Oracle'
+    url: jdbc:oracle:thin:@//localhost:1521/XE
+    username: HMPPS_EVENT_API
+    password: test
 
   test:
     database:
@@ -40,8 +46,6 @@ hmpps:
     provider: localstack
     localstackUrl: http://localhost:4566
     queues:
-      xtagdps:
-        queueName: xtagdps
       prisoneventtestqueue:
         queueName: ${random.uuid}
         subscribeTopicId: prisoneventtopic

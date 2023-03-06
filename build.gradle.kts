@@ -28,7 +28,6 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-data-rest:1.6.13")
 
   implementation("com.zaxxer:HikariCP:5.0.1")
-  runtimeOnly("com.h2database:h2:2.1.214")
   implementation("com.oracle.database.jdbc:ojdbc10:19.18.0.0")
   implementation("com.oracle.database.messaging:aqapi:21.3.0.0")
 
@@ -41,6 +40,7 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.12")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:localstack:1.17.6")
+  testImplementation("org.testcontainers:oracle-xe:1.17.6")
 }
 
 java {
@@ -56,4 +56,8 @@ tasks {
       jvmTarget = "19"
     }
   }
+}
+
+tasks.withType<Test> {
+  jvmArgs(listOf("-Xmx2g"))
 }

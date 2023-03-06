@@ -32,10 +32,6 @@ spring:
   flyway:
     enabled: false
 
-  h2:
-    console:
-      enabled: false
-
   jpa:
     database-platform: org.hibernate.dialect.Oracle12cDialect
     open-in-view: false
