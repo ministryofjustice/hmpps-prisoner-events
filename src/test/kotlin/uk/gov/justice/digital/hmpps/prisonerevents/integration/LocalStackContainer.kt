@@ -43,7 +43,7 @@ object LocalStackContainer {
   }
 
   private fun localstackIsRunning(): Boolean =
-    System.getenv("DOCKER_HOST").contains("colima") ||
+    (System.getenv("DOCKER_HOST") ?: "null").contains("colima") ||
       try {
         val serverSocket = ServerSocket(4566)
         serverSocket.localPort == 0

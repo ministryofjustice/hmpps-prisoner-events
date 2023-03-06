@@ -26,7 +26,7 @@ object OracleContainerConfig {
   }
 
   private fun oracleIsRunning(): Boolean =
-    System.getenv("DOCKER_HOST").contains("colima") ||
+    (System.getenv("DOCKER_HOST") ?: "null").contains("colima") ||
       try {
         val serverSocket = ServerSocket(1521)
         serverSocket.localPort == 0
