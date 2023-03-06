@@ -41,6 +41,7 @@ jobs:
       - run:
           name: Wait for Oracle to start
           command: |
+            set +e
             RTN=1
             for i in {1..20}; do
               curl -4 --connect-timeout 30 http://localhost:1521
