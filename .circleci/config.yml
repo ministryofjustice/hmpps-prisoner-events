@@ -38,8 +38,19 @@ jobs:
     steps:
       - checkout
       - hmpps/wait_till_ready
-      - hmpps/wait_till_ready: # Wait for Oracle to start
-          port: 1521
+      - run:
+        name: Wait for Oracle to start
+        command: |
+          for i in {1..20}; do
+            curl -4 --connect-timeout 30 http://localhost:1521
+            ERR=$?
+            if [[ $ERR == 0 || $ERR == 52 ]]; then
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "timeout"
+          exit 1
       - restore_cache:
           keys:
             - gradle-{{ checksum "build.gradle.kts" }}
