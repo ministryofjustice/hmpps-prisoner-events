@@ -57,7 +57,3 @@ tasks {
     }
   }
 }
-
-tasks.withType<Test> {
-  jvmArgs(listOf("-Xmx2g"))
-}
