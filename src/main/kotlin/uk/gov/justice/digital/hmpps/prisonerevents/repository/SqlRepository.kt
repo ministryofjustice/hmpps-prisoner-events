@@ -7,7 +7,7 @@ import java.sql.ResultSet
 import java.time.LocalDate
 import java.time.LocalTime
 
-private const val LIMIT = 100
+const val LIMIT = 100
 
 @Repository
 class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
@@ -53,6 +53,10 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
           .run { "ID:$this" }
       }
     }
+
+  fun purgeExceptionQueue() {
+    jdbcTemplate.update("DELETE FROM XTAG.XTAG_LISTENER_TAB", MapSqlParameterSource())
+  }
 
   companion object {
 

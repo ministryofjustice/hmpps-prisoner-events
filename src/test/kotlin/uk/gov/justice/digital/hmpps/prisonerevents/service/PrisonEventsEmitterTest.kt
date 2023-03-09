@@ -1,7 +1,9 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
+import com.amazonaws.http.SdkHttpMetadata
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.amazonaws.services.sns.model.PublishRequest
+import com.amazonaws.services.sns.model.PublishResult
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
@@ -100,6 +102,12 @@ class PrisonEventsEmitterTest {
 
   @Test
   fun `will add telemetry event`() {
+    val publishResult = PublishResult()
+    val sdkHttpMetadata = mock<SdkHttpMetadata>()
+    whenever(sdkHttpMetadata.getHttpStatusCode()).thenReturn(200)
+    publishResult.setSdkHttpMetadata(sdkHttpMetadata)
+    whenever(prisonEventSnsClient.publish(any())).thenReturn(publishResult)
+
     service.sendEvent(
       OffenderEvent(
         eventType = "my-event-type",
@@ -232,6 +240,28 @@ class PrisonEventsEmitterTest {
         ),
       )
     }.isInstanceOf(RuntimeException::class.java)
+
+    verify(telemetryClient, never()).trackEvent(eq("my-event-type"), any(), isNull())
+    verify(telemetryClient).trackEvent(eq("my-event-type_FAILED"), any(), isNull())
+  }
+
+  @Test
+  fun `will throw if publishing fails with an http error`() {
+    val publishResult = PublishResult()
+    val sdkHttpMetadata = mock<SdkHttpMetadata>()
+    whenever(sdkHttpMetadata.getHttpStatusCode()).thenReturn(500)
+    publishResult.setSdkHttpMetadata(sdkHttpMetadata)
+    whenever(prisonEventSnsClient.publish(any())).thenReturn(publishResult)
+
+    assertThatThrownBy {
+      service.sendEvent(
+        OffenderEvent(
+          eventType = "my-event-type",
+          alertCode = "alert-code",
+          bookingId = 12345L,
+        ),
+      )
+    }.isInstanceOf(RuntimeException::class.java).message().isEqualTo("Attempt to publish message my-event-type resulted in an http 500 error")
 
     verify(telemetryClient, never()).trackEvent(eq("my-event-type"), any(), isNull())
     verify(telemetryClient).trackEvent(eq("my-event-type_FAILED"), any(), isNull())

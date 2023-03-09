@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service
 import com.amazonaws.services.sns.AmazonSNSAsync
 import com.amazonaws.services.sns.model.MessageAttributeValue
 import com.amazonaws.services.sns.model.PublishRequest
+import com.amazonaws.services.sns.model.PublishResult
 import com.fasterxml.jackson.core.JsonProcessingException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
@@ -20,37 +21,36 @@ import java.util.stream.Collectors
 @Service
 class PrisonEventsEmitter(
   hmppsQueueService: HmppsQueueService,
-  objectMapper: ObjectMapper,
-  telemetryClient: TelemetryClient,
+  private val objectMapper: ObjectMapper,
+  private val telemetryClient: TelemetryClient,
 ) {
-  private val prisonEventTopicSnsClient: AmazonSNSAsync
-  private val topicArn: String
-  private val objectMapper: ObjectMapper
-  private val telemetryClient: TelemetryClient
-
-  init {
-    val prisonEventTopic: HmppsTopic? = hmppsQueueService.findByTopicId("prisoneventtopic")
-    topicArn = prisonEventTopic!!.arn
-    prisonEventTopicSnsClient = prisonEventTopic.snsClient as AmazonSNSAsync
-    this.objectMapper = objectMapper
-    this.telemetryClient = telemetryClient
+  private val prisonEventTopic: HmppsTopic? by lazy {
+    hmppsQueueService.findByTopicId("prisoneventtopic")
   }
+  private val prisonEventTopicSnsClient: AmazonSNSAsync by lazy { prisonEventTopic!!.snsClient as AmazonSNSAsync }
+  private val topicArn: String by lazy { prisonEventTopic!!.arn }
 
   fun sendEvent(payload: OffenderEvent) {
-    try {
+    val publishResult: PublishResult? = try {
       prisonEventTopicSnsClient.publish(
         PublishRequest(topicArn, objectMapper.writeValueAsString(payload))
           .withMessageAttributes(metaData(payload)),
       )
-      telemetryClient.trackEvent(payload.eventType, asTelemetryMap(payload), null)
     } catch (e: JsonProcessingException) {
       log.error("Failed to convert payload {} to json", payload, e)
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
+      return
     } catch (e: Exception) {
       log.error("Failed to publish message {}", payload, e)
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
       throw e
     }
+    val httpStatusCode = publishResult?.sdkHttpMetadata?.httpStatusCode
+    if (httpStatusCode != null && httpStatusCode >= 400) {
+      telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
+      throw RuntimeException("Attempt to publish message ${payload.eventType} resulted in an http $httpStatusCode error")
+    }
+    telemetryClient.trackEvent(payload.eventType, asTelemetryMap(payload), null)
   }
 
   private fun metaData(payload: OffenderEvent): Map<String, MessageAttributeValue> {
