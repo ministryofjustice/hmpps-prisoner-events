@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
+import com.microsoft.applicationinsights.TelemetryClient
 import oracle.jms.AQjmsSession
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.LIMIT
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import javax.jms.QueueConnection
 import javax.jms.QueueConnectionFactory
@@ -15,6 +17,7 @@ val EXCEPTION_QUEUE_NAME = "AQ\$_XTAG_LISTENER_TAB_E"
 class AQService(
   private val sqlRepository: SqlRepository,
   private val queueConnectionFactory: QueueConnectionFactory,
+  private val telemetryClient: TelemetryClient?,
   @Value("\${source.queue.name}") val queueName: String,
 ) {
   fun requeueExceptions() {
@@ -23,6 +26,12 @@ class AQService(
     val queueSimpleName = queueDetails[1]
 
     val ids = sqlRepository.getExceptionMessageIds()
+    val messageCount = ids.size
+    if (messageCount == 0) {
+      log.info("No messages found on exception queue $queueName")
+      return
+    }
+    log.info("For exception queue $queueName we found $messageCount messages, attempting to retry them")
 
     val queueConnection: QueueConnection = queueConnectionFactory.createQueueConnection()
     val session = queueConnection.createQueueSession(true, Session.AUTO_ACKNOWLEDGE) as AQjmsSession
@@ -35,15 +44,20 @@ class AQService(
         "JMSMessageID in ${join(ids)}", // MSGID column
       )
       val messageProducer = session.createProducer(dpsQueue)
-      while (true) {
+      for (count in 1..LIMIT) {
         // TODO does this re-execute the message selector each time and if so is there a more efficient alternative?
         val message = messageConsumer.receiveNoWait() ?: break
-        log.debug("Got message ${message.jmsMessageID}")
+        log.debug("Got message ${message.jmsMessageID} from exception queue")
 
         messageProducer.send(message)
         session.commit()
-        log.debug("Requeued message ${message.jmsMessageID}")
+        log.debug("Requeued message ${message.jmsMessageID} on $queueName")
       }
+      telemetryClient?.trackEvent(
+        "RetryDLQ",
+        mapOf("queue-name" to queueName, "messages-found" to "$messageCount"),
+        null,
+      )
     } catch (e: Exception) {
       log.error("Error requeuing messages", e)
       session.rollback()

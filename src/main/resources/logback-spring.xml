@@ -39,6 +39,10 @@
         <appender-ref ref="logAppender"/>
     </logger>
 
+    <logger name="org.springframework.jdbc" additivity="false" level="INFO">
+        <appender-ref ref="logAppender"/>
+    </logger>
+
     <logger name="com.microsoft.applicationinsights" additivity="false" level="INFO">
         <appender-ref ref="logAppender"/>
     </logger>

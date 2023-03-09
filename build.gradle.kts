@@ -23,9 +23,9 @@ dependencies {
 
   implementation("org.flywaydb:flyway-core")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.13")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.13")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.13")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.14")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
 
   implementation("com.zaxxer:HikariCP:5.0.1")
   implementation("com.oracle.database.jdbc:ojdbc10:19.18.0.0")
