@@ -41,7 +41,8 @@ class PrisonEventsEmitter(
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
       return
     } catch (e: Exception) {
-      log.error("Failed to publish message {}", payload, e)
+      // Exception traceback will be logged by DefaultMessageListenerContainer
+      log.error("Failed to publish message {}", payload)
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
       throw e
     }

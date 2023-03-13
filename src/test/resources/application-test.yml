@@ -1,11 +1,6 @@
 server:
   shutdown: immediate
 
-source.queue:
-  provider: oracle
-  transacted: true
-  name: XTAG.XTAG_DPS
-
 management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0

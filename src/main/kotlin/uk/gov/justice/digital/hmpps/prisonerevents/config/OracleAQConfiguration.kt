@@ -1,15 +1,11 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.config
 
-import com.amazon.sqs.javamessaging.ProviderConfiguration
-import com.amazon.sqs.javamessaging.SQSConnectionFactory
-import com.amazonaws.auth.AWSStaticCredentialsProvider
-import com.amazonaws.auth.BasicAWSCredentials
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder
+import oracle.jdbc.datasource.impl.OracleDataSource
 import oracle.jms.AQjmsFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.jms.connection.CachingConnectionFactory
 import javax.jms.QueueConnectionFactory
 import javax.sql.DataSource
 
@@ -24,37 +20,19 @@ class OracleAQConfiguration {
   @Value("\${spring.datasource.url}")
   private lateinit var connectionstring: String
 
-  @ConditionalOnProperty(name = ["source.queue.provider"], havingValue = "oracle")
+  // see https://docs.oracle.com/en/database/oracle/oracle-database/21/jajdb/oracle/jdbc/OracleConnection.html
+
   @Bean
   fun dataSource(): DataSource {
-    val ds = oracle.jdbc.pool.OracleDataSource()
+    val ds = OracleDataSource()
     ds.user = user
     ds.setPassword(password)
     ds.url = connectionstring
-    ds.implicitCachingEnabled = true
-    // Do not reconnect from scratch for each poll:
-    ds.connectionCachingEnabled = true
+    ds.setConnectionProperty("autocommit", "false")
     return ds
   }
 
-  @ConditionalOnProperty(name = ["source.queue.provider"], havingValue = "oracle")
   @Bean
   fun connectionFactory(dataSource: DataSource?): QueueConnectionFactory =
-    AQjmsFactory.getQueueConnectionFactory(dataSource)
-
-  @ConditionalOnProperty(name = ["source.queue.provider"], havingValue = "localstack")
-  @Bean
-  fun connectionFactoryLocalstack(dataSource: DataSource?): QueueConnectionFactory =
-    SQSConnectionFactory(
-      ProviderConfiguration(),
-      AmazonSQSClientBuilder
-        .standard()
-        .withCredentials(
-          AWSStaticCredentialsProvider(
-            BasicAWSCredentials("foo", "bar"),
-          ),
-        )
-        .withRegion("eu-west-2")
-        .build(),
-    )
+    CachingConnectionFactory(AQjmsFactory.getQueueConnectionFactory(dataSource))
 }

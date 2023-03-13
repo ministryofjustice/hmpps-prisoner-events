@@ -9,6 +9,7 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doCallRealMethod
@@ -20,6 +21,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.jms.core.JmsTemplate
+import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -39,7 +41,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   private lateinit var sqlRepository: SqlRepository
 
   private val jmsTemplate by lazy {
-    JmsTemplate(connectionFactory).also { it.defaultDestinationName = "XTAG.XTAG_DPS" }
+    JmsTemplate(connectionFactory).also { it.defaultDestinationName = QUEUE_NAME }
   }
 
   internal val prisonEventQueue by lazy { hmppsQueueService.findByQueueId("prisoneventtestqueue") as HmppsQueue }
@@ -66,77 +68,110 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     purgeQueues()
   }
 
-  @Test
-  fun `will consume a prison offender events message`() {
-    // AQjmsOracleDebug.setTraceLevel(3)
+  @Nested
+  inner class Consume {
+    @Test
+    fun `will consume a prison offender events message`() {
+      // AQjmsOracleDebug.setTraceLevel(3)
 
-    simulateTrigger()
+      simulateTrigger()
 
-    await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 1 }
+      await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 1 }
 
-    val receiveMessageResult = prisonEventQueueSqsClient.receiveMessage(prisonEventQueueUrl)
-    with(receiveMessageResult.messages.first()) {
-      assertThat(body.contains("""\"nomisEventType\":\"OFF_RECEP_OASYS\"""")).isTrue
-      assertThat(body.contains("""\"eventType\":\"OFFENDER_MOVEMENT-RECEPTION\"""")).isTrue
-      assertThat(body.contains("""\"bookingId\":1234567""")).isTrue
-      assertThat(body.contains("""\"movementSeq\":4""")).isTrue
+      val receiveMessageResult = prisonEventQueueSqsClient.receiveMessage(prisonEventQueueUrl)
+      with(receiveMessageResult.messages.first()) {
+        assertThat(body.contains("""\"nomisEventType\":\"OFF_RECEP_OASYS\"""")).isTrue
+        assertThat(body.contains("""\"eventType\":\"OFFENDER_MOVEMENT-RECEPTION\"""")).isTrue
+        assertThat(body.contains("""\"bookingId\":1234567""")).isTrue
+        assertThat(body.contains("""\"movementSeq\":4""")).isTrue
+      }
+    }
+
+    @Test
+    fun `will consume after one publish failure`() {
+      // Sabotage the topic temporarily - publish will fail
+      sabotageTopic()
+      simulateTrigger()
+
+      awaitPublishTries(1)
+
+      assertThat(getNumberOfMessagesCurrentlyOnPrisonEventQueue()).isEqualTo(0)
+
+      fixTopic() // Now  publish will succeed
+
+      awaitPublishTries(2)
+
+      await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 1 }
+    }
+
+    @Test
+    fun `will move to exception queue after repeated publish failures`() {
+      // Sabotage the topic
+      sabotageTopic()
+
+      simulateTrigger()
+
+      awaitPublishTries(5)
+
+      assertThat(getNumberOfMessagesCurrentlyOnPrisonEventQueue()).isEqualTo(0)
+
+      // After 5 attempts, the message should be on the exception queue
+      await.atMost(Duration.ofSeconds(10)) untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 1 }
     }
   }
 
-  @Test
-  fun `will consume after one publish failure`() {
-    // Sabotage the topic temporarily - publish will fail
-    sabotageTopic()
-    simulateTrigger()
+  @Nested
+  inner class RetryEndpoint {
+    @Test
+    fun `access forbidden when no authority`() {
+      webTestClient.get().uri("/housekeeping")
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
 
-    awaitPublishTries(1)
+    @Test
+    fun `access forbidden when no role`() {
+      webTestClient.get().uri("/housekeeping")
+        .headers(setAuthorisation(roles = listOf()))
+        .exchange()
+        .expectStatus().isForbidden
+    }
 
-    assertThat(getNumberOfMessagesCurrentlyOnPrisonEventQueue()).isEqualTo(0)
+    @Test
+    fun `access forbidden with wrong role`() {
+      webTestClient.get().uri("/housekeeping")
+        .headers(setAuthorisation(roles = listOf("ROLE_BANANAS")))
+        .exchange()
+        .expectStatus().isForbidden
+    }
 
-    fixTopic() // Now  publish will succeed
+    @Test
+    fun `Retry exception messages when none present`() {
+      webTestClient.get().uri("/housekeeping")
+        .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
+        .exchange()
+        .expectStatus().isOk
+    }
 
-    awaitPublishTries(2)
+    @Test
+    fun `Retry exception messages when messages present`() {
+      sabotageTopic()
+      repeat(2) { simulateTrigger() }
+      await.atMost(Duration.ofSeconds(20)) untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 2 }
+      fixTopic()
 
-    await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 1 }
-  }
+      webTestClient
+        .mutate()
+        .responseTimeout(Duration.ofSeconds(2000))
+        .build()
+        .get().uri("/housekeeping")
+        .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
+        .exchange()
+        .expectStatus().isOk
 
-  @Test
-  fun `will move to exception queue after repeated publish failures`() {
-    // Sabotage the topic
-    sabotageTopic()
-
-    simulateTrigger()
-
-    awaitPublishTries(5)
-
-    assertThat(getNumberOfMessagesCurrentlyOnPrisonEventQueue()).isEqualTo(0)
-
-    // After 5 attempts, the message should be on the exception queue
-    await.atMost(Duration.ofSeconds(10)) untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 1 }
-  }
-
-  @Test
-  fun `Retry exception messages when none present`() {
-    webTestClient.get().uri("/housekeeping")
-      .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
-      .exchange()
-      .expectStatus().isOk
-  }
-
-  @Test
-  fun `Retry exception messages when messages present`() {
-    sabotageTopic()
-    repeat(2) { simulateTrigger() }
-    await.atMost(Duration.ofSeconds(20)) untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 2 }
-    fixTopic()
-
-    webTestClient.get().uri("/housekeeping")
-      .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
-      .exchange()
-      .expectStatus().isOk
-
-    await untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 0 }
-    await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 2 }
+      await untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 0 }
+      await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 2 }
+    }
   }
 
   private fun sabotageTopic() {
@@ -165,17 +200,18 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   }
 
   fun awaitPublishTries(count: Int) {
-    await untilCallTo { mockingDetails(snsClient).invocations.filter { it.method.name == "publish" }.size } matches {
-      // log.info("Number of publish calls: $it")
+    await.atMost(Duration.ofSeconds(20)) untilCallTo { mockingDetails(snsClient).invocations.filter { it.method.name == "publish" }.size } matches {
+      log.info("Number of publish calls: $it")
       it == count
     }
   }
 
   fun getNumberOfMessagesCurrentlyOnPrisonEventQueue(): Int = prisonEventQueueSqsClient.numMessages(prisonEventQueueUrl)
-  // .also { log.info("Number of messages on prison queue: $it") }
+    .also { log.info("Number of messages on prison queue: $it") }
 
   fun getGetNumberOfMessagesCurrentlyOnExceptionQueue() =
-    sqlRepository.getExceptionMessageIds().size // .also { log.info("Number of messages on exception queue: $it") }
+    sqlRepository.getExceptionMessageIds().size
+      .also { log.info("Number of messages on exception queue: $it") }
 }
 
 fun AmazonSQS.numMessages(url: String): Int {
