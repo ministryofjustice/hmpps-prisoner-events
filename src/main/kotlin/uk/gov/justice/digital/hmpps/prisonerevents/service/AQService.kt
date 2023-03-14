@@ -3,19 +3,17 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service
 import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.jms.core.JmsTemplate
-import org.springframework.jms.support.destination.JmsDestinationAccessor.RECEIVE_TIMEOUT_NO_WAIT
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
-import javax.jms.QueueConnectionFactory
 
 @Service
 class AQService(
   private val sqlRepository: SqlRepository,
-  private val queueConnectionFactory: QueueConnectionFactory,
   private val transactionTemplate: TransactionTemplate,
+  private val retryJmsTemplate: JmsTemplate,
   private val telemetryClient: TelemetryClient?,
 ) {
   fun requeueExceptions() {
@@ -29,16 +27,10 @@ class AQService(
     }
     log.info("For exception queue $QUEUE_NAME we found $messageCount messages, attempting to retry them")
 
-    val jmsTemplate = JmsTemplate(queueConnectionFactory).apply {
-      isSessionTransacted = true
-      receiveTimeout = RECEIVE_TIMEOUT_NO_WAIT
-      defaultDestinationName = QUEUE_NAME
-    }
-
     // TODO does this re-execute the message selector each time and if so is there a more efficient alternative?
     val selector = "JMSMessageID in ${join(ids)}"
 
-    while (doInTransactionWithMore(jmsTemplate, tableOwner, selector)) {
+    while (requeueAndIsMore(tableOwner, selector)) {
     }
 
     telemetryClient?.trackEvent(
@@ -48,16 +40,15 @@ class AQService(
     )
   }
 
-  private fun doInTransactionWithMore(
-    jmsTemplate: JmsTemplate,
+  private fun requeueAndIsMore(
     tableOwner: String,
     selector: String,
   ): Boolean = transactionTemplate.execute {
-    jmsTemplate.receiveSelected("$tableOwner.$EXCEPTION_QUEUE_NAME", selector)
+    retryJmsTemplate.receiveSelected("$tableOwner.$EXCEPTION_QUEUE_NAME", selector)
       ?.also { message ->
         log.debug("Got message ${message.jmsMessageID} from exception queue")
 
-        jmsTemplate.send { message }
+        retryJmsTemplate.send { message }
         log.debug("Requeued message ${message.jmsMessageID} on $QUEUE_NAME")
       }
       ?: return@execute false
@@ -68,7 +59,7 @@ class AQService(
   /*
   -- purge queue
 DECLARE
- po_t dbms_aqadm.aq$_purge_options_t;
+  po_t dbms_aqadm.aq$_purge_options_t;
 BEGIN
   dbms_aqadm.purge_queue_table('MY_QUEUE_TABLE', NULL, po_t);
 END;

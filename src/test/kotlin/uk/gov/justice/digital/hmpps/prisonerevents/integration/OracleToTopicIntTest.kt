@@ -35,13 +35,13 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   private lateinit var hmppsQueueService: HmppsQueueService
 
   @Autowired
-  private lateinit var connectionFactory: ConnectionFactory
+  private lateinit var retryConnectionFactory: ConnectionFactory
 
   @Autowired
   private lateinit var sqlRepository: SqlRepository
 
   private val jmsTemplate by lazy {
-    JmsTemplate(connectionFactory).also { it.defaultDestinationName = QUEUE_NAME }
+    JmsTemplate(retryConnectionFactory).also { it.defaultDestinationName = QUEUE_NAME }
   }
 
   internal val prisonEventQueue by lazy { hmppsQueueService.findByQueueId("prisoneventtestqueue") as HmppsQueue }

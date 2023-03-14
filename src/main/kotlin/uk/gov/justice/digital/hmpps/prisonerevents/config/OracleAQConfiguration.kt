@@ -33,6 +33,10 @@ class OracleAQConfiguration {
   }
 
   @Bean
-  fun connectionFactory(dataSource: DataSource?): QueueConnectionFactory =
-    CachingConnectionFactory(AQjmsFactory.getQueueConnectionFactory(dataSource))
+  fun listenerConnectionFactory(dataSource: DataSource?): QueueConnectionFactory =
+    AQjmsFactory.getQueueConnectionFactory(dataSource) // Should not cache this connection factory according to Spring documentation
+
+  @Bean
+  fun retryConnectionFactory(dataSource: DataSource?): QueueConnectionFactory =
+    CachingConnectionFactory(AQjmsFactory.getQueueConnectionFactory(dataSource)) // Should cache this connection factory
 }
