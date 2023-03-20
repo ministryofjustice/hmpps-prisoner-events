@@ -92,7 +92,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     val GET_EXCEPTION_MESSAGES = """
       SELECT MSGID
       FROM XTAG.XTAG_LISTENER_TAB
-      WHERE Q_NAME = '${EXCEPTION_QUEUE_NAME}'
+      WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
         AND EXCEPTION_QUEUE = 'XTAG_DPS'
         AND ROWNUM <= $LIMIT
     """.trimIndent()

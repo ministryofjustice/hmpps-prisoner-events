@@ -10,16 +10,13 @@ import java.io.IOException
 import java.net.ServerSocket
 
 object LocalStackContainer {
-  val log = LoggerFactory.getLogger(this::class.java)
+  private val log = LoggerFactory.getLogger(this::class.java)
   val instance by lazy { startLocalstackIfNotRunning() }
 
-  fun setLocalStackProperties(localStackContainer: LocalStackContainer, registry: DynamicPropertyRegistry) =
-    localStackContainer.getEndpointConfiguration(LocalStackContainer.Service.SNS)
-      .let { it.serviceEndpoint to it.signingRegion }
-      .also {
-        registry.add("hmpps.sqs.localstackUrl") { it.first }
-        registry.add("hmpps.sqs.region") { it.second }
-      }
+  fun setLocalStackProperties(localStackContainer: LocalStackContainer, registry: DynamicPropertyRegistry) {
+    registry.add("hmpps.sqs.localstackUrl") { localStackContainer.getEndpointOverride(LocalStackContainer.Service.SNS) }
+    registry.add("hmpps.sqs.region") { localStackContainer.region }
+  }
 
   private fun startLocalstackIfNotRunning(): LocalStackContainer? {
     if (localstackIsRunning()) {
