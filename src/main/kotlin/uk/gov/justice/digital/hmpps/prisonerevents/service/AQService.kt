@@ -1,73 +1,69 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
 import com.microsoft.applicationinsights.TelemetryClient
-import oracle.jms.AQjmsSession
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.jms.core.JmsTemplate
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.prisonerevents.repository.LIMIT
+import org.springframework.transaction.support.TransactionTemplate
+import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
-import javax.jms.QueueConnection
-import javax.jms.QueueConnectionFactory
-import javax.jms.Session
-
-val EXCEPTION_QUEUE_NAME = "AQ\$_XTAG_LISTENER_TAB_E"
 
 @Service
 class AQService(
   private val sqlRepository: SqlRepository,
-  private val queueConnectionFactory: QueueConnectionFactory,
+  private val transactionTemplate: TransactionTemplate,
+  private val retryJmsTemplate: JmsTemplate,
   private val telemetryClient: TelemetryClient?,
-  @Value("\${source.queue.name}") val queueName: String,
 ) {
   fun requeueExceptions() {
-    val queueDetails = queueName.split(".")
-    val tableOwner = queueDetails[0]
-    val queueSimpleName = queueDetails[1]
+    val tableOwner = QUEUE_NAME.split(".")[0]
 
     val ids = sqlRepository.getExceptionMessageIds()
     val messageCount = ids.size
     if (messageCount == 0) {
-      log.info("No messages found on exception queue $queueName")
+      log.info("No messages found on exception queue $EXCEPTION_QUEUE_NAME")
       return
     }
-    log.info("For exception queue $queueName we found $messageCount messages, attempting to retry them")
+    log.info("For exception queue $QUEUE_NAME we found $messageCount messages, attempting to retry them")
 
-    val queueConnection: QueueConnection = queueConnectionFactory.createQueueConnection()
-    val session = queueConnection.createQueueSession(true, Session.AUTO_ACKNOWLEDGE) as AQjmsSession
-    val exceptionQueue = session.getQueue(tableOwner, EXCEPTION_QUEUE_NAME)
-    queueConnection.start()
-    try {
-      val dpsQueue = session.getQueue(tableOwner, queueSimpleName)
-      val messageConsumer = session.createConsumer(
-        exceptionQueue,
-        "JMSMessageID in ${join(ids)}", // MSGID column
-      )
-      val messageProducer = session.createProducer(dpsQueue)
-      for (count in 1..LIMIT) {
-        // TODO does this re-execute the message selector each time and if so is there a more efficient alternative?
-        val message = messageConsumer.receiveNoWait() ?: break
-        log.debug("Got message ${message.jmsMessageID} from exception queue")
+    // TODO does this re-execute the message selector each time and if so is there a more efficient alternative?
+    val selector = "JMSMessageID in ${join(ids)}"
 
-        messageProducer.send(message)
-        session.commit()
-        log.debug("Requeued message ${message.jmsMessageID} on $queueName")
-      }
-      telemetryClient?.trackEvent(
-        "RetryDLQ",
-        mapOf("queue-name" to queueName, "messages-found" to "$messageCount"),
-        null,
-      )
-    } catch (e: Exception) {
-      log.error("Error requeuing messages", e)
-      session.rollback()
-      throw e
-    } finally {
-      queueConnection.stop()
-      queueConnection.close()
+    while (requeueAndIsMore(tableOwner, selector)) {
     }
+
+    telemetryClient?.trackEvent(
+      "RetryDLQ",
+      mapOf("queue-name" to QUEUE_NAME, "messages-found" to "$messageCount"),
+      null,
+    )
   }
 
+  private fun requeueAndIsMore(
+    tableOwner: String,
+    selector: String,
+  ): Boolean = transactionTemplate.execute {
+    retryJmsTemplate.receiveSelected("$tableOwner.$EXCEPTION_QUEUE_NAME", selector)
+      ?.also { message ->
+        log.debug("Got message ${message.jmsMessageID} from exception queue")
+
+        retryJmsTemplate.send { message }
+        log.debug("Requeued message ${message.jmsMessageID} on $QUEUE_NAME")
+      }
+      ?: return@execute false
+
+    return@execute true
+  }!!
+
+  /*
+  -- purge queue
+DECLARE
+  po_t dbms_aqadm.aq$_purge_options_t;
+BEGIN
+  dbms_aqadm.purge_queue_table('MY_QUEUE_TABLE', NULL, po_t);
+END;
+   */
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
 
