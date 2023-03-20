@@ -106,7 +106,6 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
     @Test
     fun `will move to exception queue after repeated publish failures`() {
-      // Sabotage the topic
       sabotageTopic()
 
       simulateTrigger()
@@ -161,9 +160,6 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       fixTopic()
 
       webTestClient
-        .mutate()
-        .responseTimeout(Duration.ofSeconds(2000))
-        .build()
         .get().uri("/housekeeping")
         .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
         .exchange()

@@ -1,6 +1,6 @@
 # hmpps-prisoner-events
 
-Read xtag events from Nomis and queue to AWS topic.
+Read XTAG events from Nomis and send to the AWS prison events topic.
 
 # Running Integration tests
 
@@ -13,9 +13,8 @@ The integration tests require a running instance of Oracle-XE and a running inst
 The Oracle docker image will not run in docker desktop under an M1 processor, so an intel VM is required - Colima.
 Also for now testContainers is not working under Colima until a better 'already up' test is found.
 
-Based on the instructions here: https://blog.jdriven.com/2022/07/running-oracle-xe-with-testcontainers-on-apple-silicon :
-
-Add these lines to your .zshrc or similar:
+Based on the instructions here: https://blog.jdriven.com/2022/07/running-oracle-xe-with-testcontainers-on-apple-silicon,
+add these lines to your .zshrc or similar:
 
 ```
 export TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock # in case testContainers is used in future
