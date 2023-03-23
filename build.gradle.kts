@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.4-beta-2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.5-beta"
   kotlin("plugin.spring") version "1.8.10"
   id("org.unbroken-dome.test-sets") version "4.0.0"
 }
@@ -23,9 +23,9 @@ dependencies {
 
   implementation("org.flywaydb:flyway-core")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.14")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.14")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.14")
+  implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.15")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.15")
 
   implementation("com.oracle.database.jdbc:ojdbc11:21.9.0.0")
   implementation("com.oracle.database.messaging:aqapi:21.3.0.0")
@@ -35,7 +35,7 @@ dependencies {
 
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
-  testImplementation("org.mockito:mockito-inline:5.1.1")
+  testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.12")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:localstack:1.17.6")
