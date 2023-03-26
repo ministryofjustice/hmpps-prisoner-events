@@ -55,6 +55,11 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       }
     }
 
+  fun getExceptionMessageIdsBytes(): List<ByteArray> =
+    jdbcTemplate.query(GET_EXCEPTION_MESSAGES) { resultSet: ResultSet, _: Int ->
+      resultSet.getBytes("MSGID")
+    }
+
   fun purgeExceptionQueue() {
     jdbcTemplate.update("DELETE FROM XTAG.XTAG_LISTENER_TAB", MapSqlParameterSource())
   }

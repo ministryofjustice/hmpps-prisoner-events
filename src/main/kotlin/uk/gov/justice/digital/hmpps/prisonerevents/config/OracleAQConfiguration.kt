@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.connection.CachingConnectionFactory
+import javax.jms.ConnectionFactory
 import javax.jms.QueueConnectionFactory
 import javax.sql.DataSource
 
@@ -39,4 +40,10 @@ class OracleAQConfiguration {
   @Bean
   fun retryConnectionFactory(dataSource: DataSource?): QueueConnectionFactory =
     CachingConnectionFactory(AQjmsFactory.getQueueConnectionFactory(dataSource)) // Should cache this connection factory
+
+  @Bean
+  fun nativeConnectionFactory(dataSource: DataSource?): ConnectionFactory =
+    AQjmsFactory.getConnectionFactory(dataSource)
+
+
 }
