@@ -21,7 +21,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.jms.core.JmsTemplate
-import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -41,7 +41,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   private lateinit var sqlRepository: SqlRepository
 
   private val jmsTemplate by lazy {
-    JmsTemplate(retryConnectionFactory).also { it.defaultDestinationName = QUEUE_NAME }
+    JmsTemplate(retryConnectionFactory).also { it.defaultDestinationName = FULL_QUEUE_NAME }
   }
 
   internal val prisonEventQueue by lazy { hmppsQueueService.findByQueueId("prisoneventtestqueue") as HmppsQueue }
@@ -72,8 +72,6 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   inner class Consume {
     @Test
     fun `will consume a prison offender events message`() {
-      // AQjmsOracleDebug.setTraceLevel(3)
-
       simulateTrigger()
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 1 }
@@ -166,7 +164,9 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         .expectStatus().isOk
 
       await untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 0 }
+      // Messages have been moved from exception queue to normal queue
       await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 2 }
+      // Messages arrived on topic and were sent to subscribed queue
     }
   }
 

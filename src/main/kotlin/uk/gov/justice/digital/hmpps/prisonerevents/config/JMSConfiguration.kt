@@ -13,7 +13,9 @@ import javax.jms.ConnectionFactory
 import javax.jms.ExceptionListener
 import javax.sql.DataSource
 
-const val QUEUE_NAME = "XTAG.XTAG_DPS"
+const val TABLE_OWNER = "XTAG"
+const val QUEUE_NAME = "XTAG_DPS"
+const val FULL_QUEUE_NAME = "$TABLE_OWNER.$QUEUE_NAME"
 const val EXCEPTION_QUEUE_NAME = "AQ\$_XTAG_LISTENER_TAB_E"
 
 @Configuration
@@ -22,7 +24,7 @@ class JMSConfiguration {
   fun retryJmsTemplate(retryConnectionFactory: ConnectionFactory) = JmsTemplate(retryConnectionFactory).apply {
     isSessionTransacted = true
     receiveTimeout = JmsDestinationAccessor.RECEIVE_TIMEOUT_NO_WAIT
-    defaultDestinationName = QUEUE_NAME
+    defaultDestinationName = FULL_QUEUE_NAME
   }
 
   @Bean
@@ -32,7 +34,7 @@ class JMSConfiguration {
     jmsReceiver: JMSReceiver,
   ): DefaultMessageListenerContainer =
     DefaultMessageListenerContainer().apply {
-      this.destinationName = QUEUE_NAME
+      this.destinationName = FULL_QUEUE_NAME
       this.connectionFactory = listenerConnectionFactory
       this.cacheLevel = DefaultMessageListenerContainer.CACHE_SESSION
       this.exceptionListener = ExceptionListener {
