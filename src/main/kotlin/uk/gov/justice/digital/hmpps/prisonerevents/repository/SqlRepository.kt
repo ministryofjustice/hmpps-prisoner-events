@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import java.sql.ResultSet
 import java.time.LocalDate
 import java.time.LocalTime
@@ -93,7 +94,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       SELECT MSGID
       FROM XTAG.XTAG_LISTENER_TAB
       WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
-        AND EXCEPTION_QUEUE = 'XTAG_DPS'
+        AND EXCEPTION_QUEUE = '$QUEUE_NAME'
         AND ROWNUM <= $LIMIT
     """.trimIndent()
   }

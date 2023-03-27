@@ -31,9 +31,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     return offenderEventOf(
       Xtag(
         eventType = xtagEvent.jmsType,
-        nomisTimestamp = xtagFudgedTimestampOf(
-          LocalDateTime.ofEpochSecond(seconds, nanos, BST),
-        ),
+        nomisTimestamp = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, BST)),
         content = XtagContent(map),
       ),
     )
@@ -57,9 +55,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_DISCH_OASYS" -> offenderMovementDischargeEventOf(xtag)
         "M1_RESULT", "M1_UPD_RESULT" -> externalMovementRecordEventOf(xtag, externalMovementEventOf(xtag))
         "OFF_UPD_OASYS" -> if (!Strings.isNullOrEmpty(xtag.content.p_offender_book_id)) {
-          offenderBookingChangedEventOf(
-            xtag,
-          )
+          offenderBookingChangedEventOf(xtag)
         } else {
           offenderDetailsChangedEventOf(xtag)
         }
@@ -68,9 +64,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "ADDR_USG_UPD" -> if (xtag.content.p_address_deleted == "Y") {
           addressUsageDeletedEventOf(xtag)
         } else {
-          addressUsageUpdatedEventOf(
-            xtag,
-          )
+          addressUsageUpdatedEventOf(xtag)
         }
 
         "P4_RESULT" -> offenderAliasChangedEventOf(xtag)
@@ -81,9 +75,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_CONT_PER_UPD" -> if (xtag.content.p_address_deleted == "Y") {
           contactPersonDeletedEventOf(xtag)
         } else {
-          contactPersonUpdatedEventOf(
-            xtag,
-          )
+          contactPersonUpdatedEventOf(xtag)
         }
 
         "OFF_EDUCATION_INS" -> educationLevelInsertedEventOf(xtag)
@@ -91,9 +83,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_EDUCATION_DEL" -> educationLevelDeletedEventOf(xtag)
         "P3_RESULT" -> if (xtag.content.p_identifier_type == "NOMISP3") {
           offenderBookingInsertedEventOf(xtag)
-        } else if (!Strings.isNullOrEmpty(
-            xtag.content.p_identifier_value,
-          )
+        } else if (!Strings.isNullOrEmpty(xtag.content.p_identifier_value)
         ) {
           offenderIdentifierInsertedEventOf(xtag)
         } else {
@@ -101,14 +91,10 @@ class OffenderEventsTransformer @Autowired constructor() {
         }
 
         "S1_RESULT" -> if (!Strings.isNullOrEmpty(xtag.content.p_imprison_status_seq)) {
-          imprisonmentStatusChangedEventOf(
-            xtag,
-          )
+          imprisonmentStatusChangedEventOf(xtag)
         } else if (!Strings.isNullOrEmpty(xtag.content.p_assessment_seq)) {
           assessmentChangedEventOf(xtag)
-        } else if (!Strings.isNullOrEmpty(
-            xtag.content.p_alert_date,
-          )
+        } else if (!Strings.isNullOrEmpty(xtag.content.p_alert_date)
         ) {
           alertUpdatedEventOf(xtag)
         } else {
@@ -129,9 +115,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "A2_RESULT" -> if ("Y" == xtag.content.p_delete_flag) {
           hearingResultDeletedEventOf(xtag)
         } else {
-          hearingResultChangedEventOf(
-            xtag,
-          )
+          hearingResultChangedEventOf(xtag)
         }
 
         "PHONES_INS" -> phoneInsertedEventOf(xtag)
@@ -151,7 +135,9 @@ class OffenderEventsTransformer @Autowired constructor() {
         "BED_ASSIGNMENT_HISTORY-INSERTED" -> offenderBedAssignmentEventOf(xtag)
         "CONFIRMED_RELEASE_DATE-CHANGED" -> confirmedReleaseDateOf(xtag)
         "OFFENDER-INSERTED", "OFFENDER-UPDATED", "OFFENDER-DELETED" -> offenderUpdatedOf(xtag)
-        "OFF_IDENT_MARKS-CHANGED", "OFF_PROFILE_DETS-CHANGED", "OFF_PHYS_ATTR-CHANGED" -> offenderPhysicalDetailsUpdatedOf(xtag)
+        "OFF_IDENT_MARKS-CHANGED", "OFF_PROFILE_DETS-CHANGED", "OFF_PHYS_ATTR-CHANGED" ->
+          offenderPhysicalDetailsUpdatedOf(xtag)
+
         "EXTERNAL_MOVEMENT-CHANGED" -> externalMovementRecordEventOf(xtag, null)
 
         "OFFENDER_IEP_LEVEL-UPDATED" -> iepUpdatedEventOf(xtag)
