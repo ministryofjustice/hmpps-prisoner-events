@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.5-beta"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.5-beta-2"
   kotlin("plugin.spring") version "1.8.10"
   id("org.unbroken-dome.test-sets") version "4.0.0"
 }
@@ -20,9 +20,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
-
-  // override version to prevent json-smart vulnerability (CVE-2023-1370)
-  implementation("com.nimbusds:oauth2-oidc-sdk:9.43.1")
 
   implementation("org.flywaydb:flyway-core")
 
