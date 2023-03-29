@@ -9,6 +9,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Movement
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
@@ -55,12 +56,20 @@ class XtagEventsServiceTest {
     )
 
     val offenderEvent = service.addAdditionalEventData(
-      OffenderEvent(
+      ExternalMovementOffenderEvent(
         bookingId = 1L,
         movementSeq = 2L,
         eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED",
+        movementDateTime = null,
+        movementType = null,
+        movementReasonCode = null,
+        directionCode = null,
+        escortCode = null,
+        fromAgencyLocationId = null,
+        toAgencyLocationId = null,
+
       ),
-    )
+    ) as ExternalMovementOffenderEvent?
 
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
     assertThat(offenderEvent?.fromAgencyLocationId).isEqualTo("MDI")
@@ -77,12 +86,19 @@ class XtagEventsServiceTest {
     )
 
     val offenderEvent = service.addAdditionalEventData(
-      OffenderEvent(
+      ExternalMovementOffenderEvent(
         bookingId = 1L,
         movementSeq = 2L,
         eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED",
+        movementDateTime = null,
+        movementType = null,
+        movementReasonCode = null,
+        directionCode = null,
+        escortCode = null,
+        fromAgencyLocationId = null,
+        toAgencyLocationId = null,
       ),
-    )
+    ) as ExternalMovementOffenderEvent?
 
     assertThat(offenderEvent?.bookingId).isEqualTo(1L)
     assertThat(offenderEvent?.movementSeq).isEqualTo(2L)
@@ -99,12 +115,19 @@ class XtagEventsServiceTest {
     whenever(repository.getMovement(1L, 2)).thenReturn(listOf())
 
     val offenderEvent = service.addAdditionalEventData(
-      OffenderEvent(
+      ExternalMovementOffenderEvent(
         bookingId = 1L,
         movementSeq = 2L,
         eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED",
+        movementDateTime = null,
+        movementType = null,
+        movementReasonCode = null,
+        directionCode = null,
+        escortCode = null,
+        fromAgencyLocationId = null,
+        toAgencyLocationId = null,
       ),
-    )
+    ) as ExternalMovementOffenderEvent?
 
     assertThat(offenderEvent?.bookingId).isEqualTo(1L)
     assertThat(offenderEvent?.movementSeq).isEqualTo(2L)

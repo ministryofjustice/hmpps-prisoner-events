@@ -3,6 +3,8 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 import oracle.jms.AQjmsMapMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.externalMovementEventOf
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.localDateOf
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.localDateTimeOf
@@ -188,7 +190,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("BED_ASSIGNMENT_HISTORY-INSERTED")
     assertThat(event?.bookingId).isEqualTo(99L)
     assertThat(event?.bedAssignmentSeq).isEqualTo(1)
@@ -218,7 +220,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as ExternalMovementOffenderEvent?
     assertThat(event?.eventType).isEqualTo("EXTERNAL_MOVEMENT-CHANGED")
     assertThat(event?.bookingId).isEqualTo(232L)
     assertThat(event?.movementSeq).isEqualTo(1)
@@ -294,7 +296,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("APPOINTMENT_CHANGED")
     assertThat(event?.bookingId).isEqualTo(52303L)
     assertThat(event?.eventDatetime).isEqualTo(now)
@@ -330,7 +332,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("APPOINTMENT_CHANGED")
     assertThat(event?.bookingId).isEqualTo(52303L)
     assertThat(event?.scheduledStartTime).isEqualTo(LocalDateTime.of(2022, 7, 19, 16, 0, 0))
@@ -358,7 +360,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("IEP_UPSERTED")
     assertThat(event?.bookingId).isEqualTo(434L)
     assertThat(event?.eventDatetime).isEqualTo(now)
@@ -391,7 +393,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("IEP_DELETED")
     assertThat(event?.bookingId).isEqualTo(434L)
     assertThat(event?.eventDatetime).isEqualTo(now)
@@ -419,7 +421,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("KEY_DATE_ADJUSTMENT_UPSERTED")
     assertThat(event?.bookingId).isEqualTo(434L)
     assertThat(event?.adjustmentId).isEqualTo(987)
@@ -444,7 +446,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("KEY_DATE_ADJUSTMENT_DELETED")
     assertThat(event?.bookingId).isEqualTo(434L)
     assertThat(event?.adjustmentId).isEqualTo(987)
@@ -469,7 +471,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("SENTENCE_ADJUSTMENT_UPSERTED")
     assertThat(event?.bookingId).isEqualTo(434L)
     assertThat(event?.adjustmentId).isEqualTo(987)
@@ -496,7 +498,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("SENTENCE_ADJUSTMENT_DELETED")
     assertThat(event?.bookingId).isEqualTo(434L)
     assertThat(event?.adjustmentId).isEqualTo(987)
@@ -524,7 +526,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("VISIT_CANCELLED")
     assertThat(event?.bookingId).isEqualTo(434L)
     assertThat(event?.eventDatetime).isEqualTo(now)
@@ -551,7 +553,7 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
+    ) as GenericOffenderEvent?
     assertThat(event?.eventType).isEqualTo("OFFENDER_CASE_NOTES-INSERTED")
     assertThat(event?.bookingId).isEqualTo(12345L)
     assertThat(event?.eventDatetime).isEqualTo(now)

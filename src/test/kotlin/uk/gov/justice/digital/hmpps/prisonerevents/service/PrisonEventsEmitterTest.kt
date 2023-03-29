@@ -27,6 +27,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
@@ -62,7 +63,7 @@ class PrisonEventsEmitterTest {
 
   @Test
   fun `will add payload as message`() {
-    val payload = OffenderEvent(
+    val payload = AlertOffenderEvent(
       eventType = "my-event-type",
       alertCode = "alert-code",
       bookingId = 12345L,
@@ -78,7 +79,7 @@ class PrisonEventsEmitterTest {
   @Test
   fun `will add additional fields to JSON payload`() {
     service.sendEvent(
-      OffenderEvent(
+      AlertOffenderEvent(
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
@@ -109,7 +110,7 @@ class PrisonEventsEmitterTest {
     whenever(prisonEventSnsClient.publish(any())).thenReturn(publishResult)
 
     service.sendEvent(
-      OffenderEvent(
+      AlertOffenderEvent(
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
@@ -122,13 +123,10 @@ class PrisonEventsEmitterTest {
       ArgumentMatchers.isNull(),
     )
     assertThat(telemetryAttributesCaptor.value).containsAllEntriesOf(
-      java.util.Map.of(
-        "eventType",
-        "my-event-type",
-        "bookingId",
-        "12345",
-        "alertCode",
-        "alert-code",
+      mapOf(
+        "eventType" to "my-event-type",
+        "bookingId" to "12345",
+        "alertCode" to "alert-code",
       ),
     )
   }
@@ -136,7 +134,7 @@ class PrisonEventsEmitterTest {
   @Test
   fun `will add code`() {
     service.sendEvent(
-      OffenderEvent(
+      AlertOffenderEvent(
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
@@ -171,7 +169,7 @@ class PrisonEventsEmitterTest {
   @Test
   fun `will add event type`() {
     service.sendEvent(
-      OffenderEvent(
+      AlertOffenderEvent(
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
@@ -191,7 +189,7 @@ class PrisonEventsEmitterTest {
   @Test
   fun `will add the date time event is published`() {
     service.sendEvent(
-      OffenderEvent(
+      AlertOffenderEvent(
         eventType = "my-event-type",
         alertCode = "alert-code",
         bookingId = 12345L,
@@ -215,7 +213,7 @@ class PrisonEventsEmitterTest {
 
     assertDoesNotThrow {
       service.sendEvent(
-        OffenderEvent(
+        AlertOffenderEvent(
           eventType = "my-event-type",
           alertCode = "alert-code",
           bookingId = 12345L,
@@ -233,7 +231,7 @@ class PrisonEventsEmitterTest {
 
     assertThatThrownBy {
       service.sendEvent(
-        OffenderEvent(
+        AlertOffenderEvent(
           eventType = "my-event-type",
           alertCode = "alert-code",
           bookingId = 12345L,
@@ -255,13 +253,14 @@ class PrisonEventsEmitterTest {
 
     assertThatThrownBy {
       service.sendEvent(
-        OffenderEvent(
+        AlertOffenderEvent(
           eventType = "my-event-type",
           alertCode = "alert-code",
           bookingId = 12345L,
         ),
       )
-    }.isInstanceOf(RuntimeException::class.java).message().isEqualTo("Attempt to publish message my-event-type resulted in an http 500 error")
+    }.isInstanceOf(RuntimeException::class.java).message()
+      .isEqualTo("Attempt to publish message my-event-type resulted in an http 500 error")
 
     verify(telemetryClient, never()).trackEvent(eq("my-event-type"), any(), isNull())
     verify(telemetryClient).trackEvent(eq("my-event-type_FAILED"), any(), isNull())
