@@ -12,9 +12,11 @@ import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
+import org.mockito.kotlin.check
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer
 
@@ -44,7 +46,7 @@ class JMSReceiverTest {
   @Test
   fun `will get message`() {
     whenever(xtagEventsService.addAdditionalEventData(any()))
-      .thenReturn(OffenderEvent(eventId = "abc"))
+      .thenReturn(GenericOffenderEvent(eventId = "abc"))
 
     val message = AQjmsMapMessage().apply {
       this.setString("p_offender_book_id", "12345")
@@ -54,7 +56,11 @@ class JMSReceiverTest {
     service.onMessage(message)
 
     verify(xtagEventsService).addAdditionalEventData(captor.capture())
-    verify(eventsEmitter).sendEvent(OffenderEvent(eventId = "abc"))
+    verify(eventsEmitter).sendEvent(
+      check<GenericOffenderEvent> {
+        assertThat(it.eventId).isEqualTo("abc")
+      },
+    )
 
     assertThat(captor.value.eventType).isEqualTo("test")
   }

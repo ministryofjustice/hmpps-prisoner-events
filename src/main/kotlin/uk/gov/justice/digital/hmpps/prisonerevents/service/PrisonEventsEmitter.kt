@@ -10,6 +10,8 @@ import com.fasterxml.jackson.module.kotlin.convertValue
 import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
@@ -81,10 +83,10 @@ class PrisonEventsEmitter(
   }
 
   private fun buildOptionalCode(payload: OffenderEvent): String? =
-    if (payload.alertCode != null) {
+    if (payload is AlertOffenderEvent) {
       payload.alertCode
-    } else if (payload.movementType != null) {
-      payload.movementType + "-" + payload.directionCode
+    } else if (payload is ExternalMovementOffenderEvent) {
+      "${payload.movementType}-${payload.directionCode}"
     } else {
       null
     }

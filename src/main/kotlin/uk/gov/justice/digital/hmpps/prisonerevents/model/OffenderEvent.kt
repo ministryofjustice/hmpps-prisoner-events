@@ -5,10 +5,73 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class OffenderEvent(
-  val eventId: String? = null,
+open class OffenderEvent(
   val eventType: String? = null,
   val eventDatetime: LocalDateTime? = null,
+  val bookingId: Long? = null,
+  val offenderId: Long? = null,
+  var offenderIdDisplay: String? = null,
+  val nomisEventType: String? = null,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class AlertOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+
+  val rootOffenderId: Long? = null,
+  val alertSeq: Long? = null,
+  val alertDateTime: LocalDateTime? = null,
+  val alertType: String? = null,
+  val alertCode: String?,
+  val expiryDateTime: LocalDateTime? = null,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class ExternalMovementOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+
+  val movementSeq: Long?,
+  var movementDateTime: LocalDateTime?,
+  var movementType: String?,
+  val movementReasonCode: String?,
+  var directionCode: String?,
+  val escortCode: String?,
+  var fromAgencyLocationId: String?,
+  var toAgencyLocationId: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class GenericOffenderEvent(
+  eventType: String? = null,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+
+  val eventId: String? = null,
   val scheduleEventId: Long? = null,
   val scheduledStartTime: LocalDateTime? = null,
   val scheduledEndTime: LocalDateTime? = null,
@@ -18,22 +81,14 @@ data class OffenderEvent(
   val scheduleEventStatus: String? = null,
   val recordDeleted: Boolean? = null,
   val rootOffenderId: Long? = null,
-  val offenderId: Long? = null,
   val aliasOffenderId: Long? = null,
   val previousOffenderId: Long? = null,
-  var offenderIdDisplay: String? = null,
-  val bookingId: Long? = null,
   val bookingNumber: String? = null,
   val previousBookingNumber: String? = null,
   val sanctionSeq: Long? = null,
   val movementSeq: Long? = null,
   val imprisonmentStatusSeq: Long? = null,
   val assessmentSeq: Long? = null,
-  val alertSeq: Long? = null,
-  val alertDateTime: LocalDateTime? = null,
-  val alertType: String? = null,
-  val alertCode: String? = null,
-  val expiryDateTime: LocalDateTime? = null,
   val caseNoteId: Long? = null,
   val agencyLocationId: String? = null,
   val riskPredictorId: Long? = null,
@@ -70,15 +125,6 @@ data class OffenderEvent(
   val bedAssignmentSeq: Int? = null,
   val livingUnitId: Long? = null,
 
-  // external movement event data
-  var movementDateTime: LocalDateTime? = null,
-  var movementType: String? = null,
-  val movementReasonCode: String? = null,
-  var directionCode: String? = null,
-  val escortCode: String? = null,
-  var fromAgencyLocationId: String? = null,
-  var toAgencyLocationId: String? = null,
-
   // iep data
   val iepSeq: Long? = null,
   val iepLevel: String? = null,
@@ -86,7 +132,6 @@ data class OffenderEvent(
   // visit data
   val visitId: Long? = null,
 
-  val nomisEventType: String? = null,
   val auditModuleName: String? = null,
 
   val caseNoteType: String? = null,
@@ -94,4 +139,11 @@ data class OffenderEvent(
 
   // sentence and key date adjustments
   val adjustmentId: Long? = null,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
 )

@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 
@@ -21,17 +22,20 @@ class XtagEventsService(
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromBooking(oe.bookingId!!)
           .firstOrNull()
 
-      "EXTERNAL_MOVEMENT_RECORD-INSERTED" -> sqlRepository.getMovement(oe.bookingId!!, oe.movementSeq!!.toInt())
-        .firstOrNull()
-        ?.apply {
-          oe.offenderIdDisplay = this.offenderNo
-          oe.fromAgencyLocationId = this.fromAgency
-          oe.toAgencyLocationId = this.toAgency
-          oe.directionCode = this.directionCode
-          oe.movementDateTime =
-            if (this.movementTime != null && this.movementDate != null) this.movementTime.atDate(this.movementDate) else null
-          oe.movementType = this.movementType
-        }
+      "EXTERNAL_MOVEMENT_RECORD-INSERTED" -> {
+        oe as ExternalMovementOffenderEvent
+        sqlRepository.getMovement(oe.bookingId!!, oe.movementSeq!!.toInt())
+          .firstOrNull()
+          ?.apply {
+            oe.offenderIdDisplay = this.offenderNo
+            oe.fromAgencyLocationId = this.fromAgency
+            oe.toAgencyLocationId = this.toAgency
+            oe.directionCode = this.directionCode
+            oe.movementDateTime =
+              if (this.movementTime != null && this.movementDate != null) this.movementTime.atDate(this.movementDate) else null
+            oe.movementType = this.movementType
+          }
+      }
     }
     return oe
   }
