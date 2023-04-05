@@ -5,6 +5,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.externalMovementEventOf
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.localDateOf
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.localDateTimeOf
@@ -610,6 +615,201 @@ class OffenderEventsTransformerTest {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
+    }
+  }
+
+  @Test
+  fun `non-association changes mapped correctly`() {
+    with(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFF_NON_ASSOC-UPDATED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id_display" to "A123BC",
+              "p_ns_offender_id_display" to "G4567DE",
+              "p_offender_book_id" to "12345",
+              "p_ns_offender_book_id" to "67890",
+              "p_ns_reason_code" to "REASON",
+              "p_ns_level_code" to "LEVEL",
+              "p_internal_location_flag" to "N",
+              "p_transport_flag" to "TRANS",
+              "p_recip_ns_reason_code" to "RECIP_REASON",
+            ),
+          ),
+        ),
+      )!!,
+    ) {
+      this as NonAssociationOffenderEvent
+      assertThat(eventType).isEqualTo("NON_ASSOCIATION-UPSERTED")
+      assertThat(nomisEventType).isEqualTo("OFF_NON_ASSOC-UPDATED")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345L)
+      assertThat(nsOffenderIdDisplay).isEqualTo("G4567DE")
+      assertThat(nsBookingId).isEqualTo(67890L)
+      assertThat(reasonCode).isEqualTo("REASON")
+      assertThat(levelCode).isEqualTo("LEVEL")
+      assertThat(internalLocationFlag).isEqualTo("N")
+      assertThat(transportFlag).isEqualTo("TRANS")
+      assertThat(recipNsReasonCode).isEqualTo("RECIP_REASON")
+    }
+  }
+
+  @Test
+  fun `non-association detail changes mapped correctly`() {
+    with(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFF_NA_DETAILS_ASSOC-UPDATED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id_display" to "A123BC",
+              "p_ns_offender_id_display" to "G4567DE",
+              "p_offender_book_id" to "12345",
+              "p_ns_offender_book_id" to "67890",
+              "p_type_seq" to "12",
+              "p_ns_reason_code" to "REASON",
+              "p_ns_level_code" to "LEVEL",
+              "p_ns_type" to "TYPE",
+              "p_ns_effective_date" to "12-AUG-2022",
+              "p_ns_expiry_date" to "2023-03-31",
+              "p_authorized_staff" to "staff 1",
+              "p_comment_text" to "comment",
+            ),
+          ),
+        ),
+      )!!,
+    ) {
+      this as NonAssociationDetailsOffenderEvent
+      assertThat(eventType).isEqualTo("NON_ASSOCIATION_DETAIL-UPSERTED")
+      assertThat(nomisEventType).isEqualTo("OFF_NA_DETAILS_ASSOC-UPDATED")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345L)
+      assertThat(nsOffenderIdDisplay).isEqualTo("G4567DE")
+      assertThat(nsBookingId).isEqualTo(67890L)
+      assertThat(typeSeq).isEqualTo(12L)
+      assertThat(reasonCode).isEqualTo("REASON")
+      assertThat(levelCode).isEqualTo("LEVEL")
+      assertThat(nsType).isEqualTo("TYPE")
+      assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
+      assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
+      assertThat(authorizedBy).isEqualTo("staff 1")
+      assertThat(comment).isEqualTo("comment")
+    }
+  }
+
+  @Test
+  fun `restriction changes mapped correctly`() {
+    with(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFF_RESTRICTS-UPDATED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id_display" to "A123BC",
+              "p_offender_book_id" to "12345",
+              "p_offender_restriction_id" to "12345678900",
+              "p_restriction_type" to "TYPE",
+              "p_effective_date" to "12-AUG-2022",
+              "p_expiry_date" to "2023-03-31",
+              "p_authorised_staff_id" to "12345",
+              "p_comment_text" to "comment",
+              "p_entered_staff_id" to "23456",
+            ),
+          ),
+        ),
+      )!!,
+    ) {
+      this as RestrictionOffenderEvent
+      assertThat(eventType).isEqualTo("RESTRICTION-UPSERTED")
+      assertThat(nomisEventType).isEqualTo("OFF_RESTRICTS-UPDATED")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345L)
+      assertThat(restrictionId).isEqualTo(12345678900L)
+      assertThat(restrictionType).isEqualTo("TYPE")
+      assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
+      assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
+      assertThat(comment).isEqualTo("comment")
+      assertThat(authorisedBy).isEqualTo(12345L)
+      assertThat(enteredBy).isEqualTo(23456L)
+    }
+  }
+
+  @Test
+  fun `restriction person changes mapped correctly`() {
+    with(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFF_PERS_RESTRICTS-UPDATED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_offender_contact_person_id" to "1234567",
+              "p_offender_person_restrict_id" to "2345678",
+              "p_restriction_type" to "TYPE",
+              "p_restriction_effective_date" to "12-AUG-2022",
+              "p_restriction_expiry_date" to "2023-03-31",
+              "p_authorized_staff_id" to "12345",
+              "p_comment_text" to "comment",
+              "p_entered_staff_id" to "23456",
+            ),
+          ),
+        ),
+      )!!,
+    ) {
+      this as PersonRestrictionOffenderEvent
+      assertThat(eventType).isEqualTo("PERSON_RESTRICTION-UPSERTED")
+      assertThat(nomisEventType).isEqualTo("OFF_PERS_RESTRICTS-UPDATED")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(contactPersonId).isEqualTo(1234567L)
+      assertThat(restrictionId).isEqualTo(2345678L)
+      assertThat(restrictionType).isEqualTo("TYPE")
+      assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
+      assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
+      assertThat(comment).isEqualTo("comment")
+      assertThat(authorisedBy).isEqualTo(12345L)
+      assertThat(enteredBy).isEqualTo(23456L)
+    }
+  }
+
+  @Test
+  fun `restriction visitor mapped correctly`() {
+    with(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "VISITOR_RESTRICTS-UPDATED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id_display" to "A123BC",
+              "p_person_id" to "12345",
+              "p_visit_restriction_type" to "TYPE",
+              "p_effective_date" to "12-AUG-2022",
+              "p_expiry_date" to "2023-03-31",
+              "p_comment_txt" to "comment",
+              "p_visitor_restriction_id" to "123456",
+              "p_entered_staff_id" to "23456",
+            ),
+          ),
+        ),
+      )!!,
+    ) {
+      this as VisitorRestrictionOffenderEvent
+      assertThat(eventType).isEqualTo("VISITOR_RESTRICTION-UPSERTED")
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(personId).isEqualTo(12345)
+      assertThat(restrictionType).isEqualTo("TYPE")
+      assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
+      assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
+      assertThat(comment).isEqualTo("comment")
+      assertThat(visitorRestrictionId).isEqualTo(123456)
+      assertThat(enteredBy).isEqualTo(23456)
     }
   }
 }
