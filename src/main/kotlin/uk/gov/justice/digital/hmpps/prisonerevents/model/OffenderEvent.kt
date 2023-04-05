@@ -105,7 +105,7 @@ class NonAssociationDetailsOffenderEvent(
   val typeSeq: Int?,
   val effectiveDate: LocalDate?,
   val expiryDate: LocalDate?,
-  val authorizedBy: String?,
+  val authorisedBy: String?,
   val comment: String?,
 ) : NonAssociationOffenderEvent(
   eventType = eventType,
@@ -135,8 +135,8 @@ open class RestrictionOffenderEvent(
   val effectiveDate: LocalDate?,
   val expiryDate: LocalDate?,
   var comment: String?,
-  val authorisedBy: Long?,
-  var enteredBy: Long?,
+  val authorisedById: Long?,
+  var enteredById: Long?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
@@ -167,9 +167,9 @@ class PersonRestrictionOffenderEvent(
   restrictionType = restrictionType,
   effectiveDate = effectiveDate,
   expiryDate = expiryDate,
-  authorisedBy = authorizedBy,
+  authorisedById = authorizedBy,
   comment = comment,
-  enteredBy = enteredBy,
+  enteredById = enteredBy,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

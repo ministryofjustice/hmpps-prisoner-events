@@ -856,7 +856,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     nsType = xtag.content.p_ns_type,
     effectiveDate = localDateOf(xtag.content.p_ns_effective_date),
     expiryDate = localDateOf(xtag.content.p_ns_expiry_date),
-    authorizedBy = xtag.content.p_authorized_staff,
+    authorisedBy = xtag.content.p_authorized_staff,
     comment = xtag.content.p_comment_text,
   )
 
@@ -871,8 +871,8 @@ class OffenderEventsTransformer @Autowired constructor() {
     effectiveDate = localDateOf(xtag.content.p_effective_date),
     expiryDate = localDateOf(xtag.content.p_expiry_date),
     comment = xtag.content.p_comment_text,
-    authorisedBy = xtag.content.p_authorised_staff_id?.toLong(),
-    enteredBy = xtag.content.p_entered_staff_id?.toLong(),
+    authorisedById = xtag.content.p_authorised_staff_id?.toLong(),
+    enteredById = xtag.content.p_entered_staff_id?.toLong(),
   )
 
   private fun restrictionPersonEventOf(xtag: Xtag) = PersonRestrictionOffenderEvent(

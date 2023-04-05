@@ -697,7 +697,7 @@ class OffenderEventsTransformerTest {
       assertThat(nsType).isEqualTo("TYPE")
       assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
-      assertThat(authorizedBy).isEqualTo("staff 1")
+      assertThat(authorisedBy).isEqualTo("staff 1")
       assertThat(comment).isEqualTo("comment")
     }
   }
@@ -736,8 +736,8 @@ class OffenderEventsTransformerTest {
       assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
       assertThat(comment).isEqualTo("comment")
-      assertThat(authorisedBy).isEqualTo(12345L)
-      assertThat(enteredBy).isEqualTo(23456L)
+      assertThat(authorisedById).isEqualTo(12345L)
+      assertThat(enteredById).isEqualTo(23456L)
     }
   }
 
@@ -773,8 +773,8 @@ class OffenderEventsTransformerTest {
       assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
       assertThat(comment).isEqualTo("comment")
-      assertThat(authorisedBy).isEqualTo(12345L)
-      assertThat(enteredBy).isEqualTo(23456L)
+      assertThat(authorisedById).isEqualTo(12345L)
+      assertThat(enteredById).isEqualTo(23456L)
     }
   }
 
@@ -802,6 +802,7 @@ class OffenderEventsTransformerTest {
     ) {
       this as VisitorRestrictionOffenderEvent
       assertThat(eventType).isEqualTo("VISITOR_RESTRICTION-UPSERTED")
+      assertThat(nomisEventType).isEqualTo("VISITOR_RESTRICTS-UPDATED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(personId).isEqualTo(12345)
       assertThat(restrictionType).isEqualTo("TYPE")
