@@ -8,7 +8,12 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.Xtag
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.XtagContent
 import java.time.LocalDate
@@ -152,6 +157,13 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFFENDER_CASE_NOTES-UPDATED",
         "OFFENDER_CASE_NOTES-DELETED",
         -> caseNotesEventOf(xtag)
+
+        "OFF_NON_ASSOC-UPDATED" -> nonAssociationEventOf(xtag)
+        "OFF_NA_DETAILS_ASSOC-UPDATED" -> nonAssociationDetailsEventOf(xtag)
+
+        "OFF_RESTRICTS-UPDATED" -> restrictionEventOf(xtag)
+        "OFF_PERS_RESTRICTS-UPDATED" -> restrictionPersonEventOf(xtag)
+        "VISITOR_RESTRICTS-UPDATED" -> visitorRestrictionEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -813,6 +825,82 @@ class OffenderEventsTransformer @Autowired constructor() {
     caseNoteType = xtag.content.p_case_note_type,
     caseNoteSubType = xtag.content.p_case_note_sub_type,
     recordDeleted = "Y".equals(xtag.content.p_delete_flag),
+  )
+
+  private fun nonAssociationEventOf(xtag: Xtag) = NonAssociationOffenderEvent(
+    eventType = "NON_ASSOCIATION-" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    nsOffenderIdDisplay = xtag.content.p_ns_offender_id_display,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    nsBookingId = xtag.content.p_ns_offender_book_id?.toLong(),
+    reasonCode = xtag.content.p_ns_reason_code,
+    levelCode = xtag.content.p_ns_level_code,
+    internalLocationFlag = xtag.content.p_internal_location_flag,
+    transportFlag = xtag.content.p_transport_flag,
+    recipNsReasonCode = xtag.content.p_recip_ns_reason_code,
+  )
+
+  private fun nonAssociationDetailsEventOf(xtag: Xtag) = NonAssociationDetailsOffenderEvent(
+    eventType = "NON_ASSOCIATION_DETAIL-" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    nsOffenderIdDisplay = xtag.content.p_ns_offender_id_display,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    nsBookingId = xtag.content.p_ns_offender_book_id?.toLong(),
+    typeSeq = xtag.content.p_type_seq?.toInt(),
+    reasonCode = xtag.content.p_ns_reason_code,
+    levelCode = xtag.content.p_ns_level_code,
+    nsType = xtag.content.p_ns_type,
+    effectiveDate = localDateOf(xtag.content.p_ns_effective_date),
+    expiryDate = localDateOf(xtag.content.p_ns_expiry_date),
+    authorisedBy = xtag.content.p_authorized_staff,
+    comment = xtag.content.p_comment_text,
+  )
+
+  private fun restrictionEventOf(xtag: Xtag) = RestrictionOffenderEvent(
+    eventType = "RESTRICTION-" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    restrictionId = xtag.content.p_offender_restriction_id?.toLong(),
+    restrictionType = xtag.content.p_restriction_type,
+    effectiveDate = localDateOf(xtag.content.p_effective_date),
+    expiryDate = localDateOf(xtag.content.p_expiry_date),
+    comment = xtag.content.p_comment_text,
+    authorisedById = xtag.content.p_authorised_staff_id?.toLong(),
+    enteredById = xtag.content.p_entered_staff_id?.toLong(),
+  )
+
+  private fun restrictionPersonEventOf(xtag: Xtag) = PersonRestrictionOffenderEvent(
+    eventType = "PERSON_RESTRICTION-" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    contactPersonId = xtag.content.p_offender_contact_person_id?.toLong(),
+    restrictionId = xtag.content.p_offender_person_restrict_id?.toLong(),
+    restrictionType = xtag.content.p_restriction_type,
+    effectiveDate = localDateOf(xtag.content.p_restriction_effective_date),
+    expiryDate = localDateOf(xtag.content.p_restriction_expiry_date),
+    authorizedBy = xtag.content.p_authorized_staff_id?.toLong(),
+    comment = xtag.content.p_comment_text,
+    enteredBy = xtag.content.p_entered_staff_id?.toLong(),
+  )
+
+  private fun visitorRestrictionEventOf(xtag: Xtag) = VisitorRestrictionOffenderEvent(
+    eventType = "VISITOR_RESTRICTION-" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    personId = xtag.content.p_person_id?.toLong(),
+    restrictionType = xtag.content.p_visit_restriction_type,
+    effectiveDate = localDateOf(xtag.content.p_effective_date),
+    expiryDate = localDateOf(xtag.content.p_expiry_date),
+    comment = xtag.content.p_comment_txt,
+    visitorRestrictionId = xtag.content.p_visitor_restriction_id?.toLong(),
+    enteredBy = xtag.content.p_entered_staff_id?.toLong(),
   )
 
   companion object {

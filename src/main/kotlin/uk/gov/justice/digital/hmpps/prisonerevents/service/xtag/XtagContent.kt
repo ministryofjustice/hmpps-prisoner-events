@@ -97,5 +97,35 @@ class XtagContent(private val map: Map<String, String>) {
   val p_offender_key_date_adjust_id by m
   val p_offender_sentence_adjust_id by m
 
+  val p_ns_offender_id_display by m
+  val p_ns_offender_book_id by m
+  val p_ns_reason_code by m
+  val p_ns_level_code by m
+  val p_internal_location_flag by m
+  val p_transport_flag by m
+  val p_recip_ns_reason_code by m
+  val p_ns_type by m
+  val p_type_seq by m
+  val p_ns_effective_date by m
+  val p_ns_expiry_date by m
+  val p_authorized_staff by m
+  val p_comment_text by m
+  val p_comment_txt by m
+
+  val p_offender_restriction_id by m
+  val p_restriction_type by m
+  val p_effective_date by m
+  val p_authorised_staff_id by m
+  val p_authorized_staff_id by m
+  val p_entered_staff_id by m
+
+  val p_offender_contact_person_id by m
+  val p_offender_person_restrict_id by m
+  val p_restriction_effective_date by m
+  val p_restriction_expiry_date by m
+
+  val p_visit_restriction_type by m
+  val p_visitor_restriction_id by m
+
   override fun toString(): String = map.toString()
 }
