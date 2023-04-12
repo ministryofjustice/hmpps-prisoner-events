@@ -866,7 +866,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     nomisEventType = xtag.eventType,
     offenderIdDisplay = xtag.content.p_offender_id_display,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
-    restrictionId = xtag.content.p_offender_restriction_id?.toLong(),
+    offenderRestrictionId = xtag.content.p_offender_restriction_id?.toLong(),
     restrictionType = xtag.content.p_restriction_type,
     effectiveDate = localDateOf(xtag.content.p_effective_date),
     expiryDate = localDateOf(xtag.content.p_expiry_date),
@@ -880,13 +880,13 @@ class OffenderEventsTransformer @Autowired constructor() {
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
     contactPersonId = xtag.content.p_offender_contact_person_id?.toLong(),
-    restrictionId = xtag.content.p_offender_person_restrict_id?.toLong(),
+    offenderPersonRestrictionId = xtag.content.p_offender_person_restrict_id?.toLong(),
     restrictionType = xtag.content.p_restriction_type,
     effectiveDate = localDateOf(xtag.content.p_restriction_effective_date),
     expiryDate = localDateOf(xtag.content.p_restriction_expiry_date),
-    authorizedBy = xtag.content.p_authorized_staff_id?.toLong(),
+    authorisedById = xtag.content.p_authorized_staff_id?.toLong(),
     comment = xtag.content.p_comment_text,
-    enteredBy = xtag.content.p_entered_staff_id?.toLong(),
+    enteredById = xtag.content.p_entered_staff_id?.toLong(),
   )
 
   private fun visitorRestrictionEventOf(xtag: Xtag) = VisitorRestrictionOffenderEvent(
@@ -900,7 +900,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     expiryDate = localDateOf(xtag.content.p_expiry_date),
     comment = xtag.content.p_comment_txt,
     visitorRestrictionId = xtag.content.p_visitor_restriction_id?.toLong(),
-    enteredBy = xtag.content.p_entered_staff_id?.toLong(),
+    enteredById = xtag.content.p_entered_staff_id?.toLong(),
   )
 
   companion object {
