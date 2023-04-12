@@ -70,8 +70,7 @@ class XtagEventsServiceTest {
         escortCode = null,
         fromAgencyLocationId = null,
         toAgencyLocationId = null,
-
-        ),
+      ),
     ) as ExternalMovementOffenderEvent?
 
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
@@ -184,7 +183,8 @@ class XtagEventsServiceTest {
     whenever(repository.getNomsIdFromRestriction(1234L)).thenReturn(listOf("A2345GB"))
 
     val offenderEvent = service.addAdditionalEventData(
-      PersonRestrictionOffenderEvent(offenderPersonRestrictionId = 1234L,
+      PersonRestrictionOffenderEvent(
+        offenderPersonRestrictionId = 1234L,
         eventType = "PERSON_RESTRICTION-UPSERTED",
         eventDatetime = LocalDateTime.now(),
         nomisEventType = "OFF_PERSON",
