@@ -47,6 +47,13 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     }
   }
 
+  fun getNomsIdFromRestriction(offenderPersonRestrictId: Long): Collection<String> {
+    return jdbcTemplate.query(
+      GET_NOMS_ID_FROM_RESTRICTION,
+      MapSqlParameterSource().addValue("offenderPersonRestrictId", offenderPersonRestrictId),
+    ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
+  }
+
   fun getExceptionMessageIds(): List<String> =
     jdbcTemplate.query(GET_EXCEPTION_MESSAGES) { resultSet: ResultSet, _: Int ->
       resultSet.getBytes("MSGID").let {
@@ -88,6 +95,15 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         INNER JOIN OFFENDERS            ON OFFENDERS.OFFENDER_ID = OB.OFFENDER_ID
       WHERE OEM.MOVEMENT_SEQ = :sequenceNumber
       AND OEM.OFFENDER_BOOK_ID = :bookingId
+    """.trimIndent()
+
+    val GET_NOMS_ID_FROM_RESTRICTION = """
+      SELECT OFFENDER_ID_DISPLAY
+      FROM OFFENDER_BOOKINGS
+        INNER JOIN OFFENDERS ON OFFENDER_BOOKINGS.OFFENDER_ID = OFFENDERS.OFFENDER_ID
+        JOIN OFFENDER_CONTACT_PERSONS ON OFFENDER_CONTACT_PERSONS.OFFENDER_BOOK_ID = OFFENDER_BOOKINGS.OFFENDER_BOOK_ID
+        JOIN OFFENDER_PERSON_RESTRICTS ON OFFENDER_PERSON_RESTRICTS.OFFENDER_CONTACT_PERSON_ID = OFFENDER_CONTACT_PERSONS.OFFENDER_CONTACT_PERSON_ID
+        WHERE OFFENDER_PERSON_RESTRICTS.OFFENDER_PERSON_RESTRICT_ID = :offenderPersonRestrictId
     """.trimIndent()
 
     val GET_EXCEPTION_MESSAGES = """

@@ -1,0 +1,38 @@
+<h3>Generate events for the offender changes in prison</h3>
+<p>Background service which controls dequeuing and publishing NOMIS events to the <b>offender-events</b> (Prison Events) topic indicating a change to an offender etc. in prison</p>
+<p>
+    Events are generated when this service detects a change in NOMIS via database triggers.
+</p>
+<p>
+  The events published to the <b>offender-events</b> topic tend to be events closely related the database tables that have been updated and are often fine grained.
+</p>
+<h4>Prison specific events - <b>offender-events</b> topic</h4>
+
+
+TODO: add appinsights query to get list of events
+
+
+<div>
+    <p>
+      Meta data about the event included as a SQS Message Attribute is as follows:
+      <ul>
+        <li><b>eventType</b> see below for all event types - this is also included in the message</li>
+        <li><b>code</b> optional code that represents either the Alert Code for alerts of the movement Type with direction for events that contain movements</li>
+        <li><b>publishedAt</b> the zoned timestamp when this events was published e.g 2020-12-04T10:42:43+01:00, 2020-12-04T10:42:43Z</li>
+      </ul>
+    </p>
+</div>
+
+<h3>Topic subscription</h3>
+<p>Clients are expected to use a SQS AWS queue to receive events with queue subscribed to <b>prison-events-topic</b> or <b>hmpps-domain-topic</b> or both. </p>
+<p>Clients can subscribe to one or more events. A typical subscription could be:</p>
+<pre>
+    resource "aws_sns_topic_subscription" "my_probation_subscription" {
+    provider      = aws.london
+    topic_arn     = module.hmpps-domain-events.topic_arn
+    protocol      = "sqs"
+    endpoint      = module.my_queue.sqs_arn
+    filter_policy = "{\"eventType\":[ \"prison-offender-events.prisoner.released\", \"prison-offender-events.prisoner.receive\", \"prison-offender-events.prisoner.merged\"] }"
+    }
+</pre>
+<p>and this would be defined in the Cloud Platform offender-events namespace for <b>offender_events</b></p>

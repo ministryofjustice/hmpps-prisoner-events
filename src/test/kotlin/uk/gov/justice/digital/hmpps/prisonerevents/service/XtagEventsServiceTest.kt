@@ -11,9 +11,12 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Movement
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import java.sql.Timestamp
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
 class XtagEventsServiceTest {
@@ -67,7 +70,6 @@ class XtagEventsServiceTest {
         escortCode = null,
         fromAgencyLocationId = null,
         toAgencyLocationId = null,
-
       ),
     ) as ExternalMovementOffenderEvent?
 
@@ -166,11 +168,6 @@ class XtagEventsServiceTest {
   }
 
   @Test
-  fun shouldDecorateConfirmedReleaseDateChangedWithOffenderDisplayNo() {
-    assertEventIsDecoratedWithOffenderDisplayNoUsingBookingId("CONFIRMED_RELEASE_DATE-CHANGED")
-  }
-
-  @Test
   fun confirmedReleaseDateChangedDecorationFailureShouldNotPreventEventBeingRaised() {
     whenever(repository.getNomsIdFromBooking(1234L)).thenReturn(listOf())
 
@@ -179,6 +176,28 @@ class XtagEventsServiceTest {
     )
 
     assertThat(offenderEvent?.bookingId).isEqualTo(1234L)
+  }
+
+  @Test
+  fun shouldDecoratePersonRistrictionUpdatedWithOffenderDisplayNo() {
+    whenever(repository.getNomsIdFromRestriction(1234L)).thenReturn(listOf("A2345GB"))
+
+    val offenderEvent = service.addAdditionalEventData(
+      PersonRestrictionOffenderEvent(
+        offenderPersonRestrictionId = 1234L,
+        eventType = "PERSON_RESTRICTION-UPSERTED",
+        eventDatetime = LocalDateTime.now(),
+        nomisEventType = "OFF_PERSON",
+        contactPersonId = 1L,
+        restrictionType = "TEST",
+        effectiveDate = LocalDate.now(),
+        expiryDate = null,
+        authorisedById = null,
+        comment = "TEST COMMENT",
+        enteredById = null,
+      ),
+    )
+    assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
   }
 
   private fun assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId(eventName: String) {

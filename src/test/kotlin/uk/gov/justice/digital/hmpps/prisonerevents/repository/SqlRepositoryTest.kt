@@ -19,6 +19,8 @@ class SqlRepositoryTest : IntegrationTestBase() {
 
   @BeforeEach
   fun setup() {
+    jdbcTemplate.update("delete from OFFENDER_PERSON_RESTRICTS")
+    jdbcTemplate.update("delete from OFFENDER_CONTACT_PERSONS")
     jdbcTemplate.update("delete from OFFENDER_EXTERNAL_MOVEMENTS")
     jdbcTemplate.update("delete from OFFENDER_BOOKINGS")
     jdbcTemplate.update("delete from OFFENDERS")
@@ -68,6 +70,20 @@ class SqlRepositoryTest : IntegrationTestBase() {
     assertThat(data).hasSize(1)
 
     assertThat(repository.getMovement(2468L, 5)).isEmpty()
+  }
+
+  @Test
+  fun getNomisIdFromRestrictions() {
+    seedOffenders()
+    seedBookings()
+    seedOffenderContactPersons()
+    seedOffenderPersonRestricts()
+
+    val data = repository.getNomsIdFromRestriction(10000L)
+    assertThat(data.first()).isEqualTo("A1234AA")
+    assertThat(data).hasSize(1)
+
+    assertThat(repository.getNomsIdFromRestriction(999L)).isEmpty()
   }
 
   private fun seedOffenders() {
@@ -131,6 +147,39 @@ class SqlRepositoryTest : IntegrationTestBase() {
           'BBB',
           'OUT',
           'TRN')""",
+    )
+  }
+
+  private fun seedOffenderContactPersons() {
+    jdbcTemplate.update(
+      """insert into OFFENDER_CONTACT_PERSONS(
+          OFFENDER_BOOK_ID,
+          PERSON_ID,
+          CONTACT_TYPE,
+          RELATIONSHIP_TYPE,
+          OFFENDER_CONTACT_PERSON_ID
+        ) values (
+          1234,
+          100,
+          'S',
+          'BRO',
+          1000)""",
+    )
+  }
+
+  private fun seedOffenderPersonRestricts() {
+    jdbcTemplate.update(
+      """insert into OFFENDER_PERSON_RESTRICTS(
+          OFFENDER_CONTACT_PERSON_ID,
+          OFFENDER_PERSON_RESTRICT_ID,
+          RESTRICTION_TYPE,
+          RESTRICTION_EFFECTIVE_DATE
+        ) values (
+          1000,
+          10000,
+          'BAN',
+          TO_DATE('2022/08/15', 'YYYY/MM/DD')
+        )""",
     )
   }
 }

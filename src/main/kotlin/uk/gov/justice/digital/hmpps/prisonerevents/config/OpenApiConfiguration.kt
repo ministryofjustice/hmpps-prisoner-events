@@ -32,7 +32,7 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
     .info(
       Info().title("HMPPS Prisoner Events API")
         .version(version)
-        .description("Controls dequeuing and publishing NOMIS events to the Prisoner Events topic")
+        .description(javaClass.getResource("/swagger-description.html")!!.readText())
         .contact(Contact().name("HMPPS Digital Studio").email("feedback@digital.justice.gov.uk")),
     )
     .components(
