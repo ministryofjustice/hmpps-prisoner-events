@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
-import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
@@ -158,7 +157,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFFENDER_CASE_NOTES-DELETED",
         -> caseNotesEventOf(xtag)
 
-        "OFF_NON_ASSOC-UPDATED" -> nonAssociationEventOf(xtag)
+        "OFF_NON_ASSOC-UPDATED" -> null // Redundant as only happens with a corresponding OFF_NA_DETAILS_ASSOC-UPDATED event
         "OFF_NA_DETAILS_ASSOC-UPDATED" -> nonAssociationDetailsEventOf(xtag)
 
         "OFF_RESTRICTS-UPDATED" -> restrictionEventOf(xtag)
@@ -825,21 +824,6 @@ class OffenderEventsTransformer @Autowired constructor() {
     caseNoteType = xtag.content.p_case_note_type,
     caseNoteSubType = xtag.content.p_case_note_sub_type,
     recordDeleted = "Y".equals(xtag.content.p_delete_flag),
-  )
-
-  private fun nonAssociationEventOf(xtag: Xtag) = NonAssociationOffenderEvent(
-    eventType = "NON_ASSOCIATION-" + if (xtag.content.p_delete_flag == "Y") "DELETED" else "UPSERTED",
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-    offenderIdDisplay = xtag.content.p_offender_id_display,
-    nsOffenderIdDisplay = xtag.content.p_ns_offender_id_display,
-    bookingId = xtag.content.p_offender_book_id?.toLong(),
-    nsBookingId = xtag.content.p_ns_offender_book_id?.toLong(),
-    reasonCode = xtag.content.p_ns_reason_code,
-    levelCode = xtag.content.p_ns_level_code,
-    internalLocationFlag = xtag.content.p_internal_location_flag,
-    transportFlag = xtag.content.p_transport_flag,
-    recipNsReasonCode = xtag.content.p_recip_ns_reason_code,
   )
 
   private fun nonAssociationDetailsEventOf(xtag: Xtag) = NonAssociationDetailsOffenderEvent(

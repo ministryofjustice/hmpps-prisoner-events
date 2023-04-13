@@ -63,7 +63,7 @@ class ExternalMovementOffenderEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-open class NonAssociationOffenderEvent(
+class NonAssociationDetailsOffenderEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
   bookingId: Long?,
@@ -73,10 +73,14 @@ open class NonAssociationOffenderEvent(
   val nsOffenderIdDisplay: String?,
   val nsBookingId: Long?,
   val reasonCode: String?,
-  val levelCode: String?,
-  val internalLocationFlag: String?,
-  val transportFlag: String?,
-  val recipNsReasonCode: String?,
+  val levelCode: String? = null,
+
+  val nsType: String?,
+  val typeSeq: Int?,
+  val effectiveDate: LocalDate?,
+  val expiryDate: LocalDate?,
+  val authorisedBy: String?,
+  val comment: String?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
@@ -86,44 +90,7 @@ open class NonAssociationOffenderEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class NonAssociationDetailsOffenderEvent(
-  eventType: String?,
-  eventDatetime: LocalDateTime?,
-  bookingId: Long?,
-  offenderIdDisplay: String?,
-  nomisEventType: String?,
-
-  nsOffenderIdDisplay: String?,
-  nsBookingId: Long?,
-  reasonCode: String?,
-  levelCode: String? = null,
-  internalLocationFlag: String? = null,
-  transportFlag: String? = null,
-  recipNsReasonCode: String? = null,
-
-  val nsType: String?,
-  val typeSeq: Int?,
-  val effectiveDate: LocalDate?,
-  val expiryDate: LocalDate?,
-  val authorisedBy: String?,
-  val comment: String?,
-) : NonAssociationOffenderEvent(
-  eventType = eventType,
-  eventDatetime = eventDatetime,
-  bookingId = bookingId,
-  offenderIdDisplay = offenderIdDisplay,
-  nomisEventType = nomisEventType,
-  nsOffenderIdDisplay = nsOffenderIdDisplay,
-  nsBookingId = nsBookingId,
-  reasonCode = reasonCode,
-  levelCode = levelCode,
-  internalLocationFlag = internalLocationFlag,
-  transportFlag = transportFlag,
-  recipNsReasonCode = recipNsReasonCode,
-)
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-open class RestrictionOffenderEvent(
+class RestrictionOffenderEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
-import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
@@ -615,45 +614,6 @@ class OffenderEventsTransformerTest {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
-    }
-  }
-
-  @Test
-  fun `non-association changes mapped correctly`() {
-    with(
-      offenderEventsTransformer.offenderEventOf(
-        Xtag(
-          eventType = "OFF_NON_ASSOC-UPDATED",
-          nomisTimestamp = fixedEventTime,
-          content = XtagContent(
-            mapOf(
-              "p_offender_id_display" to "A123BC",
-              "p_ns_offender_id_display" to "G4567DE",
-              "p_offender_book_id" to "12345",
-              "p_ns_offender_book_id" to "67890",
-              "p_ns_reason_code" to "REASON",
-              "p_ns_level_code" to "LEVEL",
-              "p_internal_location_flag" to "N",
-              "p_transport_flag" to "TRANS",
-              "p_recip_ns_reason_code" to "RECIP_REASON",
-            ),
-          ),
-        ),
-      )!!,
-    ) {
-      this as NonAssociationOffenderEvent
-      assertThat(eventType).isEqualTo("NON_ASSOCIATION-UPSERTED")
-      assertThat(nomisEventType).isEqualTo("OFF_NON_ASSOC-UPDATED")
-      assertThat(eventDatetime).isEqualTo(fixedEventTime)
-      assertThat(offenderIdDisplay).isEqualTo("A123BC")
-      assertThat(bookingId).isEqualTo(12345L)
-      assertThat(nsOffenderIdDisplay).isEqualTo("G4567DE")
-      assertThat(nsBookingId).isEqualTo(67890L)
-      assertThat(reasonCode).isEqualTo("REASON")
-      assertThat(levelCode).isEqualTo("LEVEL")
-      assertThat(internalLocationFlag).isEqualTo("N")
-      assertThat(transportFlag).isEqualTo("TRANS")
-      assertThat(recipNsReasonCode).isEqualTo("RECIP_REASON")
     }
   }
 
