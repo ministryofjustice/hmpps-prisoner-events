@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.5-beta-3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.6-beta"
   kotlin("plugin.spring") version "1.8.10"
   id("org.unbroken-dome.test-sets") version "4.0.0"
 }
@@ -23,11 +23,11 @@ dependencies {
 
   implementation("org.flywaydb:flyway-core")
 
-  implementation("org.springdoc:springdoc-openapi-ui:1.6.15")
-  implementation("org.springdoc:springdoc-openapi-kotlin:1.6.15")
-  implementation("org.springdoc:springdoc-openapi-data-rest:1.6.15")
+  implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
+  implementation("org.springdoc:springdoc-openapi-kotlin:1.7.0")
+  implementation("org.springdoc:springdoc-openapi-data-rest:1.7.0")
 
-  implementation("com.oracle.database.jdbc:ojdbc11:21.9.0.0")
+  implementation("com.oracle.database.jdbc:ojdbc11:23.2.0.0")
   implementation("com.oracle.database.messaging:aqapi:21.3.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
@@ -38,8 +38,8 @@ dependencies {
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.13")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.17.6")
-  testImplementation("org.testcontainers:oracle-xe:1.17.6")
+  testImplementation("org.testcontainers:localstack:1.18.0")
+  testImplementation("org.testcontainers:oracle-xe:1.18.0")
 }
 
 java {
