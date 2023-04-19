@@ -5,6 +5,7 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 import oracle.jms.AQjmsMapMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
@@ -1510,6 +1511,167 @@ class OffenderEventsTransformerTest {
       assertThat(rootOffenderId).isEqualTo(456)
       assertThat(identifierType).isEqualTo("some type")
       assertThat(nomisEventType).isEqualTo("P3_RESULT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `imprisonment status changed mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "S1_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "456",
+            "p_imprison_status_seq" to "123",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("IMPRISONMENT_STATUS-CHANGED")
+      assertThat(bookingId).isEqualTo(456L)
+      assertThat(imprisonmentStatusSeq).isEqualTo(123L)
+      assertThat(nomisEventType).isEqualTo("S1_RESULT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `assessment changed mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "S1_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "456",
+            "p_assessment_seq" to "123",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("ASSESSMENT-CHANGED")
+      assertThat(bookingId).isEqualTo(456L)
+      assertThat(assessmentSeq).isEqualTo(123L)
+      assertThat(nomisEventType).isEqualTo("S1_RESULT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `other s1 result mapped correctly`() {
+    val now = LocalDateTime.now()
+    assertThat(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "S1_RESULT",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_book_id" to "456",
+            ),
+          ),
+        ),
+      ),
+    ).isNull()
+  }
+
+  @Test
+  fun `alert updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<AlertOffenderEvent>(
+      Xtag(
+        eventType = "OFF_ALERT_UPDATE",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_root_offender_id" to "123",
+            "p_offender_book_id" to "456",
+            "p_alert_seq" to "789",
+            "p_alert_date" to "123",
+            "p_old_alert_date" to "2019-02-14",
+            "p_old_alert_time" to "10:12:23",
+            "p_alert_type" to "some type",
+            "p_alert_code" to "some code",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("ALERT-UPDATED")
+      assertThat(rootOffenderId).isEqualTo(123L)
+      assertThat(bookingId).isEqualTo(456L)
+      assertThat(alertSeq).isEqualTo(789L)
+      assertThat(alertDateTime).isEqualTo(LocalDateTime.parse("2019-02-14T10:12:23"))
+      assertThat(alertType).isEqualTo("some type")
+      assertThat(alertCode).isEqualTo("some code")
+      assertThat(nomisEventType).isEqualTo("OFF_ALERT_UPDATE")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `alert inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<AlertOffenderEvent>(
+      Xtag(
+        eventType = "OFF_ALERT_INSERT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_root_offender_id" to "123",
+            "p_offender_book_id" to "456",
+            "p_alert_seq" to "789",
+            "p_alert_type" to "some type",
+            "p_alert_code" to "some code",
+            "p_alert_date" to "2019-02-14",
+            "p_alert_time" to "10:12:23",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("ALERT-INSERTED")
+      assertThat(rootOffenderId).isEqualTo(123L)
+      assertThat(bookingId).isEqualTo(456L)
+      assertThat(alertSeq).isEqualTo(789L)
+      assertThat(alertDateTime).isEqualTo(LocalDateTime.parse("2019-02-14T10:12:23"))
+      assertThat(alertType).isEqualTo("some type")
+      assertThat(alertCode).isEqualTo("some code")
+      assertThat(nomisEventType).isEqualTo("OFF_ALERT_INSERT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `alert deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<AlertOffenderEvent>(
+      Xtag(
+        eventType = "OFF_ALERT_DELETE",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id" to "234",
+            "p_root_offender_id" to "123",
+            "p_alert_date" to "2019-02-14",
+            "p_alert_time" to "10:12:23",
+            "p_alert_type" to "some type",
+            "p_alert_code" to "some code",
+            "p_expiry_date" to "2012-02-14",
+            "p_expiry_time" to "11:12:23",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("ALERT-DELETED")
+      assertThat(rootOffenderId).isEqualTo(123L)
+      assertThat(alertDateTime).isEqualTo(LocalDateTime.parse("2019-02-14T10:12:23"))
+      assertThat(alertType).isEqualTo("some type")
+      assertThat(alertCode).isEqualTo("some code")
+      assertThat(expiryDateTime).isEqualTo(LocalDateTime.parse("2012-02-14T11:12:23"))
+      assertThat(nomisEventType).isEqualTo("OFF_ALERT_DELETE")
       assertThat(offenderIdDisplay).isNull()
     }
   }
