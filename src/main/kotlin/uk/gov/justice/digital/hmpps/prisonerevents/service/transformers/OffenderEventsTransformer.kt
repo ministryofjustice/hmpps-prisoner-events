@@ -101,16 +101,13 @@ class OffenderEventsTransformer @Autowired constructor() {
           imprisonmentStatusChangedEventOf(xtag)
         } else if (!Strings.isNullOrEmpty(xtag.content.p_assessment_seq)) {
           assessmentChangedEventOf(xtag)
-        } else if (!Strings.isNullOrEmpty(xtag.content.p_alert_date)
-        ) {
-          alertUpdatedEventOf(xtag)
         } else {
-          alertInsertedEventOf(xtag)
+          null
         }
 
         "OFF_ALERT_INSERT" -> alertInsertedEventOf(xtag)
         "OFF_ALERT_UPDATE" -> alertUpdatedEventOf(xtag)
-        "OFF_ALERT_DELETE", "S1_DEL_RESULT" -> alertDeletedEventOf(xtag)
+        "OFF_ALERT_DELETE" -> alertDeletedEventOf(xtag)
         "INCIDENT-INSERTED" -> incidentInsertedEventOf(xtag)
         "INCIDENT-UPDATED" -> incidentUpdatedEventOf(xtag)
         "OFF_IMP_STAT_OASYS" -> imprisonmentStatusChangedEventOf(xtag)
