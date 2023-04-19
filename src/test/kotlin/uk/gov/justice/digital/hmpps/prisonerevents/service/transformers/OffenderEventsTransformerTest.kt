@@ -1,3 +1,5 @@
+@file:Suppress("TestFunctionName")
+
 package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 
 import oracle.jms.AQjmsMapMessage
@@ -6,6 +8,7 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
@@ -24,6 +27,10 @@ import java.util.UUID
 class OffenderEventsTransformerTest {
   private val offenderEventsTransformer = OffenderEventsTransformer()
   private val fixedEventTime = LocalDateTime.now()
+
+  @Suppress("UNCHECKED_CAST")
+  private fun <T : OffenderEvent> withCallTransformer(xtag: Xtag, block: T.() -> Unit): Unit =
+    (offenderEventsTransformer.offenderEventOf(xtag)!! as T).block()
 
   @Test
   fun offenderEventOfAQ() {
@@ -147,12 +154,12 @@ class OffenderEventsTransformerTest {
           eventType = "meh",
         ),
       ),
-    ).isNotNull()
+    ).isNotNull
   }
 
   @Test
   fun S2_RESULT_IsMappedTo_SENTENCE_DATES_CHANGED() {
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<OffenderEvent>(
       Xtag(
         eventType = "S2_RESULT",
         content = XtagContent(
@@ -162,27 +169,29 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
-    assertThat(event?.eventType).isEqualTo("SENTENCE_DATES-CHANGED")
+    ) {
+      assertThat(eventType).isEqualTo("SENTENCE_DATES-CHANGED")
+    }
   }
 
   @Test
   fun OFF_SENT_OASYS_IsMappedTo_SENTENCE_CALCULATION_DATES_CHANGED() {
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFF_SENT_OASYS",
         content = XtagContent(
           mapOf("p_offender_book_id" to "99"),
         ),
       ),
-    )
-    assertThat(event?.eventType).isEqualTo("SENTENCE_CALCULATION_DATES-CHANGED")
+    ) {
+      assertThat(eventType).isEqualTo("SENTENCE_CALCULATION_DATES-CHANGED")
+    }
   }
 
   @Test
   fun bedAssignmentCorrectlyMapped() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "BED_ASSIGNMENT_HISTORY-INSERTED",
         nomisTimestamp = now,
@@ -194,19 +203,20 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("BED_ASSIGNMENT_HISTORY-INSERTED")
-    assertThat(event?.bookingId).isEqualTo(99L)
-    assertThat(event?.bedAssignmentSeq).isEqualTo(1)
-    assertThat(event?.livingUnitId).isEqualTo(34123412L)
-    assertThat(event?.nomisEventType).isEqualTo("BED_ASSIGNMENT_HISTORY-INSERTED")
-    assertThat(event?.eventDatetime).isEqualTo(now)
+    ) {
+      assertThat(eventType).isEqualTo("BED_ASSIGNMENT_HISTORY-INSERTED")
+      assertThat(bookingId).isEqualTo(99L)
+      assertThat(bedAssignmentSeq).isEqualTo(1)
+      assertThat(livingUnitId).isEqualTo(34123412L)
+      assertThat(nomisEventType).isEqualTo("BED_ASSIGNMENT_HISTORY-INSERTED")
+      assertThat(eventDatetime).isEqualTo(now)
+    }
   }
 
   @Test
   fun externalMovementChangedCorrectlyMapped() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<ExternalMovementOffenderEvent>(
       Xtag(
         eventType = "EXTERNAL_MOVEMENT-CHANGED",
         nomisTimestamp = now,
@@ -224,23 +234,24 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as ExternalMovementOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("EXTERNAL_MOVEMENT-CHANGED")
-    assertThat(event?.bookingId).isEqualTo(232L)
-    assertThat(event?.movementSeq).isEqualTo(1)
-    assertThat(event?.nomisEventType).isEqualTo("EXTERNAL_MOVEMENT-CHANGED")
-    assertThat(event?.eventDatetime).isEqualTo(now)
-    assertThat(event?.fromAgencyLocationId).isEqualTo("MDI")
-    assertThat(event?.toAgencyLocationId).isEqualTo("HOSP")
-    assertThat(event?.directionCode).isEqualTo("OUT")
-    assertThat(event?.movementReasonCode).isEqualTo("HP")
-    assertThat(event?.movementType).isEqualTo("REL")
+    ) {
+      assertThat(eventType).isEqualTo("EXTERNAL_MOVEMENT-CHANGED")
+      assertThat(bookingId).isEqualTo(232L)
+      assertThat(movementSeq).isEqualTo(1)
+      assertThat(nomisEventType).isEqualTo("EXTERNAL_MOVEMENT-CHANGED")
+      assertThat(eventDatetime).isEqualTo(now)
+      assertThat(fromAgencyLocationId).isEqualTo("MDI")
+      assertThat(toAgencyLocationId).isEqualTo("HOSP")
+      assertThat(directionCode).isEqualTo("OUT")
+      assertThat(movementReasonCode).isEqualTo("HP")
+      assertThat(movementType).isEqualTo("REL")
+    }
   }
 
   @Test
   fun sentencingChangedCorrectlyMapped() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "SENTENCING-CHANGED",
         nomisTimestamp = now,
@@ -251,17 +262,18 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
-    assertThat(event?.eventType).isEqualTo("SENTENCING-CHANGED")
-    assertThat(event?.bookingId).isEqualTo(2322322L)
-    assertThat(event?.eventDatetime).isEqualTo(now)
-    assertThat(event?.offenderIdDisplay).isEqualTo("A1234AA")
+    ) {
+      assertThat(eventType).isEqualTo("SENTENCING-CHANGED")
+      assertThat(bookingId).isEqualTo(2322322L)
+      assertThat(eventDatetime).isEqualTo(now)
+      assertThat(offenderIdDisplay).isEqualTo("A1234AA")
+    }
   }
 
   @Test
   fun confirmedReleaseDateChangeMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "CONFIRMED_RELEASE_DATE-CHANGED",
         nomisTimestamp = now,
@@ -271,16 +283,17 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    )
-    assertThat(event?.eventType).isEqualTo("CONFIRMED_RELEASE_DATE-CHANGED")
-    assertThat(event?.bookingId).isEqualTo(99L)
-    assertThat(event?.eventDatetime).isEqualTo(now)
+    ) {
+      assertThat(eventType).isEqualTo("CONFIRMED_RELEASE_DATE-CHANGED")
+      assertThat(bookingId).isEqualTo(99L)
+      assertThat(eventDatetime).isEqualTo(now)
+    }
   }
 
   @Test
   fun offenderIndividualScheduledEventMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "SCHEDULE_INT_APP-CHANGED",
         nomisTimestamp = now,
@@ -300,25 +313,26 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("APPOINTMENT_CHANGED")
-    assertThat(event?.bookingId).isEqualTo(52303L)
-    assertThat(event?.eventDatetime).isEqualTo(now)
-    assertThat(event?.agencyLocationId).isEqualTo("LEI")
-    assertThat(event?.scheduleEventId).isEqualTo(2362162)
-    assertThat(event?.scheduledStartTime).isEqualTo(LocalDateTime.of(2022, 7, 19, 16, 0, 0))
-    assertThat(event?.scheduledEndTime).isEqualTo(LocalDateTime.of(2022, 7, 19, 16, 30, 0))
-    assertThat(event?.scheduleEventStatus).isEqualTo("SCH")
-    assertThat(event?.scheduleEventType).isEqualTo("APP")
-    assertThat(event?.scheduleEventSubType).isEqualTo("CALA")
-    assertThat(event?.scheduleEventClass).isEqualTo("INT_MOV")
-    assertThat(event?.recordDeleted).isEqualTo(true)
+    ) {
+      assertThat(eventType).isEqualTo("APPOINTMENT_CHANGED")
+      assertThat(bookingId).isEqualTo(52303L)
+      assertThat(eventDatetime).isEqualTo(now)
+      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(scheduleEventId).isEqualTo(2362162)
+      assertThat(scheduledStartTime).isEqualTo(LocalDateTime.of(2022, 7, 19, 16, 0, 0))
+      assertThat(scheduledEndTime).isEqualTo(LocalDateTime.of(2022, 7, 19, 16, 30, 0))
+      assertThat(scheduleEventStatus).isEqualTo("SCH")
+      assertThat(scheduleEventType).isEqualTo("APP")
+      assertThat(scheduleEventSubType).isEqualTo("CALA")
+      assertThat(scheduleEventClass).isEqualTo("INT_MOV")
+      assertThat(recordDeleted).isEqualTo(true)
+    }
   }
 
   @Test
   fun offenderIndividualScheduledEventMappedCorrectlyWhenEndDateMissing() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "SCHEDULE_INT_APP-CHANGED",
         nomisTimestamp = now,
@@ -336,17 +350,18 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("APPOINTMENT_CHANGED")
-    assertThat(event?.bookingId).isEqualTo(52303L)
-    assertThat(event?.scheduledStartTime).isEqualTo(LocalDateTime.of(2022, 7, 19, 16, 0, 0))
-    assertThat(event?.scheduledEndTime).isNull()
+    ) {
+      assertThat(eventType).isEqualTo("APPOINTMENT_CHANGED")
+      assertThat(bookingId).isEqualTo(52303L)
+      assertThat(scheduledStartTime).isEqualTo(LocalDateTime.of(2022, 7, 19, 16, 0, 0))
+      assertThat(scheduledEndTime).isNull()
+    }
   }
 
   @Test
   fun offenderIepUpdatedMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFFENDER_IEP_LEVEL-UPDATED",
         nomisTimestamp = now,
@@ -364,22 +379,23 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("IEP_UPSERTED")
-    assertThat(event?.bookingId).isEqualTo(434L)
-    assertThat(event?.eventDatetime).isEqualTo(now)
-    assertThat(event?.agencyLocationId).isEqualTo("MDI")
-    assertThat(event?.iepSeq).isEqualTo(3)
-    assertThat(event?.iepLevel).isEqualTo("STD")
-    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
-    assertThat(event?.agencyLocationId).isEqualTo("MDI")
-    assertThat(event?.auditModuleName).isEqualTo("transfer")
+    ) {
+      assertThat(eventType).isEqualTo("IEP_UPSERTED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(eventDatetime).isEqualTo(now)
+      assertThat(agencyLocationId).isEqualTo("MDI")
+      assertThat(iepSeq).isEqualTo(3)
+      assertThat(iepLevel).isEqualTo("STD")
+      assertThat(offenderIdDisplay).isEqualTo("AF123")
+      assertThat(agencyLocationId).isEqualTo("MDI")
+      assertThat(auditModuleName).isEqualTo("transfer")
+    }
   }
 
   @Test
   fun offenderIepDeletedMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFFENDER_IEP_LEVEL-UPDATED",
         nomisTimestamp = now,
@@ -397,22 +413,23 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("IEP_DELETED")
-    assertThat(event?.bookingId).isEqualTo(434L)
-    assertThat(event?.eventDatetime).isEqualTo(now)
-    assertThat(event?.agencyLocationId).isEqualTo("MDI")
-    assertThat(event?.iepSeq).isEqualTo(3)
-    assertThat(event?.iepLevel).isEqualTo("STD")
-    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
-    assertThat(event?.agencyLocationId).isEqualTo("MDI")
-    assertThat(event?.auditModuleName).isEqualTo("transfer")
+    ) {
+      assertThat(eventType).isEqualTo("IEP_DELETED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(eventDatetime).isEqualTo(now)
+      assertThat(agencyLocationId).isEqualTo("MDI")
+      assertThat(iepSeq).isEqualTo(3)
+      assertThat(iepLevel).isEqualTo("STD")
+      assertThat(offenderIdDisplay).isEqualTo("AF123")
+      assertThat(agencyLocationId).isEqualTo("MDI")
+      assertThat(auditModuleName).isEqualTo("transfer")
+    }
   }
 
   @Test
   fun offenderKeyDateAdjustmentUpdatedMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFF_KEY_DATES_ADJ-UPDATED",
         nomisTimestamp = now,
@@ -425,18 +442,19 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("KEY_DATE_ADJUSTMENT_UPSERTED")
-    assertThat(event?.bookingId).isEqualTo(434L)
-    assertThat(event?.adjustmentId).isEqualTo(987)
-    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
-    assertThat(event?.auditModuleName).isEqualTo("SENTDATES")
+    ) {
+      assertThat(eventType).isEqualTo("KEY_DATE_ADJUSTMENT_UPSERTED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(adjustmentId).isEqualTo(987)
+      assertThat(offenderIdDisplay).isEqualTo("AF123")
+      assertThat(auditModuleName).isEqualTo("SENTDATES")
+    }
   }
 
   @Test
   fun offenderKeyDateAdjustmentDeletedMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFF_KEY_DATES_ADJ-UPDATED",
         nomisTimestamp = now,
@@ -450,18 +468,19 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("KEY_DATE_ADJUSTMENT_DELETED")
-    assertThat(event?.bookingId).isEqualTo(434L)
-    assertThat(event?.adjustmentId).isEqualTo(987)
-    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
-    assertThat(event?.auditModuleName).isEqualTo("SENTDATES")
+    ) {
+      assertThat(eventType).isEqualTo("KEY_DATE_ADJUSTMENT_DELETED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(adjustmentId).isEqualTo(987)
+      assertThat(offenderIdDisplay).isEqualTo("AF123")
+      assertThat(auditModuleName).isEqualTo("SENTDATES")
+    }
   }
 
   @Test
   fun offenderSentenceAdjustmentUpdatedMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFF_SENT_ADJ-UPDATED",
         nomisTimestamp = now,
@@ -475,19 +494,20 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("SENTENCE_ADJUSTMENT_UPSERTED")
-    assertThat(event?.bookingId).isEqualTo(434L)
-    assertThat(event?.adjustmentId).isEqualTo(987)
-    assertThat(event?.sentenceSeq).isEqualTo(2)
-    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
-    assertThat(event?.auditModuleName).isEqualTo("SENTDATES")
+    ) {
+      assertThat(eventType).isEqualTo("SENTENCE_ADJUSTMENT_UPSERTED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(adjustmentId).isEqualTo(987)
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(offenderIdDisplay).isEqualTo("AF123")
+      assertThat(auditModuleName).isEqualTo("SENTDATES")
+    }
   }
 
   @Test
   fun offenderSentenceAdjustmentDeletedMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFF_SENT_ADJ-UPDATED",
         nomisTimestamp = now,
@@ -502,19 +522,20 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("SENTENCE_ADJUSTMENT_DELETED")
-    assertThat(event?.bookingId).isEqualTo(434L)
-    assertThat(event?.adjustmentId).isEqualTo(987)
-    assertThat(event?.sentenceSeq).isEqualTo(2)
-    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
-    assertThat(event?.auditModuleName).isEqualTo("SENTDATES")
+    ) {
+      assertThat(eventType).isEqualTo("SENTENCE_ADJUSTMENT_DELETED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(adjustmentId).isEqualTo(987)
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(offenderIdDisplay).isEqualTo("AF123")
+      assertThat(auditModuleName).isEqualTo("SENTDATES")
+    }
   }
 
   @Test
   fun visitCancelledMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = ("OFFENDER_VISIT-UPDATED"),
         nomisTimestamp = now,
@@ -530,21 +551,22 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("VISIT_CANCELLED")
-    assertThat(event?.bookingId).isEqualTo(434L)
-    assertThat(event?.eventDatetime).isEqualTo(now)
-    assertThat(event?.agencyLocationId).isEqualTo("MDI")
-    assertThat(event?.visitId).isEqualTo(4)
-    assertThat(event?.offenderIdDisplay).isEqualTo("AF123")
-    assertThat(event?.agencyLocationId).isEqualTo("MDI")
-    assertThat(event?.auditModuleName).isEqualTo("visit_screen")
+    ) {
+      assertThat(eventType).isEqualTo("VISIT_CANCELLED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(eventDatetime).isEqualTo(now)
+      assertThat(agencyLocationId).isEqualTo("MDI")
+      assertThat(visitId).isEqualTo(4)
+      assertThat(offenderIdDisplay).isEqualTo("AF123")
+      assertThat(agencyLocationId).isEqualTo("MDI")
+      assertThat(auditModuleName).isEqualTo("visit_screen")
+    }
   }
 
   @Test
   fun caseNotesMappedCorrectly() {
     val now = LocalDateTime.now()
-    val event = offenderEventsTransformer.offenderEventOf(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFFENDER_CASE_NOTES-INSERTED",
         nomisTimestamp = now,
@@ -557,25 +579,24 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ),
-    ) as GenericOffenderEvent?
-    assertThat(event?.eventType).isEqualTo("OFFENDER_CASE_NOTES-INSERTED")
-    assertThat(event?.bookingId).isEqualTo(12345L)
-    assertThat(event?.eventDatetime).isEqualTo(now)
-    assertThat(event?.caseNoteId).isEqualTo(456789L)
-    assertThat(event?.caseNoteType).isEqualTo("CHAP")
-    assertThat(event?.caseNoteSubType).isEqualTo("FAITH")
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CASE_NOTES-INSERTED")
+      assertThat(bookingId).isEqualTo(12345L)
+      assertThat(eventDatetime).isEqualTo(now)
+      assertThat(caseNoteId).isEqualTo(456789L)
+      assertThat(caseNoteType).isEqualTo("CHAP")
+      assertThat(caseNoteSubType).isEqualTo("FAITH")
+    }
   }
 
   @Test
   fun `offender physical attributes changes mapped correctly`() {
-    with(
-      offenderEventsTransformer.offenderEventOf(
-        Xtag(
-          eventType = "OFF_PHYS_ATTR-CHANGED",
-          nomisTimestamp = fixedEventTime,
-          content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
-        ),
-      )!!,
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_PHYS_ATTR-CHANGED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+      ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
@@ -585,14 +606,12 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender physical characteristics changes mapped correctly`() {
-    with(
-      offenderEventsTransformer.offenderEventOf(
-        Xtag(
-          eventType = "OFF_PROFILE_DETS-CHANGED",
-          nomisTimestamp = fixedEventTime,
-          content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
-        ),
-      )!!,
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_PROFILE_DETS-CHANGED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+      ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
@@ -602,14 +621,12 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender physical marks changes mapped correctly`() {
-    with(
-      offenderEventsTransformer.offenderEventOf(
-        Xtag(
-          eventType = "OFF_IDENT_MARKS-CHANGED",
-          nomisTimestamp = fixedEventTime,
-          content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
-        ),
-      )!!,
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_IDENT_MARKS-CHANGED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+      ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
@@ -619,31 +636,28 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `non-association detail changes mapped correctly`() {
-    with(
-      offenderEventsTransformer.offenderEventOf(
-        Xtag(
-          eventType = "OFF_NA_DETAILS_ASSOC-UPDATED",
-          nomisTimestamp = fixedEventTime,
-          content = XtagContent(
-            mapOf(
-              "p_offender_id_display" to "A123BC",
-              "p_ns_offender_id_display" to "G4567DE",
-              "p_offender_book_id" to "12345",
-              "p_ns_offender_book_id" to "67890",
-              "p_type_seq" to "12",
-              "p_ns_reason_code" to "REASON",
-              "p_ns_level_code" to "LEVEL",
-              "p_ns_type" to "TYPE",
-              "p_ns_effective_date" to "12-AUG-2022",
-              "p_ns_expiry_date" to "2023-03-31",
-              "p_authorized_staff" to "staff 1",
-              "p_comment_text" to "comment",
-            ),
+    withCallTransformer<NonAssociationDetailsOffenderEvent>(
+      Xtag(
+        eventType = "OFF_NA_DETAILS_ASSOC-UPDATED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_ns_offender_id_display" to "G4567DE",
+            "p_offender_book_id" to "12345",
+            "p_ns_offender_book_id" to "67890",
+            "p_type_seq" to "12",
+            "p_ns_reason_code" to "REASON",
+            "p_ns_level_code" to "LEVEL",
+            "p_ns_type" to "TYPE",
+            "p_ns_effective_date" to "12-AUG-2022",
+            "p_ns_expiry_date" to "2023-03-31",
+            "p_authorized_staff" to "staff 1",
+            "p_comment_text" to "comment",
           ),
         ),
-      )!!,
+      ),
     ) {
-      this as NonAssociationDetailsOffenderEvent
       assertThat(eventType).isEqualTo("NON_ASSOCIATION_DETAIL-UPSERTED")
       assertThat(nomisEventType).isEqualTo("OFF_NA_DETAILS_ASSOC-UPDATED")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
@@ -664,28 +678,25 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `restriction changes mapped correctly`() {
-    with(
-      offenderEventsTransformer.offenderEventOf(
-        Xtag(
-          eventType = "OFF_RESTRICTS-UPDATED",
-          nomisTimestamp = fixedEventTime,
-          content = XtagContent(
-            mapOf(
-              "p_offender_id_display" to "A123BC",
-              "p_offender_book_id" to "12345",
-              "p_offender_restriction_id" to "12345678900",
-              "p_restriction_type" to "TYPE",
-              "p_effective_date" to "12-AUG-2022",
-              "p_expiry_date" to "2023-03-31",
-              "p_authorised_staff_id" to "12345",
-              "p_comment_text" to "comment",
-              "p_entered_staff_id" to "23456",
-            ),
+    withCallTransformer<RestrictionOffenderEvent>(
+      Xtag(
+        eventType = "OFF_RESTRICTS-UPDATED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_restriction_id" to "12345678900",
+            "p_restriction_type" to "TYPE",
+            "p_effective_date" to "12-AUG-2022",
+            "p_expiry_date" to "2023-03-31",
+            "p_authorised_staff_id" to "12345",
+            "p_comment_text" to "comment",
+            "p_entered_staff_id" to "23456",
           ),
         ),
-      )!!,
+      ),
     ) {
-      this as RestrictionOffenderEvent
       assertThat(eventType).isEqualTo("RESTRICTION-UPSERTED")
       assertThat(nomisEventType).isEqualTo("OFF_RESTRICTS-UPDATED")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
@@ -703,27 +714,24 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `restriction person changes mapped correctly`() {
-    with(
-      offenderEventsTransformer.offenderEventOf(
-        Xtag(
-          eventType = "OFF_PERS_RESTRICTS-UPDATED",
-          nomisTimestamp = fixedEventTime,
-          content = XtagContent(
-            mapOf(
-              "p_offender_contact_person_id" to "1234567",
-              "p_offender_person_restrict_id" to "2345678",
-              "p_restriction_type" to "TYPE",
-              "p_restriction_effective_date" to "12-AUG-2022",
-              "p_restriction_expiry_date" to "2023-03-31",
-              "p_authorized_staff_id" to "12345",
-              "p_comment_text" to "comment",
-              "p_entered_staff_id" to "23456",
-            ),
+    withCallTransformer<PersonRestrictionOffenderEvent>(
+      Xtag(
+        eventType = "OFF_PERS_RESTRICTS-UPDATED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_contact_person_id" to "1234567",
+            "p_offender_person_restrict_id" to "2345678",
+            "p_restriction_type" to "TYPE",
+            "p_restriction_effective_date" to "12-AUG-2022",
+            "p_restriction_expiry_date" to "2023-03-31",
+            "p_authorized_staff_id" to "12345",
+            "p_comment_text" to "comment",
+            "p_entered_staff_id" to "23456",
           ),
         ),
-      )!!,
+      ),
     ) {
-      this as PersonRestrictionOffenderEvent
       assertThat(eventType).isEqualTo("PERSON_RESTRICTION-UPSERTED")
       assertThat(nomisEventType).isEqualTo("OFF_PERS_RESTRICTS-UPDATED")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
@@ -740,27 +748,24 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `restriction visitor mapped correctly`() {
-    with(
-      offenderEventsTransformer.offenderEventOf(
-        Xtag(
-          eventType = "VISITOR_RESTRICTS-UPDATED",
-          nomisTimestamp = fixedEventTime,
-          content = XtagContent(
-            mapOf(
-              "p_offender_id_display" to "A123BC",
-              "p_person_id" to "12345",
-              "p_visit_restriction_type" to "TYPE",
-              "p_effective_date" to "12-AUG-2022",
-              "p_expiry_date" to "2023-03-31",
-              "p_comment_txt" to "comment",
-              "p_visitor_restriction_id" to "123456",
-              "p_entered_staff_id" to "23456",
-            ),
+    withCallTransformer<VisitorRestrictionOffenderEvent>(
+      Xtag(
+        eventType = "VISITOR_RESTRICTS-UPDATED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_person_id" to "12345",
+            "p_visit_restriction_type" to "TYPE",
+            "p_effective_date" to "12-AUG-2022",
+            "p_expiry_date" to "2023-03-31",
+            "p_comment_txt" to "comment",
+            "p_visitor_restriction_id" to "123456",
+            "p_entered_staff_id" to "23456",
           ),
         ),
-      )!!,
+      ),
     ) {
-      this as VisitorRestrictionOffenderEvent
       assertThat(eventType).isEqualTo("VISITOR_RESTRICTION-UPSERTED")
       assertThat(nomisEventType).isEqualTo("VISITOR_RESTRICTS-UPDATED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
@@ -771,6 +776,220 @@ class OffenderEventsTransformerTest {
       assertThat(comment).isEqualTo("comment")
       assertThat(visitorRestrictionId).isEqualTo(123456)
       assertThat(enteredById).isEqualTo(23456)
+    }
+  }
+
+  @Test
+  fun `risk score mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "P8_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_offender_risk_predictor_id" to "987",
+            "p_delete_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("RISK_SCORE-CHANGED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(riskPredictorId).isEqualTo(987)
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("P8_RESULT")
+    }
+  }
+
+  @Test
+  fun `risk score deletion mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "P8_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_offender_risk_predictor_id" to "987",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("RISK_SCORE-DELETED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(riskPredictorId).isEqualTo(987)
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("P8_RESULT")
+    }
+  }
+
+  @Test
+  fun `offender sanction mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "A3_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_sanction_seq" to "987",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_SANCTION-CHANGED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(sanctionSeq).isEqualTo(987)
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("A3_RESULT")
+    }
+  }
+
+  @Test
+  fun `booking number P1_RESULT mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "P1_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_offender_id" to "987",
+            "p_new_prison_num" to "Y123CD",
+            "p_old_prison_num" to "Y123AB",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(offenderId).isEqualTo(987)
+      assertThat(bookingNumber).isEqualTo("Y123CD")
+      assertThat(previousBookingNumber).isEqualTo("Y123AB")
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("P1_RESULT")
+    }
+  }
+
+  @Test
+  fun `booking number mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "BOOK_UPD_OASYS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_offender_id" to "987",
+            "p_new_prison_num" to "Y123CD",
+            "p_old_prison_num" to "Y123AB",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(offenderId).isEqualTo(987)
+      assertThat(bookingNumber).isEqualTo("Y123CD")
+      assertThat(previousBookingNumber).isEqualTo("Y123AB")
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("BOOK_UPD_OASYS")
+    }
+  }
+
+  @Test
+  fun `maternity status inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_HEALTH_PROB_INS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("MATERNITY_STATUS-INSERTED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("OFF_HEALTH_PROB_INS")
+    }
+  }
+
+  @Test
+  fun `maternity status updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_HEALTH_PROB_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("MATERNITY_STATUS-UPDATED")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("OFF_HEALTH_PROB_UPD")
+    }
+  }
+
+  @Test
+  fun `offender movement reception mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_RECEP_OASYS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_movement_seq" to "789",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_MOVEMENT-RECEPTION")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(movementSeq).isEqualTo(789)
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("OFF_RECEP_OASYS")
+    }
+  }
+
+  @Test
+  fun `offender movement discharge mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_DISCH_OASYS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "434",
+            "p_movement_seq" to "789",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_MOVEMENT-DISCHARGE")
+      assertThat(bookingId).isEqualTo(434L)
+      assertThat(movementSeq).isEqualTo(789)
+      assertThat(offenderIdDisplay).isNull()
+      assertThat(nomisEventType).isEqualTo("OFF_DISCH_OASYS")
     }
   }
 }
