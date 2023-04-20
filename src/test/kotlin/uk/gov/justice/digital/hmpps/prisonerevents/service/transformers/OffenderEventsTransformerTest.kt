@@ -160,7 +160,7 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun S2_RESULT_IsMappedTo_SENTENCE_DATES_CHANGED() {
-    withCallTransformer<OffenderEvent>(
+    withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "S2_RESULT",
         content = XtagContent(
@@ -172,6 +172,10 @@ class OffenderEventsTransformerTest {
       ),
     ) {
       assertThat(eventType).isEqualTo("SENTENCE_DATES-CHANGED")
+      assertThat(bookingId).isEqualTo(99L)
+      assertThat(sentenceCalculationId).isEqualTo(88L)
+      assertThat(nomisEventType).isEqualTo("S2_RESULT")
+      assertThat(offenderIdDisplay).isNull()
     }
   }
 
@@ -181,11 +185,14 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_SENT_OASYS",
         content = XtagContent(
-          mapOf("p_offender_book_id" to "99"),
+          mapOf("p_offender_book_id" to "234"),
         ),
       ),
     ) {
       assertThat(eventType).isEqualTo("SENTENCE_CALCULATION_DATES-CHANGED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("OFF_SENT_OASYS")
+      assertThat(offenderIdDisplay).isNull()
     }
   }
 
@@ -1895,5 +1902,701 @@ class OffenderEventsTransformerTest {
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
     }
+  }
+
+  @Test
+  fun `imprisonment status change mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_IMP_STAT_OASYS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+            "p_imprison_status_seq" to "456",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("IMPRISONMENT_STATUS-CHANGED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(imprisonmentStatusSeq).isEqualTo(456L)
+      assertThat(nomisEventType).isEqualTo("OFF_IMP_STAT_OASYS")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender profile detail inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_PROF_DETAIL_INS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_PROFILE_DETAILS-INSERTED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("OFF_PROF_DETAIL_INS")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender profile detail updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_PROF_DETAIL_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_PROFILE_DETAILS-UPDATED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("OFF_PROF_DETAIL_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `hearing date changed mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "A2_CALLBACK",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_oic_hearing_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("HEARING_DATE-CHANGED")
+      assertThat(oicHearingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("A2_CALLBACK")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `hearing result deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "A2_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_oic_hearing_id" to "234",
+            "p_result_seq" to "123",
+            "p_agency_incident_id" to "345",
+            "p_charge_seq" to "456",
+            "p_oic_offence_id" to "789",
+            "p_plea_finding_code" to "pleas",
+            "p_finding_code" to "finding code",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("HEARING_RESULT-DELETED")
+      assertThat(oicHearingId).isEqualTo(234L)
+      assertThat(resultSeq).isEqualTo(123L)
+      assertThat(agencyIncidentId).isEqualTo(345L)
+      assertThat(chargeSeq).isEqualTo(456L)
+      assertThat(oicOffenceId).isEqualTo(789L)
+      assertThat(pleaFindingCode).isEqualTo("pleas")
+      assertThat(findingCode).isEqualTo("finding code")
+      assertThat(nomisEventType).isEqualTo("A2_RESULT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `hearing result changed mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "A2_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_oic_hearing_id" to "234",
+            "p_result_seq" to "123",
+            "p_agency_incident_id" to "345",
+            "p_charge_seq" to "456",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("HEARING_RESULT-CHANGED")
+      assertThat(oicHearingId).isEqualTo(234L)
+      assertThat(resultSeq).isEqualTo(123L)
+      assertThat(agencyIncidentId).isEqualTo(345L)
+      assertThat(chargeSeq).isEqualTo(456L)
+      assertThat(nomisEventType).isEqualTo("A2_RESULT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `phone inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "PHONES_INS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_owner_id" to "234",
+            "p_owner_class" to "class",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("PHONE-INSERTED")
+      assertThat(ownerId).isEqualTo(234L)
+      assertThat(ownerClass).isEqualTo("class")
+      assertThat(nomisEventType).isEqualTo("PHONES_INS")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `phone updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "PHONES_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_owner_id" to "234",
+            "p_owner_class" to "class",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("PHONE-UPDATED")
+      assertThat(ownerId).isEqualTo(234L)
+      assertThat(ownerClass).isEqualTo("class")
+      assertThat(nomisEventType).isEqualTo("PHONES_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `phone deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "PHONES_DEL",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_owner_id" to "234",
+            "p_owner_class" to "class",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("PHONE-DELETED")
+      assertThat(ownerId).isEqualTo(234L)
+      assertThat(ownerClass).isEqualTo("class")
+      assertThat(nomisEventType).isEqualTo("PHONES_DEL")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender employment inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_EMPLOYMENTS_INS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_EMPLOYMENT-INSERTED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("OFF_EMPLOYMENTS_INS")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender employment updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_EMPLOYMENTS_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_EMPLOYMENT-UPDATED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("OFF_EMPLOYMENTS_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender employment deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFF_EMPLOYMENTS_DEL",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_EMPLOYMENT-DELETED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("OFF_EMPLOYMENTS_DEL")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `hdc condition changed mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "D5_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+            "p_sentence_seq" to "345",
+            "p_condition_code" to "code",
+            "p_offender_sent_calculation_id" to "456",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("HDC_CONDITION-CHANGED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(sentenceSeq).isEqualTo(345L)
+      assertThat(conditionCode).isEqualTo("code")
+      assertThat(offenderSentenceConditionId).isEqualTo(456L)
+      assertThat(nomisEventType).isEqualTo("D5_RESULT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `hdc fine inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "D4_RESULT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+            "p_sentence_seq" to "345",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("HDC_FINE-INSERTED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(sentenceSeq).isEqualTo(345L)
+      assertThat(nomisEventType).isEqualTo("D4_RESULT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `address inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "ADDR_INS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_root_offender_id" to "123",
+            "p_address_id" to "234",
+            "p_owner_id" to "345",
+            "p_owner_class" to "class",
+            "p_address_end_date" to "2019-02-03",
+            "p_primary_addr_flag" to "Y",
+            "p_mail_addr_flag" to "N",
+            "p_person_id" to "567",
+          ),
+        ),
+      ),
+    ) {
+      // The ADDRESSES_XTAG_EVENTS trigger only fires for owner_class = 'PER'
+      // There is no event for other owner class inserts, only updates and deletes.
+      assertThat(eventType).isEqualTo("PERSON_ADDRESS-INSERTED")
+      assertThat(rootOffenderId).isEqualTo(123L)
+      assertThat(addressId).isEqualTo(234L)
+      assertThat(ownerId).isEqualTo(345L)
+      assertThat(ownerClass).isEqualTo("class")
+      assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
+      assertThat(primaryAddressFlag).isEqualTo("Y")
+      assertThat(mailAddressFlag).isEqualTo("N")
+      assertThat(personId).isEqualTo(567L)
+      assertThat(nomisEventType).isEqualTo("ADDR_INS")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `person address updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "ADDR_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_address_id" to "234",
+            "p_owner_id" to "345",
+            "p_owner_class" to "PER",
+            "p_address_end_date" to "2019-02-03",
+            "p_primary_addr_flag" to "Y",
+            "p_mail_addr_flag" to "N",
+            "p_person_id" to "567",
+            "p_address_deleted" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("PERSON_ADDRESS-UPDATED")
+      assertThat(addressId).isEqualTo(234L)
+      assertThat(ownerId).isEqualTo(345L)
+      assertThat(ownerClass).isEqualTo("PER")
+      assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
+      assertThat(primaryAddressFlag).isEqualTo("Y")
+      assertThat(mailAddressFlag).isEqualTo("N")
+      assertThat(personId).isEqualTo(567L)
+      assertThat(nomisEventType).isEqualTo("ADDR_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `person address deletion mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "ADDR_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_address_id" to "234",
+            "p_owner_id" to "345",
+            "p_owner_class" to "PER",
+            "p_address_end_date" to "2019-02-03",
+            "p_primary_addr_flag" to "Y",
+            "p_mail_addr_flag" to "N",
+            "p_person_id" to "567",
+            "p_address_deleted" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("PERSON_ADDRESS-DELETED")
+      assertThat(addressId).isEqualTo(234L)
+      assertThat(ownerId).isEqualTo(345L)
+      assertThat(ownerClass).isEqualTo("PER")
+      assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
+      assertThat(primaryAddressFlag).isEqualTo("Y")
+      assertThat(mailAddressFlag).isEqualTo("N")
+      assertThat(personId).isEqualTo(567L)
+      assertThat(nomisEventType).isEqualTo("ADDR_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender address updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "ADDR_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_address_id" to "234",
+            "p_owner_id" to "345",
+            "p_owner_class" to "OFF",
+            "p_address_end_date" to "2019-02-03",
+            "p_primary_addr_flag" to "Y",
+            "p_mail_addr_flag" to "N",
+            "p_person_id" to "567",
+            "p_address_deleted" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_ADDRESS-UPDATED")
+      assertThat(addressId).isEqualTo(234L)
+      assertThat(ownerId).isEqualTo(345L)
+      assertThat(ownerClass).isEqualTo("OFF")
+      assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
+      assertThat(primaryAddressFlag).isEqualTo("Y")
+      assertThat(mailAddressFlag).isEqualTo("N")
+      assertThat(personId).isEqualTo(567L)
+      assertThat(nomisEventType).isEqualTo("ADDR_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender address deletion mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "ADDR_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_address_id" to "234",
+            "p_owner_id" to "345",
+            "p_owner_class" to "OFF",
+            "p_address_end_date" to "2019-02-03",
+            "p_primary_addr_flag" to "Y",
+            "p_mail_addr_flag" to "N",
+            "p_person_id" to "567",
+            "p_address_deleted" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_ADDRESS-DELETED")
+      assertThat(addressId).isEqualTo(234L)
+      assertThat(ownerId).isEqualTo(345L)
+      assertThat(ownerClass).isEqualTo("OFF")
+      assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
+      assertThat(primaryAddressFlag).isEqualTo("Y")
+      assertThat(mailAddressFlag).isEqualTo("N")
+      assertThat(personId).isEqualTo(567L)
+      assertThat(nomisEventType).isEqualTo("ADDR_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `address updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "ADDR_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_address_id" to "234",
+            "p_owner_id" to "345",
+            "p_owner_class" to "something",
+            "p_address_end_date" to "2019-02-03",
+            "p_primary_addr_flag" to "Y",
+            "p_mail_addr_flag" to "N",
+            "p_person_id" to "567",
+            "p_address_deleted" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("ADDRESS-UPDATED")
+      assertThat(addressId).isEqualTo(234L)
+      assertThat(ownerId).isEqualTo(345L)
+      assertThat(ownerClass).isEqualTo("something")
+      assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
+      assertThat(primaryAddressFlag).isEqualTo("Y")
+      assertThat(mailAddressFlag).isEqualTo("N")
+      assertThat(personId).isEqualTo(567L)
+      assertThat(nomisEventType).isEqualTo("ADDR_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `address deletion mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "ADDR_UPD",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_address_id" to "234",
+            "p_owner_id" to "345",
+            "p_owner_class" to "something",
+            "p_address_end_date" to "2019-02-03",
+            "p_primary_addr_flag" to "Y",
+            "p_mail_addr_flag" to "N",
+            "p_person_id" to "567",
+            "p_address_deleted" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("ADDRESS-DELETED")
+      assertThat(addressId).isEqualTo(234L)
+      assertThat(ownerId).isEqualTo(345L)
+      assertThat(ownerClass).isEqualTo("something")
+      assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
+      assertThat(primaryAddressFlag).isEqualTo("Y")
+      assertThat(mailAddressFlag).isEqualTo("N")
+      assertThat(personId).isEqualTo(567L)
+      assertThat(nomisEventType).isEqualTo("ADDR_UPD")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `court sentence changed mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "C_NOTIFICATION",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("COURT_SENTENCE-CHANGED")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("C_NOTIFICATION")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender transfer out of LIDS mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "IEDT_OUT",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_TRANSFER-OUT_OF_LIDS")
+      assertThat(bookingId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("IEDT_OUT")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFFENDER-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id" to "234",
+            "p_offender_id_display" to "A234BC",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER-INSERTED")
+      assertThat(offenderId).isEqualTo(234L)
+      assertThat(nomisEventType).isNull()
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+    }
+  }
+
+  @Test
+  fun `offender deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFFENDER-DELETED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id" to "234",
+            "p_offender_id_display" to "A234BC",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER-DELETED")
+      assertThat(offenderId).isEqualTo(234L)
+      assertThat(nomisEventType).isNull()
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+    }
+  }
+
+  @Test
+  fun `offender updated event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "OFFENDER-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id" to "234",
+            "p_offender_id_display" to "A234BC",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER-UPDATED")
+      assertThat(offenderId).isEqualTo(234L)
+      assertThat(nomisEventType).isNull()
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+    }
+  }
+
+  @Test
+  fun `offender non association updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    assertThat(
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFF_NON_ASSOC-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id" to "234",
+            ),
+          ),
+        ),
+      ),
+    ).isNull()
   }
 }
