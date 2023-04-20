@@ -1675,4 +1675,225 @@ class OffenderEventsTransformerTest {
       assertThat(offenderIdDisplay).isNull()
     }
   }
+
+  @Test
+  fun `incident inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-INSERTED")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-INSERTED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `incident case updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+            "p_table_name" to "incident_cases",
+            "p_delete_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-CHANGED-CASES")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `incident case deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+            "p_table_name" to "incident_cases",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-DELETED-CASES")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `incident case parties updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+            "p_party_seq" to "123",
+            "p_table_name" to "incident_case_parties",
+            "p_delete_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-CHANGED-PARTIES")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(incidentPartySeq).isEqualTo(123L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `incident case parties deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+            "p_party_seq" to "123",
+            "p_table_name" to "incident_case_parties",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-DELETED-PARTIES")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(incidentPartySeq).isEqualTo(123L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `incident case responses updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+            "p_question_seq" to "789",
+            "p_response_seq" to "345",
+            "p_table_name" to "incident_case_responses",
+            "p_delete_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-CHANGED-RESPONSES")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(incidentQuestionSeq).isEqualTo(789L)
+      assertThat(incidentResponseSeq).isEqualTo(345L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `incident case responses deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+            "p_question_seq" to "789",
+            "p_response_seq" to "345",
+            "p_table_name" to "incident_case_responses",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-DELETED-RESPONSES")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(incidentQuestionSeq).isEqualTo(789L)
+      assertThat(incidentResponseSeq).isEqualTo(345L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `incident case requirements updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+            "p_requirement_seq" to "456",
+            "p_table_name" to "incident_case_requirements",
+            "p_delete_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-CHANGED-REQUIREMENTS")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(incidentRequirementSeq).isEqualTo(456L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `incident case requirements deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "INCIDENT-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_incident_case_id" to "234",
+            "p_requirement_seq" to "456",
+            "p_table_name" to "incident_case_requirements",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("INCIDENT-DELETED-REQUIREMENTS")
+      assertThat(incidentCaseId).isEqualTo(234L)
+      assertThat(incidentRequirementSeq).isEqualTo(456L)
+      assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
 }

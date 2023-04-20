@@ -523,7 +523,7 @@ class OffenderEventsTransformer @Autowired constructor() {
 
   private fun incidentUpdatedEventOf(xtag: Xtag): OffenderEvent {
     val v =
-      if (xtag.content.p_delete_flag == "N") "CHANGED-" else "DELETED-" + INCIDENT_TABLE_MAP[xtag.content.p_table_name]
+      (if (xtag.content.p_delete_flag == "N") "CHANGED-" else "DELETED-") + INCIDENT_TABLE_MAP[xtag.content.p_table_name]
     return GenericOffenderEvent(
       eventType = "INCIDENT-$v",
       eventDatetime = xtag.nomisTimestamp,
