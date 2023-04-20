@@ -1,8 +1,9 @@
+@file:Suppress("PropertyName")
+
 package uk.gov.justice.digital.hmpps.prisonerevents.service.xtag
 
 class XtagContent(private val map: Map<String, String>) {
   private val m = map.withDefault { null }
-  val p_nomis_timestamp by m
   val p_offender_id by m
   val p_root_offender_id by m
   val p_offender_book_id by m
@@ -13,7 +14,6 @@ class XtagContent(private val map: Map<String, String>) {
   val p_owner_class by m
   val p_primary_addr_flag by m
   val p_mail_addr_flag by m
-  val p_next_of_kin_flag by m
   val p_delete_flag by m
   val p_old_prison_num by m
   val p_old_prision_num by m
@@ -38,21 +38,16 @@ class XtagContent(private val map: Map<String, String>) {
   val p_agency_incident_id by m
   val p_oic_offence_id by m
   val p_offender_risk_predictor_id by m
-  val p_offender_sent_condition_id by m
-  val p_hdc_status_tracking_id by m
   val p_from_agy_loc_id by m
   val p_to_agy_loc_id by m
   val p_plea_finding_code by m
   val p_finding_code by m
   val p_condition_code by m
-  val p_reason_code by m
-  val p_status_code by m
   val p_alert_code by m
   val p_movement_reason_code by m
   val p_direction_code by m
   val p_escort_code by m
   val p_event_date by m
-  val p_event_time by m
   val p_old_alert_date by m
   val p_old_alert_time by m
   val p_alert_date by m
@@ -72,9 +67,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_identifier_type by m
   val p_bed_assign_seq by m
   val p_living_unit_id by m
-  val p_new_record by m
   val p_record_deleted by m
-  val p_timestamp by m
   val p_event_id by m
   val p_start_time by m
   val p_end_time by m
@@ -101,9 +94,6 @@ class XtagContent(private val map: Map<String, String>) {
   val p_ns_offender_book_id by m
   val p_ns_reason_code by m
   val p_ns_level_code by m
-  val p_internal_location_flag by m
-  val p_transport_flag by m
-  val p_recip_ns_reason_code by m
   val p_ns_type by m
   val p_type_seq by m
   val p_ns_effective_date by m
