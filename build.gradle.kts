@@ -1,15 +1,10 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "4.8.6-beta-3"
   kotlin("plugin.spring") version "1.8.20"
-  id("org.unbroken-dome.test-sets") version "4.0.0"
 }
 
 configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
-}
-
-testSets {
-  "testSmoke"()
 }
 
 dependencies {
