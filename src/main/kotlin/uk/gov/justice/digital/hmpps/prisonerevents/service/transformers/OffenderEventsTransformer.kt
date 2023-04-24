@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
@@ -160,6 +161,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_RESTRICTS-UPDATED" -> restrictionEventOf(xtag)
         "OFF_PERS_RESTRICTS-UPDATED" -> restrictionPersonEventOf(xtag)
         "VISITOR_RESTRICTS-UPDATED" -> visitorRestrictionEventOf(xtag)
+        "PRISONER_ACTIVITY-UPDATED" -> prisonerActivityUpdateEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -882,6 +884,17 @@ class OffenderEventsTransformer @Autowired constructor() {
     comment = xtag.content.p_comment_txt,
     visitorRestrictionId = xtag.content.p_visitor_restriction_id?.toLong(),
     enteredById = xtag.content.p_entered_staff_id?.toLong(),
+  )
+
+  private fun prisonerActivityUpdateEventOf(xtag: Xtag) = PrisonerActivityUpdateEvent(
+    eventType = "PRISONER_ACTIVITY-UPDATED",
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    prisonId = xtag.content.p_caseload_id,
+    suspendActivities = "Y" == xtag.content.p_suspend_activities,
+    endActivities = "Y" == xtag.content.p_end_activities,
+    staffId = xtag.content.p_entered_staff_id,
   )
 
   companion object {

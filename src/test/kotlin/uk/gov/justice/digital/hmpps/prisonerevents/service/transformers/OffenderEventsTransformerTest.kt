@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
@@ -2579,6 +2580,35 @@ class OffenderEventsTransformerTest {
       assertThat(offenderId).isEqualTo(234L)
       assertThat(nomisEventType).isNull()
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
+    }
+  }
+
+  @Test
+  fun `prisoner activity updated event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<PrisonerActivityUpdateEvent>(
+      Xtag(
+        eventType = "PRISONER_ACTIVITY-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_caseload_id" to "LEI",
+            "p_suspend_activities" to "Y",
+            "p_end_activities" to "N",
+            "p_entered_staff_id" to "Some Staff ID",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("PRISONER_ACTIVITY-UPDATED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("PRISONER_ACTIVITY-UPDATED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(prisonId).isEqualTo("LEI")
+      assertThat(suspendActivities).isTrue()
+      assertThat(endActivities).isFalse()
+      assertThat(staffId).isEqualTo("Some Staff ID")
     }
   }
 
