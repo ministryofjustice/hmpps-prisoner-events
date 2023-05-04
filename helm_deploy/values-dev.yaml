@@ -11,6 +11,11 @@ generic-service:
   ingress:
     host: prsnr-events-dev.aks-dev-1.studio-hosting.service.justice.gov.uk
 
+  scheduledDowntime:
+    enabled: true
+    startup: '17 6 * * 1-5' # Start at 6.17am UTC Monday-Friday
+    shutdown: '49 21 * * 1-5' # Stop at 9.49pm UTC Monday-Friday
+
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     API_BASE_URL_OAUTH: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
