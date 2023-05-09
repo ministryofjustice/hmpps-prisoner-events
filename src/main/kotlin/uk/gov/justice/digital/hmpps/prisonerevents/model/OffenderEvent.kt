@@ -153,6 +153,22 @@ class VisitorRestrictionOffenderEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class PrisonerActivityUpdateEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  val prisonId: String?,
+  val action: String?,
+  val user: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
