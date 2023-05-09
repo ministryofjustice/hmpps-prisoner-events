@@ -2584,31 +2584,29 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun `prisoner activity updated event mapped correctly`() {
+  fun `prisoner activity suspend event mapped correctly`() {
     val now = LocalDateTime.now()
     withCallTransformer<PrisonerActivityUpdateEvent>(
       Xtag(
-        eventType = "PRISONER_ACTIVITY-UPDATED",
+        eventType = "PRISONER_ACTIVITY-UPDATE",
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
             "p_offender_id_display" to "A234BC",
-            "p_caseload_id" to "LEI",
-            "p_suspend_activities" to "Y",
-            "p_end_activities" to "N",
-            "p_entered_staff_id" to "Some Staff ID",
+            "p_agy_loc_id" to "LEI",
+            "p_action" to "SUSPEND",
+            "p_user" to "Some User",
           ),
         ),
       ),
     ) {
-      assertThat(eventType).isEqualTo("PRISONER_ACTIVITY-UPDATED")
+      assertThat(eventType).isEqualTo("PRISONER_ACTIVITY-UPDATE")
       assertThat(offenderId).isNull()
-      assertThat(nomisEventType).isEqualTo("PRISONER_ACTIVITY-UPDATED")
+      assertThat(nomisEventType).isEqualTo("PRISONER_ACTIVITY-UPDATE")
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(prisonId).isEqualTo("LEI")
-      assertThat(suspendActivities).isTrue()
-      assertThat(endActivities).isFalse()
-      assertThat(staffId).isEqualTo("Some Staff ID")
+      assertThat(action).isEqualTo("SUSPEND")
+      assertThat(user).isEqualTo("Some User")
     }
   }
 

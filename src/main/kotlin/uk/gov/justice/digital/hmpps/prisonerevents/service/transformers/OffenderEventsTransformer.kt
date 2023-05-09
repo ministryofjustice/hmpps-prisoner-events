@@ -161,7 +161,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_RESTRICTS-UPDATED" -> restrictionEventOf(xtag)
         "OFF_PERS_RESTRICTS-UPDATED" -> restrictionPersonEventOf(xtag)
         "VISITOR_RESTRICTS-UPDATED" -> visitorRestrictionEventOf(xtag)
-        "PRISONER_ACTIVITY-UPDATED" -> prisonerActivityUpdateEventOf(xtag)
+        "PRISONER_ACTIVITY-UPDATE" -> prisonerActivityUpdateEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -887,14 +887,13 @@ class OffenderEventsTransformer @Autowired constructor() {
   )
 
   private fun prisonerActivityUpdateEventOf(xtag: Xtag) = PrisonerActivityUpdateEvent(
-    eventType = "PRISONER_ACTIVITY-UPDATED",
+    eventType = "PRISONER_ACTIVITY-UPDATE",
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
     offenderIdDisplay = xtag.content.p_offender_id_display,
-    prisonId = xtag.content.p_caseload_id,
-    suspendActivities = "Y" == xtag.content.p_suspend_activities,
-    endActivities = "Y" == xtag.content.p_end_activities,
-    staffId = xtag.content.p_entered_staff_id,
+    prisonId = xtag.content.p_agy_loc_id,
+    action = xtag.content.p_action,
+    user = xtag.content.p_user,
   )
 
   companion object {
