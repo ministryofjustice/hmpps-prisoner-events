@@ -1479,6 +1479,7 @@ class OffenderEventsTransformerTest {
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
+            "p_offender_book_id" to "789",
             "p_offender_id" to "123",
             "p_root_offender_id" to "456",
             "p_identifier_type" to "some type",
@@ -1488,6 +1489,7 @@ class OffenderEventsTransformerTest {
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_IDENTIFIER-INSERTED")
+      assertThat(bookingId).isEqualTo(789)
       assertThat(offenderId).isEqualTo(123)
       assertThat(rootOffenderId).isEqualTo(456)
       assertThat(identifierType).isEqualTo("some type")
@@ -1506,6 +1508,7 @@ class OffenderEventsTransformerTest {
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
+            "p_offender_book_id" to "789",
             "p_offender_id" to "123",
             "p_root_offender_id" to "456",
             "p_identifier_type" to "some type",
@@ -1514,8 +1517,8 @@ class OffenderEventsTransformerTest {
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_IDENTIFIER-DELETED")
+      assertThat(bookingId).isEqualTo(789)
       assertThat(offenderId).isEqualTo(123)
-      assertThat(rootOffenderId).isEqualTo(456)
       assertThat(rootOffenderId).isEqualTo(456)
       assertThat(identifierType).isEqualTo("some type")
       assertThat(nomisEventType).isEqualTo("P3_RESULT")
