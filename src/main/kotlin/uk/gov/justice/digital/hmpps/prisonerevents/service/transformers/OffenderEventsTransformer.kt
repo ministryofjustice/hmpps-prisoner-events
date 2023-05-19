@@ -541,7 +541,7 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderIdentifierInsertedEventOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = "OFFENDER_IDENTIFIER-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
     offenderId = xtag.content.p_offender_id?.toLong(),
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     identifierType = xtag.content.p_identifier_type,
@@ -552,7 +552,7 @@ class OffenderEventsTransformer @Autowired constructor() {
   private fun offenderIdentifierDeletedEventOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = "OFFENDER_IDENTIFIER-DELETED",
     eventDatetime = xtag.nomisTimestamp,
-    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
     offenderId = xtag.content.p_offender_id?.toLong(),
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     identifierType = xtag.content.p_identifier_type,
