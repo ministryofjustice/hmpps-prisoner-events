@@ -26,12 +26,12 @@ dependencies {
   implementation("com.oracle.database.messaging:aqapi:23.2.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.1")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.0")
 
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("io.jsonwebtoken:jjwt:0.9.1")
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.14")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.13")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:localstack:1.18.0")
   testImplementation("org.testcontainers:oracle-xe:1.18.0")
