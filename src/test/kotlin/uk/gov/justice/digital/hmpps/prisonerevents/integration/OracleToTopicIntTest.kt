@@ -1,9 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.integration
 
-import com.amazonaws.services.sns.AmazonSNS
-import com.amazonaws.services.sns.model.PublishRequest
-import com.amazonaws.services.sqs.AmazonSQS
-import com.amazonaws.services.sqs.model.PurgeQueueRequest
+import jakarta.jms.ConnectionFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
@@ -21,13 +18,17 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.jms.core.JmsTemplate
+import software.amazon.awssdk.services.sns.SnsAsyncClient
+import software.amazon.awssdk.services.sns.model.PublishRequest
+import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
+import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
+import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.time.Duration
-import javax.jms.ConnectionFactory
 
 class OracleToTopicIntTest : IntegrationTestBase() {
 
@@ -50,7 +51,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
   companion object {
     private var isTopicSpySetUp = false
-    private lateinit var snsClient: AmazonSNS
+    private lateinit var snsClient: SnsAsyncClient
   }
 
   @BeforeEach
@@ -76,12 +77,14 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
       await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 1 }
 
-      val receiveMessageResult = prisonEventQueueSqsClient.receiveMessage(prisonEventQueueUrl)
-      with(receiveMessageResult.messages.first()) {
-        assertThat(body.contains("""\"nomisEventType\":\"OFF_RECEP_OASYS\"""")).isTrue
-        assertThat(body.contains("""\"eventType\":\"OFFENDER_MOVEMENT-RECEPTION\"""")).isTrue
-        assertThat(body.contains("""\"bookingId\":1234567""")).isTrue
-        assertThat(body.contains("""\"movementSeq\":4""")).isTrue
+      val receiveMessageResult = prisonEventQueueSqsClient.receiveMessage(
+        ReceiveMessageRequest.builder().queueUrl(prisonEventQueueUrl).build(),
+      )
+      with(receiveMessageResult.get().messages().first()) {
+        assertThat(body().contains("""\"nomisEventType\":\"OFF_RECEP_OASYS\"""")).isTrue
+        assertThat(body().contains("""\"eventType\":\"OFFENDER_MOVEMENT-RECEPTION\"""")).isTrue
+        assertThat(body().contains("""\"bookingId\":1234567""")).isTrue
+        assertThat(body().contains("""\"movementSeq\":4""")).isTrue
       }
     }
 
@@ -180,17 +183,17 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
   private fun simulateTrigger() {
     jmsTemplate.send { session ->
-      val testMessage = session.createMapMessage()
-      testMessage.jmsType = "OFF_RECEP_OASYS"
-      testMessage.setLong("p_offender_book_id", 1234567L)
-      testMessage.setInt("p_movement_seq", 4)
-      testMessage.setString("eventType", "OFF_RECEP_OASYS")
-      testMessage
+      session.createMapMessage().apply {
+        jmsType = "OFF_RECEP_OASYS"
+        setLong("p_offender_book_id", 1234567L)
+        setInt("p_movement_seq", 4)
+        setString("eventType", "OFF_RECEP_OASYS")
+      }
     }
   }
 
   fun purgeQueues() {
-    prisonEventQueueSqsClient.purgeQueue(PurgeQueueRequest(prisonEventQueueUrl))
+    prisonEventQueueSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(prisonEventQueueUrl).build())
     sqlRepository.purgeExceptionQueue()
     await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() == 0 }
   }
@@ -202,15 +205,10 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     }
   }
 
-  fun getNumberOfMessagesCurrentlyOnPrisonEventQueue(): Int = prisonEventQueueSqsClient.numMessages(prisonEventQueueUrl)
-    .also { log.info("Number of messages on prison queue: $it") }
+  fun getNumberOfMessagesCurrentlyOnPrisonEventQueue(): Int =
+    prisonEventQueueSqsClient.countAllMessagesOnQueue(prisonEventQueueUrl).get()
 
   fun getGetNumberOfMessagesCurrentlyOnExceptionQueue() =
     sqlRepository.getExceptionMessageIds().size
       .also { log.info("Number of messages on exception queue: $it") }
-}
-
-fun AmazonSQS.numMessages(url: String): Int {
-  val queueAttributes = getQueueAttributes(url, listOf("ApproximateNumberOfMessages"))
-  return queueAttributes.attributes["ApproximateNumberOfMessages"]!!.toInt()
 }

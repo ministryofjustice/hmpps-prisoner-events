@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
-import oracle.jms.AQjmsMapMessage
-import oracle.jms.AQjmsMessage
+import oracle.jakarta.jms.AQjmsMapMessage
+import oracle.jakarta.jms.AQjmsMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

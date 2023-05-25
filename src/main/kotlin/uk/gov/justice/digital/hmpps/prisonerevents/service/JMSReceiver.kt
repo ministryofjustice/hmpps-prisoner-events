@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
-import oracle.jms.AQjmsMapMessage
+import jakarta.jms.Message
+import jakarta.jms.MessageListener
+import oracle.jakarta.jms.AQjmsMapMessage
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer
-import javax.jms.Message
-import javax.jms.MessageListener
 
 @Component
 class JMSReceiver(

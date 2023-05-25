@@ -40,6 +40,9 @@ spring:
     hibernate:
       ddl-auto: none
 
+  main:
+    allow-bean-definition-overriding: true
+
 server:
   port: 8080
   servlet:

@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 
 import com.google.common.base.Strings
-import oracle.jms.AQjmsMapMessage
+import oracle.jakarta.jms.AQjmsMapMessage
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
