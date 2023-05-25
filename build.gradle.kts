@@ -33,8 +33,8 @@ dependencies {
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.14")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.18.1")
-  testImplementation("org.testcontainers:oracle-xe:1.18.1")
+  testImplementation("org.testcontainers:localstack:1.18.0")
+  testImplementation("org.testcontainers:oracle-xe:1.18.0")
 }
 
 java {
