@@ -8,7 +8,7 @@ configurations {
 }
 
 // still on spring boot 2
-val hmppsSqsVersion by extra("1.3.0")
+val hmppsSqsVersion by extra("1.2.0")
 
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
