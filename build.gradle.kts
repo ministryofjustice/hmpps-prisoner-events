@@ -7,14 +7,11 @@ configurations {
   testImplementation { exclude(group = "org.junit.vintage") }
 }
 
-// still on spring boot 2
-val hmppsSqsVersion by extra("1.2.0")
-
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("com.amazonaws:aws-java-sdk-sns")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:$hmppsSqsVersion")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:1.2.0")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-security")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
@@ -36,8 +33,8 @@ dependencies {
   testImplementation("org.mockito:mockito-inline:5.2.0")
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.14")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.18.1")
-  testImplementation("org.testcontainers:oracle-xe:1.18.1")
+  testImplementation("org.testcontainers:localstack:1.18.0")
+  testImplementation("org.testcontainers:oracle-xe:1.18.0")
 }
 
 java {
