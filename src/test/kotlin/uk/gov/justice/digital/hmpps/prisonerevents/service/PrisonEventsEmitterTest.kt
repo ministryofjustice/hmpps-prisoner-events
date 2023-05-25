@@ -1,10 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
-import com.amazonaws.http.SdkHttpMetadata
-import com.amazonaws.services.sns.AmazonSNSAsync
-import com.amazonaws.services.sns.model.PublishRequest
-import com.amazonaws.services.sns.model.PublishResult
-import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions
@@ -20,13 +15,17 @@ import org.mockito.Captor
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import software.amazon.awssdk.http.SdkHttpResponse
+import software.amazon.awssdk.services.sns.SnsAsyncClient
+import software.amazon.awssdk.services.sns.model.PublishRequest
+import software.amazon.awssdk.services.sns.model.PublishResponse
+import software.amazon.awssdk.services.sns.model.ValidationException
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -34,6 +33,7 @@ import uk.gov.justice.hmpps.sqs.HmppsTopic
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit.SECONDS
+import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 @ExtendWith(MockitoExtension::class)
@@ -51,12 +51,18 @@ class PrisonEventsEmitterTest {
   private lateinit var publishRequestCaptor: ArgumentCaptor<PublishRequest>
 
   private val hmppsQueueService = mock<HmppsQueueService>()
-  private val prisonEventSnsClient = mock<AmazonSNSAsync>()
+  private val prisonEventSnsClient = mock<SnsAsyncClient>()
+  private val publishResult: PublishResponse = mock<PublishResponse>()
 
   @BeforeEach
   fun setup() {
     whenever(hmppsQueueService.findByTopicId("prisoneventtopic"))
       .thenReturn(HmppsTopic("prisoneventtopic", "topicARN", prisonEventSnsClient))
+
+    val sdk = SdkHttpResponse.builder().statusCode(200).build()
+    whenever(publishResult.sdkHttpResponse()).thenReturn(sdk)
+    whenever(prisonEventSnsClient.publish(any<PublishRequest>()))
+      .thenReturn(CompletableFuture.completedFuture(publishResult))
 
     service = PrisonEventsEmitter(hmppsQueueService, objectMapper, telemetryClient)
   }
@@ -89,7 +95,7 @@ class PrisonEventsEmitterTest {
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
-    assertThat(objectMapper.readTree(request.message)).isEqualTo(
+    assertThat(objectMapper.readTree(request.message())).isEqualTo(
       objectMapper.readTree(
         """
       {
@@ -103,12 +109,6 @@ class PrisonEventsEmitterTest {
 
   @Test
   fun `will add telemetry event`() {
-    val publishResult = PublishResult()
-    val sdkHttpMetadata = mock<SdkHttpMetadata>()
-    whenever(sdkHttpMetadata.getHttpStatusCode()).thenReturn(200)
-    publishResult.setSdkHttpMetadata(sdkHttpMetadata)
-    whenever(prisonEventSnsClient.publish(any())).thenReturn(publishResult)
-
     service.sendEvent(
       AlertOffenderEvent(
         eventType = "my-event-type",
@@ -144,9 +144,9 @@ class PrisonEventsEmitterTest {
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
-    assertThat(request.messageAttributes["code"]).satisfies(
+    assertThat(request.messageAttributes()["code"]).satisfies(
       Consumer {
-        assertThat(it?.stringValue).isEqualTo("alert-code")
+        assertThat(it?.stringValue()).isEqualTo("alert-code")
       },
     )
   }
@@ -163,7 +163,7 @@ class PrisonEventsEmitterTest {
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
-    assertThat(request.messageAttributes["code"]).isNull()
+    assertThat(request.messageAttributes()["code"]).isNull()
   }
 
   @Test
@@ -179,9 +179,9 @@ class PrisonEventsEmitterTest {
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
-    assertThat(request.messageAttributes["eventType"]).satisfies(
+    assertThat(request.messageAttributes()["eventType"]).satisfies(
       Consumer {
-        assertThat(it?.stringValue).isEqualTo("my-event-type")
+        assertThat(it?.stringValue()).isEqualTo("my-event-type")
       },
     )
   }
@@ -199,9 +199,9 @@ class PrisonEventsEmitterTest {
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
-    assertThat(request.messageAttributes["publishedAt"]).isNotNull.satisfies(
+    assertThat(request.messageAttributes()["publishedAt"]).isNotNull.satisfies(
       Consumer {
-        assertThat(OffsetDateTime.parse(it?.stringValue).toLocalDateTime())
+        assertThat(OffsetDateTime.parse(it?.stringValue()).toLocalDateTime())
           .isCloseTo(LocalDateTime.now(), Assertions.within(10, SECONDS))
       },
     )
@@ -209,7 +209,8 @@ class PrisonEventsEmitterTest {
 
   @Test
   fun `will send telemetry for bad JSON`() {
-    whenever(prisonEventSnsClient.publish(any())).doAnswer { throw JsonParseException(mock(), "Bad JSON") }
+    whenever(prisonEventSnsClient.publish(any<PublishRequest>()))
+      .thenReturn(CompletableFuture.failedFuture(ValidationException.builder().build()))
 
     assertDoesNotThrow {
       service.sendEvent(
@@ -227,7 +228,32 @@ class PrisonEventsEmitterTest {
 
   @Test
   fun `will throw and send telemetry if publishing fails`() {
-    whenever(prisonEventSnsClient.publish(any())).thenThrow(RuntimeException::class.java)
+    whenever(prisonEventSnsClient.publish(any<PublishRequest>()))
+      .thenReturn(CompletableFuture.failedFuture(RuntimeException("test")))
+
+    assertThatThrownBy {
+      service.sendEvent(
+        AlertOffenderEvent(
+          eventType = "my-event-type",
+          alertCode = "alert-code",
+          bookingId = 12345L,
+        ),
+      )
+    }.cause().isInstanceOf(RuntimeException::class.java)
+      .message()
+      .isEqualTo("test")
+
+    verify(telemetryClient, never()).trackEvent(eq("my-event-type"), any(), isNull())
+    verify(telemetryClient).trackEvent(eq("my-event-type_FAILED"), any(), isNull())
+  }
+
+  @Test
+  fun `will throw if publishing fails with an http error`() {
+    val sdk = SdkHttpResponse.builder().statusCode(500).build()
+    val publishResult: PublishResponse = mock<PublishResponse>()
+    whenever(publishResult.sdkHttpResponse()).thenReturn(sdk)
+    whenever(prisonEventSnsClient.publish(any<PublishRequest>()))
+      .thenReturn(CompletableFuture.completedFuture(publishResult))
 
     assertThatThrownBy {
       service.sendEvent(
@@ -238,28 +264,7 @@ class PrisonEventsEmitterTest {
         ),
       )
     }.isInstanceOf(RuntimeException::class.java)
-
-    verify(telemetryClient, never()).trackEvent(eq("my-event-type"), any(), isNull())
-    verify(telemetryClient).trackEvent(eq("my-event-type_FAILED"), any(), isNull())
-  }
-
-  @Test
-  fun `will throw if publishing fails with an http error`() {
-    val publishResult = PublishResult()
-    val sdkHttpMetadata = mock<SdkHttpMetadata>()
-    whenever(sdkHttpMetadata.getHttpStatusCode()).thenReturn(500)
-    publishResult.setSdkHttpMetadata(sdkHttpMetadata)
-    whenever(prisonEventSnsClient.publish(any())).thenReturn(publishResult)
-
-    assertThatThrownBy {
-      service.sendEvent(
-        AlertOffenderEvent(
-          eventType = "my-event-type",
-          alertCode = "alert-code",
-          bookingId = 12345L,
-        ),
-      )
-    }.isInstanceOf(RuntimeException::class.java).message()
+      .message()
       .isEqualTo("Attempt to publish message my-event-type resulted in an http 500 error")
 
     verify(telemetryClient, never()).trackEvent(eq("my-event-type"), any(), isNull())

@@ -33,10 +33,14 @@ jobs:
     environment:
       _JAVA_OPTIONS: -Xmx256m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=1
     working_directory: ~/app
-    resource_class: medium
+    resource_class: large
 
     steps:
       - checkout
+      - restore_cache:
+          keys:
+            - gradle-{{ checksum "build.gradle.kts" }}
+            - gradle-
       - hmpps/wait_till_ready
       - run:
           name: Wait for Oracle to start
@@ -53,11 +57,6 @@ jobs:
               sleep 10
             done
             exit $RTN
-
-      - restore_cache:
-          keys:
-            - gradle-{{ checksum "build.gradle.kts" }}
-            - gradle-
       - run:
           command: ./gradlew check
       - save_cache:

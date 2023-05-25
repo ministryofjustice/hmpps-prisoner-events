@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.config
 
+import jakarta.jms.ConnectionFactory
+import jakarta.jms.ExceptionListener
 import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,8 +11,6 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer
 import org.springframework.jms.support.destination.JmsDestinationAccessor
 import org.springframework.util.ErrorHandler
 import uk.gov.justice.digital.hmpps.prisonerevents.service.JMSReceiver
-import javax.jms.ConnectionFactory
-import javax.jms.ExceptionListener
 import javax.sql.DataSource
 
 const val TABLE_OWNER = "XTAG"
