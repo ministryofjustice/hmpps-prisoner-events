@@ -169,6 +169,25 @@ class PrisonerActivityUpdateEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class AssessmentUpdateEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  bookingId: Long?,
+  val assessmentSeq: Long?,
+  val assessmentType: String?,
+  val evaluationResultCode: String?,
+  val reviewLevelSupType: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
@@ -194,7 +213,6 @@ class GenericOffenderEvent(
   val sanctionSeq: Long? = null,
   val movementSeq: Long? = null,
   val imprisonmentStatusSeq: Long? = null,
-  val assessmentSeq: Long? = null,
   val caseNoteId: Long? = null,
   val agencyLocationId: String? = null,
   val riskPredictorId: Long? = null,

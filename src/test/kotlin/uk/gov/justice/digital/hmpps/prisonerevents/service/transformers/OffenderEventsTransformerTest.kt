@@ -6,6 +6,7 @@ import oracle.jakarta.jms.AQjmsMapMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
@@ -1547,9 +1548,9 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun `assessment changed mapped correctly`() {
+  fun `deprecated assessment changed mapped correctly`() {
     val now = LocalDateTime.now()
-    withCallTransformer<GenericOffenderEvent>(
+    withCallTransformer<AssessmentUpdateEvent>(
       Xtag(
         eventType = "S1_RESULT",
         nomisTimestamp = now,
@@ -1566,6 +1567,38 @@ class OffenderEventsTransformerTest {
       assertThat(assessmentSeq).isEqualTo(123L)
       assertThat(nomisEventType).isEqualTo("S1_RESULT")
       assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `assessment changed mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<AssessmentUpdateEvent>(
+      Xtag(
+        eventType = "OFFENDER_ASSESSMENTS-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_book_id" to "456",
+            "p_assessment_seq" to "123",
+            "p_offender_id_display" to "A1234AA",
+            "p_assessment_type" to "CSR",
+            "p_evaluation_result_code" to "APP",
+            "p_review_level_sup_type" to "STANDARD",
+            "p_nomis_timestamp" to "20230509215740.443718000",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("ASSESSMENT-UPDATED")
+      assertThat(bookingId).isEqualTo(456L)
+      assertThat(assessmentSeq).isEqualTo(123L)
+      assertThat(assessmentType).isEqualTo("CSR")
+      assertThat(evaluationResultCode).isEqualTo("APP")
+      assertThat(reviewLevelSupType).isEqualTo("STANDARD")
+      assertThat(offenderIdDisplay).isEqualTo("A1234AA")
+      assertThat(nomisEventType).isEqualTo("OFFENDER_ASSESSMENTS-UPDATED")
+      assertThat(eventDatetime).isEqualTo(LocalDateTime.parse("2023-05-09T21:57:40.443718"))
     }
   }
 

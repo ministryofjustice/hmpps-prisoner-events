@@ -35,3 +35,11 @@ Next run
 Now, integration tests will run with these existing docker containers .
 
 Testcontainers will not start new containers on Mac as the port technique to detect an already running instance does not work under colima.
+
+# Running locally
+
+## Prerequisites
+
+Ensure you include this property setting which prevents errors accessing non-existent javax classes:
+
+`-Doracle.jakarta.jms.useEmulatedXA=false`

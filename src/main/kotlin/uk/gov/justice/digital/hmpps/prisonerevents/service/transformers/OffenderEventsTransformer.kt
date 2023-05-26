@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
@@ -105,6 +106,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         } else {
           null
         }
+        "OFFENDER_ASSESSMENTS-UPDATED" -> assessmentUpdatedEventOf(xtag)
 
         "OFF_ALERT_INSERT" -> alertInsertedEventOf(xtag)
         "OFF_ALERT_UPDATE" -> alertUpdatedEventOf(xtag)
@@ -500,11 +502,27 @@ class OffenderEventsTransformer @Autowired constructor() {
     nomisEventType = xtag.eventType,
   )
 
-  private fun assessmentChangedEventOf(xtag: Xtag) = GenericOffenderEvent(
+  private fun assessmentChangedEventOf(xtag: Xtag) = AssessmentUpdateEvent(
     eventType = "ASSESSMENT-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     assessmentSeq = xtag.content.p_assessment_seq?.toLong(),
+    assessmentType = null,
+    evaluationResultCode = null,
+    reviewLevelSupType = null,
+    offenderIdDisplay = null,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun assessmentUpdatedEventOf(xtag: Xtag) = AssessmentUpdateEvent(
+    eventType = "ASSESSMENT-UPDATED",
+    eventDatetime = localDateTimeOf(xtag.content.p_nomis_timestamp),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    assessmentSeq = xtag.content.p_assessment_seq?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    reviewLevelSupType = xtag.content.p_review_level_sup_type,
+    evaluationResultCode = xtag.content.p_evaluation_result_code,
+    assessmentType = xtag.content.p_assessment_type,
     nomisEventType = xtag.eventType,
   )
 
@@ -926,30 +944,28 @@ class OffenderEventsTransformer @Autowired constructor() {
       }
     }
 
-    fun localDateOf(date: String?): LocalDate? {
-      val pattern = "[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd][dd-MMM-yyyy][dd-MMM-yy]"
+    private const val datePattern = "[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd][dd-MMM-yyyy][dd-MMM-yy]"
+    private val caseInsensitiveFormatter = DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(datePattern).toFormatter()
+
+    fun localDateOf(date: String?): LocalDate? =
       try {
-        return date?.let {
-          LocalDate.parse(
-            it,
-            DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(pattern).toFormatter(),
-          )
+        date?.let {
+          LocalDate.parse(it, caseInsensitiveFormatter)
         }
       } catch (dtpe: DateTimeParseException) {
-        log.error("Unable to parse {} into a LocalDate using pattern {}", date, pattern)
+        log.error("Unable to parse $date into a LocalDateTime using pattern $datePattern", dtpe)
+        null
       }
-      return null
-    }
 
-    fun localTimeOf(dateTime: String?): LocalTime? {
-      val pattern = "[yyyy-MM-dd ]HH:mm:ss"
+    private const val timePattern = "[yyyy-MM-dd ]HH:mm:ss"
+
+    fun localTimeOf(dateTime: String?): LocalTime? =
       try {
-        return dateTime?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern(pattern)) }
+        dateTime?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern(timePattern)) }
       } catch (dtpe: DateTimeParseException) {
-        log.error("Unable to parse {} into a LocalTime using pattern {}", dateTime, pattern)
+        log.error("Unable to parse $dateTime into a LocalTime using pattern $timePattern", dtpe)
+        null
       }
-      return null
-    }
 
     fun localDateTimeOf(date: String?, time: String?): LocalDateTime? =
       localDateOf(date)?.let {
@@ -959,6 +975,18 @@ class OffenderEventsTransformer @Autowired constructor() {
         } else {
           t.atDate(it)
         }
+      }
+
+    private const val timeStampPattern = "yyyyMMddHHmmss.SSSSSSSSS"
+
+    fun localDateTimeOf(dateTime: String?): LocalDateTime? =
+      try {
+        dateTime?.let {
+          LocalDateTime.parse(it, DateTimeFormatter.ofPattern(timeStampPattern))
+        }
+      } catch (dtpe: DateTimeParseException) {
+        log.error("Unable to parse $dateTime into a LocalDateTime using pattern $timeStampPattern", dtpe)
+        null
       }
   }
 }
