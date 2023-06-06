@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.2.0-beta-2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.2.0"
   kotlin("plugin.spring") version "1.8.21"
 }
 
@@ -24,17 +24,17 @@ dependencies {
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.2.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.12.0")
-  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.1")
+  implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 
   testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.11.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.14")
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.15")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.18.1")
-  testImplementation("org.testcontainers:oracle-xe:1.18.1")
+  testImplementation("org.testcontainers:localstack:1.18.3")
+  testImplementation("org.testcontainers:oracle-xe:1.18.3")
 }
 
 java {
