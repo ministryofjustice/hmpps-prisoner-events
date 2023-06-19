@@ -34,20 +34,9 @@
           "telemetryType": "exception",
           "attributes": [
             {
-              "key": "exception.message",
-              "value": ".*GETMAXIDENTIFIERLENGTH.*",
-              "matchType": "regexp"
-            }
-          ],
-          "percentage": 0
-        },
-        {
-          "telemetryType": "exception",
-          "attributes": [
-            {
-              "key": "exception.message",
-              "value": ".*GETDBCOMPATMAJORVERSION.*",
-              "matchType": "regexp"
+              "key": "exception.type",
+              "value": "java.sql.SQLException",
+              "matchType": "strict"
             }
           ],
           "percentage": 0
