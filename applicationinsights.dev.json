@@ -20,7 +20,7 @@
     "sampling": {
       "overrides": [
         {
-          "telemetryKind": "dependency",
+          "telemetryType": "request",
           "attributes": [
             {
               "key": "http.url",
@@ -31,22 +31,22 @@
           "percentage": 100
         },
         {
-          "telemetryKind": "exception",
+          "telemetryType": "exception",
           "attributes": [
             {
-              "key": "db.statement",
-              "value": ".*getDBCompatMajorVersion.*",
+              "key": "exception.message",
+              "value": ".*GETMAXIDENTIFIERLENGTH.*",
               "matchType": "regexp"
             }
           ],
           "percentage": 0
         },
         {
-          "telemetryKind": "exception",
+          "telemetryType": "exception",
           "attributes": [
             {
-              "key": "db.statement",
-              "value": ".*getMaxIdentifierLength.*",
+              "key": "exception",
+              "value": ".*GETDBCOMPATMAJORVERSION.*",
               "matchType": "regexp"
             }
           ],
