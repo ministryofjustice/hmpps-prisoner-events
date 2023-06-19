@@ -45,7 +45,7 @@
           "telemetryType": "exception",
           "attributes": [
             {
-              "key": "exception",
+              "key": "exception.message",
               "value": ".*GETDBCOMPATMAJORVERSION.*",
               "matchType": "regexp"
             }
