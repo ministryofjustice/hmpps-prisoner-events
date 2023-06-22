@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffende
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
@@ -1474,7 +1475,7 @@ class OffenderEventsTransformerTest {
   @Test
   fun `offender identifier inserted mapped correctly`() {
     val now = LocalDateTime.now()
-    withCallTransformer<GenericOffenderEvent>(
+    withCallTransformer<OffenderIdentifierUpdatedEvent>(
       Xtag(
         eventType = "P3_RESULT",
         nomisTimestamp = now,
@@ -1501,7 +1502,7 @@ class OffenderEventsTransformerTest {
   @Test
   fun `offender identifier deleted mapped correctly`() {
     val now = LocalDateTime.now()
-    withCallTransformer<GenericOffenderEvent>(
+    withCallTransformer<OffenderIdentifierUpdatedEvent>(
       Xtag(
         eventType = "P3_RESULT",
         nomisTimestamp = now,
@@ -1517,10 +1518,39 @@ class OffenderEventsTransformerTest {
       assertThat(eventType).isEqualTo("OFFENDER_IDENTIFIER-DELETED")
       assertThat(offenderId).isEqualTo(123)
       assertThat(rootOffenderId).isEqualTo(456)
-      assertThat(rootOffenderId).isEqualTo(456)
       assertThat(identifierType).isEqualTo("some type")
       assertThat(nomisEventType).isEqualTo("P3_RESULT")
       assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender identifier updated mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderIdentifierUpdatedEvent>(
+      Xtag(
+        eventType = "OFFENDER_IDENTIFIERS-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_root_offender_id" to "456",
+            "p_offender_id" to "123",
+            "p_offender_id_display" to "A2435CD",
+            "p_identifier_type" to "some type",
+            "p_identifier_value" to "value",
+            "p_nomis_timestamp" to "20230509215740.443718000",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_IDENTIFIER-UPDATED")
+      assertThat(rootOffenderId).isEqualTo(456)
+      assertThat(offenderId).isEqualTo(123)
+      assertThat(offenderIdDisplay).isEqualTo("A2435CD")
+      assertThat(identifierType).isEqualTo("some type")
+      assertThat(identifierValue).isEqualTo("value")
+      assertThat(nomisEventType).isEqualTo("OFFENDER_IDENTIFIERS-UPDATED")
+      assertThat(eventDatetime).isEqualTo(LocalDateTime.parse("2023-05-09T21:57:40.443718"))
     }
   }
 
