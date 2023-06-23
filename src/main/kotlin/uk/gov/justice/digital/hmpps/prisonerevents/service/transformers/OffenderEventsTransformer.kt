@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffende
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
@@ -98,6 +99,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         } else {
           offenderIdentifierDeletedEventOf(xtag)
         }
+        "OFFENDER_IDENTIFIERS-UPDATED" -> offenderIdentifierUpdatedEventOf(xtag)
 
         "S1_RESULT" -> if (!Strings.isNullOrEmpty(xtag.content.p_imprison_status_seq)) {
           imprisonmentStatusChangedEventOf(xtag)
@@ -556,7 +558,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     )
   }
 
-  private fun offenderIdentifierInsertedEventOf(xtag: Xtag) = GenericOffenderEvent(
+  private fun offenderIdentifierInsertedEventOf(xtag: Xtag) = OffenderIdentifierUpdatedEvent(
     eventType = "OFFENDER_IDENTIFIER-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
     offenderId = xtag.content.p_offender_id?.toLong(),
@@ -566,13 +568,24 @@ class OffenderEventsTransformer @Autowired constructor() {
     nomisEventType = xtag.eventType,
   )
 
-  private fun offenderIdentifierDeletedEventOf(xtag: Xtag) = GenericOffenderEvent(
+  private fun offenderIdentifierDeletedEventOf(xtag: Xtag) = OffenderIdentifierUpdatedEvent(
     eventType = "OFFENDER_IDENTIFIER-DELETED",
     eventDatetime = xtag.nomisTimestamp,
     offenderId = xtag.content.p_offender_id?.toLong(),
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     identifierType = xtag.content.p_identifier_type,
     nomisEventType = xtag.eventType,
+  )
+
+  private fun offenderIdentifierUpdatedEventOf(xtag: Xtag) = OffenderIdentifierUpdatedEvent(
+    eventType = "OFFENDER_IDENTIFIER-UPDATED",
+    eventDatetime = localDateTimeOf(xtag.content.p_nomis_timestamp),
+    nomisEventType = xtag.eventType,
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    identifierType = xtag.content.p_identifier_type,
+    identifierValue = xtag.content.p_identifier_value,
   )
 
   private fun educationLevelInsertedEventOf(xtag: Xtag) = GenericOffenderEvent(
