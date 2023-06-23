@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 
-import com.google.common.base.Strings
 import oracle.jakarta.jms.AQjmsMapMessage
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -64,7 +63,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_RECEP_OASYS" -> offenderMovementReceptionEventOf(xtag)
         "OFF_DISCH_OASYS" -> offenderMovementDischargeEventOf(xtag)
         "M1_RESULT", "M1_UPD_RESULT" -> externalMovementRecordEventOf(xtag, externalMovementEventOf(xtag))
-        "OFF_UPD_OASYS" -> if (!Strings.isNullOrEmpty(xtag.content.p_offender_book_id)) {
+        "OFF_UPD_OASYS" -> if (!xtag.content.p_offender_book_id.isNullOrEmpty()) {
           offenderBookingChangedEventOf(xtag)
         } else {
           offenderDetailsChangedEventOf(xtag)
@@ -93,7 +92,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_EDUCATION_DEL" -> educationLevelDeletedEventOf(xtag)
         "P3_RESULT" -> if (xtag.content.p_identifier_type == "NOMISP3") {
           offenderBookingInsertedEventOf(xtag)
-        } else if (!Strings.isNullOrEmpty(xtag.content.p_identifier_value)
+        } else if (!xtag.content.p_identifier_value.isNullOrEmpty()
         ) {
           offenderIdentifierInsertedEventOf(xtag)
         } else {
@@ -101,9 +100,9 @@ class OffenderEventsTransformer @Autowired constructor() {
         }
         "OFFENDER_IDENTIFIERS-UPDATED" -> offenderIdentifierUpdatedEventOf(xtag)
 
-        "S1_RESULT" -> if (!Strings.isNullOrEmpty(xtag.content.p_imprison_status_seq)) {
+        "S1_RESULT" -> if (!xtag.content.p_imprison_status_seq.isNullOrEmpty()) {
           imprisonmentStatusChangedEventOf(xtag)
-        } else if (!Strings.isNullOrEmpty(xtag.content.p_assessment_seq)) {
+        } else if (!xtag.content.p_assessment_seq.isNullOrEmpty()) {
           assessmentChangedEventOf(xtag)
         } else {
           null
