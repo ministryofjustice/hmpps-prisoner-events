@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.externalMovementEventOf
@@ -2666,6 +2667,33 @@ class OffenderEventsTransformerTest {
       assertThat(eventType).isEqualTo("PRISONER_ACTIVITY-UPDATE")
       assertThat(offenderId).isNull()
       assertThat(nomisEventType).isEqualTo("PRISONER_ACTIVITY-UPDATE")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(prisonId).isEqualTo("LEI")
+      assertThat(action).isEqualTo("SUSPEND")
+      assertThat(user).isEqualTo("Some User")
+    }
+  }
+
+  @Test
+  fun `prisoner appointment suspend event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<PrisonerAppointmentUpdateEvent>(
+      Xtag(
+        eventType = "PRISONER_APPOINTMENT-UPDATE",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_agy_loc_id" to "LEI",
+            "p_action" to "SUSPEND",
+            "p_user" to "Some User",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("PRISONER_APPOINTMENT-UPDATE")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("PRISONER_APPOINTMENT-UPDATE")
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(prisonId).isEqualTo("LEI")
       assertThat(action).isEqualTo("SUSPEND")

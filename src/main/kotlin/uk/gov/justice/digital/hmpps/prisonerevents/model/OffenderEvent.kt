@@ -169,6 +169,22 @@ class PrisonerActivityUpdateEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class PrisonerAppointmentUpdateEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  val prisonId: String?,
+  val action: String?,
+  val user: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class AssessmentUpdateEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
