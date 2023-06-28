@@ -54,7 +54,7 @@ class PrisonEventsEmitter(
         throw e
       }
     } catch (e: Exception) {
-      log.error("Failed to publish message $payload", e)
+      log.error("Failed to publish (unexpected exception) message $payload", e)
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
       throw e
     }
