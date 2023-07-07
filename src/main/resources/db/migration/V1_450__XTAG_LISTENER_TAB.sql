@@ -6,6 +6,8 @@ begin
   DBMS_AQADM.CREATE_QUEUE (
     queue_name          => 'XTAG.XTAG_DPS',
     queue_table         => 'XTAG.XTAG_LISTENER_TAB',
+    retention_time      => 86400,
+    max_retries         => 3,
     retry_delay         => 1); -- 1s makes testing easier than with immediate retries
 
   DBMS_AQADM.START_QUEUE (
