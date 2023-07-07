@@ -13,7 +13,7 @@ open class OffenderEvent(
   var offenderIdDisplay: String? = null,
   val nomisEventType: String? = null,
 ) {
-  override fun toString(): String =
+  override fun toString() =
     "(eventType=$eventType, offenderIdDisplay=$offenderIdDisplay, bookingId=$bookingId, eventDatetime=$eventDatetime, offenderId=$offenderId, nomisEventType=$nomisEventType)"
 }
 

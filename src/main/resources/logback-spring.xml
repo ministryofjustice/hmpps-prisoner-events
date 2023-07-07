@@ -21,7 +21,7 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="org.springframework.jms" additivity="false" level="INFO">
+    <logger name="org.springframework.jms" additivity="false" level="DEBUG">
         <appender-ref ref="consoleAppender"/>
     </logger>
 
@@ -29,7 +29,7 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="org.springframework.transaction" additivity="false" level="INFO">
+    <logger name="org.springframework.transaction" additivity="false" level="TRACE">
         <appender-ref ref="consoleAppender"/>
     </logger>
 

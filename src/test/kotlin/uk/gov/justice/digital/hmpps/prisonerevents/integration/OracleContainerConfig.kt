@@ -9,7 +9,7 @@ import java.net.ServerSocket
 object OracleContainerConfig {
   val instance: OracleContainer? by lazy { startOracleContainer() }
 
-  fun startOracleContainer(): OracleContainer? {
+  private fun startOracleContainer(): OracleContainer? {
     if (oracleIsRunning()) {
       log.warn("Using existing Oracle-XE database")
       return null

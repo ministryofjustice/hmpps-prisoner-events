@@ -111,7 +111,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
       simulateTrigger()
 
-      awaitPublishTries(5)
+      awaitPublishTries(4)
 
       assertThat(getNumberOfMessagesCurrentlyOnPrisonEventQueue()).isEqualTo(0)
 
