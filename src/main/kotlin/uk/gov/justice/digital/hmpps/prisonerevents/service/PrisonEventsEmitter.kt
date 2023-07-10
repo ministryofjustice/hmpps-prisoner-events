@@ -51,12 +51,12 @@ class PrisonEventsEmitter(
         // Exception traceback will be logged by DefaultMessageListenerContainer
         log.error("Failed to publish message $payload", e.cause)
         telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
-        throw e
+        throw RuntimeException(e)
       }
     } catch (e: Exception) {
       log.error("Failed to publish (unexpected exception) message $payload", e)
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
-      throw e
+      throw RuntimeException(e)
     }
     val httpStatusCode = publishResult.sdkHttpResponse().statusCode()
     if (httpStatusCode >= 400) {
