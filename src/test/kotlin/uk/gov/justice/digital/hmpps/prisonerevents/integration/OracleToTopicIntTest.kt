@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doCallRealMethod
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mockingDetails
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.spy
@@ -19,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.jms.core.JmsTemplate
 import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
+import software.amazon.awssdk.services.sns.model.PublishResponse
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
@@ -175,7 +177,8 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   }
 
   private fun sabotageTopic() {
-    whenever(snsClient.publish(any<PublishRequest>())).thenReturn(CompletableFuture.failedFuture(SocketException("Test exception")))
+    doReturn(CompletableFuture.failedFuture<PublishResponse>(SocketException("Test exception"))).whenever(snsClient)
+      .publish(any<PublishRequest>())
   }
 
   private fun fixTopic() {
