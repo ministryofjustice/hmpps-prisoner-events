@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doCallRealMethod
-import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.mockingDetails
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.spy
