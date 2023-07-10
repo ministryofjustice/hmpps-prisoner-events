@@ -28,6 +28,7 @@ import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsTopic
 import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
+import java.net.SocketException
 import java.time.Duration
 
 class OracleToTopicIntTest : IntegrationTestBase() {
@@ -174,7 +175,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   }
 
   private fun sabotageTopic() {
-    doThrow(RuntimeException("Test exception")).whenever(snsClient).publish(any<PublishRequest>())
+    doThrow(SocketException("Test exception")).whenever(snsClient).publish(any<PublishRequest>())
   }
 
   private fun fixTopic() {
