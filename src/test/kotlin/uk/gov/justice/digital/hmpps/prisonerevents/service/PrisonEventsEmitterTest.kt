@@ -239,7 +239,7 @@ class PrisonEventsEmitterTest {
           bookingId = 12345L,
         ),
       )
-    }.cause().isInstanceOf(RuntimeException::class.java)
+    }.rootCause().isInstanceOf(RuntimeException::class.java)
       .message()
       .isEqualTo("test")
 
