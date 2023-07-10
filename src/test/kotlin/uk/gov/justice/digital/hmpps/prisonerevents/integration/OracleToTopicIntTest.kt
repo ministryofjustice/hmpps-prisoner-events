@@ -30,6 +30,7 @@ import uk.gov.justice.hmpps.sqs.HmppsTopic
 import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.net.SocketException
 import java.time.Duration
+import java.util.concurrent.CompletableFuture
 
 class OracleToTopicIntTest : IntegrationTestBase() {
 
@@ -175,7 +176,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   }
 
   private fun sabotageTopic() {
-    doThrow(SocketException("Test exception")).whenever(snsClient).publish(any<PublishRequest>())
+    whenever(snsClient.publish(any<PublishRequest>())).thenReturn(CompletableFuture.failedFuture(SocketException("Test exception")))
   }
 
   private fun fixTopic() {
