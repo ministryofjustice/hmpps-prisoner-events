@@ -17,6 +17,12 @@ generic-service:
     annotations:
       # this magic line automatically generates a certificate for the ingress
       cert-manager.io/cluster-issuer: letsencrypt-production
+      nginx.ingress.kubernetes.io/configuration-snippet: |
+        server_tokens off;
+        location /housekeeping {
+          deny all;
+          return 401;
+        }
     enabled: true
     dso_enabled: true
     host: app-hostname.local    # override per environment

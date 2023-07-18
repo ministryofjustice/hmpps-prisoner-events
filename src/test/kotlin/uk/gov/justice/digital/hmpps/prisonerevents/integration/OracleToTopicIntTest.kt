@@ -78,7 +78,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     fun `will consume a prison offender events message`() {
       simulateTrigger()
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 1 }
+      awaitQueueSizeToBe(1)
 
       val receiveMessageResult = prisonEventQueueSqsClient.receiveMessage(
         ReceiveMessageRequest.builder().queueUrl(prisonEventQueueUrl).build(),
@@ -105,7 +105,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
       awaitPublishTries(2)
 
-      await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 1 }
+      awaitQueueSizeToBe(1)
     }
 
     @Test
@@ -119,39 +119,16 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       assertThat(getNumberOfMessagesCurrentlyOnPrisonEventQueue()).isEqualTo(0)
 
       // After 5 attempts, the message should be on the exception queue
-      await.atMost(Duration.ofSeconds(10)) untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 1 }
+      awaitExceptionQueueSizeToBe(1)
     }
   }
 
   @Nested
   inner class RetryEndpoint {
     @Test
-    fun `access forbidden when no authority`() {
-      webTestClient.get().uri("/housekeeping")
-        .exchange()
-        .expectStatus().isUnauthorized
-    }
-
-    @Test
-    fun `access forbidden when no role`() {
-      webTestClient.get().uri("/housekeeping")
-        .headers(setAuthorisation(roles = listOf()))
-        .exchange()
-        .expectStatus().isForbidden
-    }
-
-    @Test
-    fun `access forbidden with wrong role`() {
-      webTestClient.get().uri("/housekeeping")
-        .headers(setAuthorisation(roles = listOf("ROLE_BANANAS")))
-        .exchange()
-        .expectStatus().isForbidden
-    }
-
-    @Test
     fun `Retry exception messages when none present`() {
-      webTestClient.get().uri("/housekeeping")
-        .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
+      webTestClient.put().uri("/housekeeping")
+        .headers(setAuthorisation(roles = emptyList()))
         .exchange()
         .expectStatus().isOk
     }
@@ -160,19 +137,19 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     fun `Retry exception messages when messages present`() {
       sabotageTopic()
       repeat(2) { simulateTrigger() }
-      await.atMost(Duration.ofSeconds(20)) untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 2 }
+      awaitExceptionQueueSizeToBe(2)
       fixTopic()
 
       webTestClient
-        .get().uri("/housekeeping")
-        .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
+        .put().uri("/housekeeping")
+        .headers(setAuthorisation(roles = emptyList()))
         .exchange()
         .expectStatus().isOk
 
-      await untilCallTo { getGetNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == 0 }
+      awaitExceptionQueueSizeToBe(0)
       // Messages have been moved from exception queue to normal queue
-      await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == 2 }
-      // Messages arrived on topic and were sent to subscribed queue
+      awaitQueueSizeToBe(2)
+      // Messages arrived at the topic and were sent to subscribed queue
     }
   }
 
@@ -199,20 +176,36 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   fun purgeQueues() {
     prisonEventQueueSqsClient.purgeQueue(PurgeQueueRequest.builder().queueUrl(prisonEventQueueUrl).build())
     sqlRepository.purgeExceptionQueue()
-    await untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() == 0 }
+    awaitQueueSizeToBe(0)
   }
 
+  val maxWait: Duration = Duration.ofSeconds(20)
+  val poll: Duration = Duration.ofSeconds(1)
+
   fun awaitPublishTries(count: Int) {
-    await.atMost(Duration.ofSeconds(20)) untilCallTo { mockingDetails(snsClient).invocations.filter { it.method.name == "publish" }.size } matches {
+    await.atMost(maxWait).pollInterval(poll) untilCallTo {
+      mockingDetails(snsClient).invocations.filter { it.method.name == "publish" }.size
+    } matches {
       log.info("Number of publish calls: $it")
       it == count
     }
   }
 
+  fun awaitQueueSizeToBe(count: Int) {
+    await.atMost(maxWait)
+      .pollInterval(poll) untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == count }
+  }
+
+  fun awaitExceptionQueueSizeToBe(count: Int) {
+    await.atMost(maxWait)
+      .pollInterval(poll) untilCallTo { getNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == count }
+  }
+
   fun getNumberOfMessagesCurrentlyOnPrisonEventQueue(): Int =
     prisonEventQueueSqsClient.countAllMessagesOnQueue(prisonEventQueueUrl).get()
+      .also { log.info("Number of messages on prison queue: $it") }
 
-  fun getGetNumberOfMessagesCurrentlyOnExceptionQueue() =
+  fun getNumberOfMessagesCurrentlyOnExceptionQueue() =
     sqlRepository.getExceptionMessageIds().size
       .also { log.info("Number of messages on exception queue: $it") }
 }
