@@ -5,9 +5,8 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import org.springframework.http.MediaType
-import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
-import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.prisonerevents.config.ErrorResponse
@@ -18,8 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.service.AQService
 @RequestMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
 class AQResource(private val aqService: AQService) {
 
-  @PreAuthorize("hasRole('ROLE_QUEUE_ADMIN')")
-  @GetMapping("/housekeeping")
+  @PutMapping("/housekeeping")
   @Operation(
     summary = "Retry messages on the Oracle AQ exception queue",
     description = "Retrieve any messages on the Oracle AQ exception queue and move them back to the main queue to be retried.",
