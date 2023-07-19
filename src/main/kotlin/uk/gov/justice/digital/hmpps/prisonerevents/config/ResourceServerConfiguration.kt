@@ -34,6 +34,7 @@ class ResourceServerConfiguration {
           "/csrf",
           "/health/**",
           "/info",
+          "/housekeeping",
           "/v3/api-docs/**",
           "/swagger-ui/**",
           "/swagger-ui.html",
