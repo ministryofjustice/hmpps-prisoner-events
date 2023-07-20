@@ -17,7 +17,11 @@ class HealthInfo(
   private val version: String = buildProperties.version
 
   override fun health(): Health {
-    val exceptionCount = sqlRepository.getExceptionCount()
+    val exceptionCount = try {
+      sqlRepository.getExceptionCount().toString()
+    } catch (e: Exception) {
+      "unknown: ${e.message}"
+    }
     return Health.up().withDetail("version", version).withDetail("oracleDLQ", exceptionCount).build()
   }
 }

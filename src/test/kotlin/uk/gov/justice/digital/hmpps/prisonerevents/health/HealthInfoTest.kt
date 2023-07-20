@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import org.springframework.boot.info.BuildProperties
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
+import java.lang.RuntimeException
 import java.util.Properties
 
 @ExtendWith(MockitoExtension::class)
@@ -22,6 +23,15 @@ class HealthInfoTest {
     properties.setProperty("version", "somever")
     whenever(sqlRepository.getExceptionCount()).thenReturn(3)
     Assertions.assertThat(HealthInfo(BuildProperties(properties), sqlRepository).health().details)
-      .isEqualTo(mapOf("version" to "somever", "oracleDLQ" to 3))
+      .isEqualTo(mapOf("version" to "somever", "oracleDLQ" to "3"))
+  }
+
+  @Test
+  fun `should survive database failure`() {
+    val properties = Properties()
+    properties.setProperty("version", "somever")
+    whenever(sqlRepository.getExceptionCount()).thenThrow(RuntimeException("test"))
+    Assertions.assertThat(HealthInfo(BuildProperties(properties), sqlRepository).health().details)
+      .isEqualTo(mapOf("version" to "somever", "oracleDLQ" to "unknown: test"))
   }
 }
