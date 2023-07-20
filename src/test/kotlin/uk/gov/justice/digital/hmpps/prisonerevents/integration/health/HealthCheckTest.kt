@@ -20,15 +20,17 @@ class HealthCheckTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Health info reports version`() {
+  fun `Health info reports details`() {
     webTestClient.get().uri("/health")
       .exchange()
       .expectStatus().isOk
-      .expectBody().jsonPath("components.healthInfo.details.version").value(
+      .expectBody()
+      .jsonPath("components.healthInfo.details.version").value(
         Consumer<String> {
           assertThat(it).startsWith(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE))
         },
       )
+      .jsonPath("components.healthInfo.details.oracleDLQ").isEqualTo(0)
   }
 
   @Test

@@ -120,6 +120,14 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
       // After 5 attempts, the message should be on the exception queue
       awaitExceptionQueueSizeToBe(1)
+
+      webTestClient
+        .mutate().responseTimeout(Duration.ofSeconds(20)).build()
+        .get().uri("/health")
+        .exchange()
+        .expectStatus().isOk
+        .expectBody()
+        .jsonPath("components.healthInfo.details.oracleDLQ").isEqualTo(1)
     }
   }
 
