@@ -8,6 +8,7 @@ import org.springframework.transaction.support.TransactionTemplate
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.TABLE_OWNER
+import uk.gov.justice.digital.hmpps.prisonerevents.config.trackEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 
 @Service
@@ -24,7 +25,9 @@ class AQService(
       log.info("No messages found on exception queue $EXCEPTION_QUEUE_NAME")
       return
     }
+
     log.info("For exception queue $EXCEPTION_QUEUE_NAME of $FULL_QUEUE_NAME we found $messageCount messages, attempting to retry them")
+    telemetryClient?.trackEvent("RetryDLQ", mapOf("queue-name" to FULL_QUEUE_NAME, "messages-found" to "$messageCount"))
 
     // https://javadoc.io/doc/com.oracle.database.jdbc/ojdbc11/latest/index.html
     // https://docs.oracle.com/database/121/JAJMS/toc.htm
@@ -46,12 +49,6 @@ class AQService(
         log.debug("Committing transaction")
       }
     }
-
-    telemetryClient?.trackEvent(
-      "RetryDLQ",
-      mapOf("queue-name" to FULL_QUEUE_NAME, "messages-found" to "$messageCount"),
-      null,
-    )
   }
 
   companion object {

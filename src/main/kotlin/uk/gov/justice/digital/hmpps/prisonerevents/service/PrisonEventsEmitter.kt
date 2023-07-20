@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
 import software.amazon.awssdk.services.sns.model.ValidationException
+import uk.gov.justice.digital.hmpps.prisonerevents.config.trackEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
@@ -45,25 +46,25 @@ class PrisonEventsEmitter(
     } catch (e: ExecutionException) {
       if (e.cause is ValidationException) {
         log.error("Invalid payload $payload or other parameter", e.cause)
-        telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
+        telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload))
         return
       } else {
         // Exception traceback will be logged by DefaultMessageListenerContainer
         log.error("Failed to publish message $payload", e.cause)
-        telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
+        telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload))
         throw RuntimeException(e)
       }
     } catch (e: Exception) {
       log.error("Failed to publish (unexpected exception) message $payload", e)
-      telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
+      telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload))
       throw RuntimeException(e)
     }
     val httpStatusCode = publishResult.sdkHttpResponse().statusCode()
     if (httpStatusCode >= 400) {
-      telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload), null)
+      telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload))
       throw RuntimeException("Attempt to publish message ${payload.eventType} resulted in an http $httpStatusCode error")
     }
-    telemetryClient.trackEvent(payload.eventType, asTelemetryMap(payload), null)
+    telemetryClient.trackEvent(payload.eventType.toString(), asTelemetryMap(payload))
   }
 
   private fun metaData(payload: OffenderEvent): Map<String, MessageAttributeValue> {
@@ -92,12 +93,10 @@ class PrisonEventsEmitter(
   }
 
   private fun buildOptionalCode(payload: OffenderEvent): String? =
-    if (payload is AlertOffenderEvent) {
-      payload.alertCode
-    } else if (payload is ExternalMovementOffenderEvent) {
-      "${payload.movementType}-${payload.directionCode}"
-    } else {
-      null
+    when (payload) {
+      is AlertOffenderEvent -> payload.alertCode
+      is ExternalMovementOffenderEvent -> "${payload.movementType}-${payload.directionCode}"
+      else -> null
     }
 
   companion object {
