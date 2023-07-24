@@ -49,3 +49,6 @@ generic-service:
 
   # Disabled for DSO AKS cluster
   allowlist: null
+
+cron:
+  housekeeping_schedule: "*/10 * * * *"
