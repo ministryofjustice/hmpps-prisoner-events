@@ -24,6 +24,7 @@ import software.amazon.awssdk.services.sns.model.PublishResponse
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -31,6 +32,7 @@ import uk.gov.justice.hmpps.sqs.HmppsTopic
 import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.net.SocketException
 import java.time.Duration
+import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
 class OracleToTopicIntTest : IntegrationTestBase() {
@@ -153,6 +155,58 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     }
   }
 
+  @Nested
+  inner class DequeueEndpoint {
+    @Test
+    fun `must have valid token`() {
+      webTestClient.delete().uri("/exceptions/XTAG_DPS?onlyBefore=2023-06-01")
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus().isUnauthorized
+    }
+
+    @Test
+    fun `must have correct role`() {
+      webTestClient.delete().uri("/exceptions/XTAG_DPS?onlyBefore=2023-06-01")
+        .headers(setAuthorisation(roles = listOf("ROLE_MIGRATE_BANANAS")))
+        .header("Content-Type", "application/json")
+        .exchange()
+        .expectStatus().isForbidden
+    }
+
+    @Test
+    fun `Delete exception messages`() {
+      sabotageTopic()
+      repeat(1) { simulateTrigger() }
+      awaitExceptionQueueSizeToBe(1)
+      fixTopic()
+
+      webTestClient
+        .delete().uri("/exceptions/doesntexist?onlyBefore=2023-06-01")
+        .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
+        .exchange()
+        .expectStatus().isOk
+
+      assertThat(getNumberOfMessagesCurrentlyOnExceptionQueue()).isEqualTo(1)
+
+      webTestClient
+        .delete().uri("/exceptions/XTAG_DPS?onlyBefore=2023-08-01")
+        .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
+        .exchange()
+        .expectStatus().isOk
+
+      assertThat(getNumberOfMessagesCurrentlyOnExceptionQueue()).isEqualTo(1)
+
+      webTestClient
+        .delete().uri("/exceptions/XTAG_DPS?onlyBefore=${LocalDate.now().plusDays(1)}")
+        .headers(setAuthorisation(roles = listOf("ROLE_QUEUE_ADMIN")))
+        .exchange()
+        .expectStatus().isOk
+
+      assertThat(getNumberOfMessagesCurrentlyOnExceptionQueue()).isEqualTo(0)
+    }
+  }
+
   private fun sabotageTopic() {
     doReturn(CompletableFuture.failedFuture<PublishResponse>(SocketException("Test exception"))).whenever(snsClient)
       .publish(any<PublishRequest>())
@@ -179,7 +233,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     awaitQueueSizeToBe(0)
   }
 
-  val maxWait: Duration = Duration.ofSeconds(20)
+  val maxWait: Duration = Duration.ofSeconds(30)
   val poll: Duration = Duration.ofSeconds(1)
 
   fun awaitPublishTries(count: Int) {
@@ -206,6 +260,6 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       .also { log.info("Number of messages on prison queue: $it") }
 
   fun getNumberOfMessagesCurrentlyOnExceptionQueue() =
-    sqlRepository.getExceptionMessageIds().size
+    sqlRepository.getExceptionMessageIds(QUEUE_NAME).size
       .also { log.info("Number of messages on exception queue: $it") }
 }

@@ -21,7 +21,8 @@ class HealthCheckTest : IntegrationTestBase() {
 
   @Test
   fun `Health info reports version`() {
-    webTestClient.get().uri("/health")
+    webTestClient.get()
+      .uri("/health")
       .exchange()
       .expectStatus().isOk
       .expectBody().jsonPath("components.healthInfo.details.version").value(

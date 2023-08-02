@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.TABLE_OWNER
 import uk.gov.justice.digital.hmpps.prisonerevents.config.trackEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
+import java.time.LocalDate
 
 @Service
 class AQService(
@@ -19,7 +21,7 @@ class AQService(
   private val telemetryClient: TelemetryClient?,
 ) {
   fun requeueExceptions() {
-    val ids = sqlRepository.getExceptionMessageIds()
+    val ids = sqlRepository.getExceptionMessageIds(QUEUE_NAME)
     val messageCount = ids.size
     if (messageCount == 0) {
       log.info("No messages found on exception queue $EXCEPTION_QUEUE_NAME")
@@ -47,6 +49,24 @@ class AQService(
             }
         }
         log.debug("Committing transaction")
+      }
+    }
+  }
+
+  fun dequeueExceptions(originalQueue: String, onlyBefore: LocalDate) {
+    val ids = sqlRepository.getExceptionMessageIds(originalQueue, onlyBefore)
+    val messageCount = ids.size
+    if (messageCount == 0) {
+      log.info("No messages found for $originalQueue on exception queue $EXCEPTION_QUEUE_NAME")
+      return
+    }
+
+    log.info("For exception queue $EXCEPTION_QUEUE_NAME of $originalQueue we found $messageCount messages, attempting to dequeue them")
+    telemetryClient?.trackEvent("DequeueDLQ", mapOf("queue-name" to originalQueue, "messages-found" to "$messageCount", "only-before" to "$onlyBefore"))
+
+    ids.chunked(10).forEach { chunk ->
+      chunk.forEach { id ->
+        retryJmsTemplate.receiveSelected("$TABLE_OWNER.$EXCEPTION_QUEUE_NAME", "JMSMessageID='$id'")
       }
     }
   }
