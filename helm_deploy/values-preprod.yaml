@@ -26,5 +26,10 @@ generic-service:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     API_BASE_URL_OAUTH: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
 
+  namespace_secrets:
+    offender-events-topic:
+      HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_ACCESS_KEY_ID: "access_key_id"
+      HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_SECRET_ACCESS_KEY: "secret_access_key"
+
 cron:
   housekeeping_schedule: "*/10 7-20 * * 1-5"
