@@ -84,6 +84,8 @@ class NonAssociationDetailsOffenderEvent(
   val expiryDate: LocalDate?,
   val authorisedBy: String?,
   val comment: String?,
+
+  val auditModuleName: String? = null,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
