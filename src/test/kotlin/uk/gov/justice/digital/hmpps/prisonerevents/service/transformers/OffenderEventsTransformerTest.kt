@@ -666,6 +666,7 @@ class OffenderEventsTransformerTest {
             "p_ns_expiry_date" to "2023-03-31",
             "p_authorized_staff" to "staff 1",
             "p_comment_text" to "comment",
+            "p_audit_module_name" to "non_associations",
           ),
         ),
       ),
@@ -685,6 +686,7 @@ class OffenderEventsTransformerTest {
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
       assertThat(authorisedBy).isEqualTo("staff 1")
       assertThat(comment).isEqualTo("comment")
+      assertThat(auditModuleName).isEqualTo("non_associations")
     }
   }
 
