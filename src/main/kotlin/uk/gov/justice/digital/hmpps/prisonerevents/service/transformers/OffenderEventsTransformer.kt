@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
@@ -93,8 +94,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "OFF_EDUCATION_DEL" -> educationLevelDeletedEventOf(xtag)
         "P3_RESULT" -> if (xtag.content.p_identifier_type == "NOMISP3") {
           offenderBookingInsertedEventOf(xtag)
-        } else if (!xtag.content.p_identifier_value.isNullOrEmpty()
-        ) {
+        } else if (!xtag.content.p_identifier_value.isNullOrEmpty()) {
           offenderIdentifierInsertedEventOf(xtag)
         } else {
           offenderIdentifierDeletedEventOf(xtag)
@@ -167,6 +167,7 @@ class OffenderEventsTransformer @Autowired constructor() {
         "VISITOR_RESTRICTS-UPDATED" -> visitorRestrictionEventOf(xtag)
         "PRISONER_ACTIVITY-UPDATE" -> prisonerActivityUpdateEventOf(xtag)
         "PRISONER_APPOINTMENT-UPDATE" -> prisonerAppointmentUpdateEventOf(xtag)
+        "OFFENDER_CHARGES-UPDATED" -> offenderChargeEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -937,6 +938,16 @@ class OffenderEventsTransformer @Autowired constructor() {
     prisonId = xtag.content.p_agy_loc_id,
     action = xtag.content.p_action,
     user = xtag.content.p_user,
+  )
+
+  private fun offenderChargeEventOf(xtag: Xtag) = OffenderChargeUpdatedEvent(
+    eventType = "OFFENDER_CHARGES-UPDATED",
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    chargeId = xtag.content.p_offender_charge_id?.toLong(),
+    recordDeleted = xtag.content.p_delete_flag == "Y",
+    nomisEventType = xtag.eventType,
   )
 
   companion object {

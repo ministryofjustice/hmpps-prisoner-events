@@ -227,6 +227,23 @@ class OffenderIdentifierUpdatedEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderChargeUpdatedEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  val chargeId: Long?,
+  val recordDeleted: Boolean,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,

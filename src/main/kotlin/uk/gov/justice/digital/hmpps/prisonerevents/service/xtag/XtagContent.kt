@@ -28,6 +28,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_imprison_status_seq by m
   val p_sentence_seq by m
   val p_result_seq by m
+  val p_offender_charge_id by m
   val p_charge_seq by m
   val p_sanction_seq by m
   val p_movement_seq by m
