@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
@@ -2719,5 +2720,58 @@ class OffenderEventsTransformerTest {
         ),
       ),
     ).isNull()
+  }
+
+  @Test
+  fun `offender charges update event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderChargeUpdatedEvent>(
+      Xtag(
+        eventType = "OFFENDER_CHARGES-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_charge_id" to "23456",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CHARGES-UPDATED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("OFFENDER_CHARGES-UPDATED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(chargeId).isEqualTo(23456)
+      assertThat(recordDeleted).isFalse()
+    }
+  }
+
+  @Test
+  fun `offender charges delete event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderChargeUpdatedEvent>(
+      Xtag(
+        eventType = "OFFENDER_CHARGES-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_charge_id" to "23456",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CHARGES-UPDATED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("OFFENDER_CHARGES-UPDATED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(chargeId).isEqualTo(23456)
+      assertThat(recordDeleted).isTrue()
+    }
   }
 }
