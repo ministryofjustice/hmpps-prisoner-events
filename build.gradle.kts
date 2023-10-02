@@ -10,7 +10,7 @@ configurations {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:6.0.11")
+  implementation("org.springframework:spring-jms:6.0.12")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.0.1")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-security")
@@ -21,7 +21,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
-  implementation("com.oracle.database.jdbc:ojdbc11:23.2.0.0")
+  implementation("com.oracle.database.jdbc:ojdbc11:23.3.0.23.09")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.2.1.0")
 
   implementation("org.apache.commons:commons-lang3:3.13.0")
