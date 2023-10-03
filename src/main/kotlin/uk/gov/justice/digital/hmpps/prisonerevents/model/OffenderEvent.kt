@@ -84,6 +84,8 @@ class NonAssociationDetailsOffenderEvent(
   val expiryDate: LocalDate?,
   val authorisedBy: String?,
   val comment: String?,
+
+  val auditModuleName: String? = null,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
@@ -220,6 +222,23 @@ class OffenderIdentifierUpdatedEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
   offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderChargeUpdatedEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  val chargeId: Long?,
+  val recordDeleted: Boolean,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
   offenderIdDisplay = offenderIdDisplay,
   nomisEventType = nomisEventType,
 )

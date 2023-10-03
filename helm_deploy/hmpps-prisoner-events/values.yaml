@@ -1,12 +1,9 @@
 ---
 generic-service:
   nameOverride: hmpps-prisoner-events
+  productId: DPS060
 
   replicaCount: 4
-
-  poddisruptionbudget:
-    enabled: true
-    minAvailable: 3
 
   image:
     repository: quay.io/hmpps/hmpps-prisoner-events
@@ -15,8 +12,6 @@ generic-service:
 
   ingress:
     annotations:
-      # this magic line automatically generates a certificate for the ingress
-      cert-manager.io/cluster-issuer: letsencrypt-production
       nginx.ingress.kubernetes.io/configuration-snippet: |
         server_tokens off;
         location /housekeeping {
@@ -43,12 +38,7 @@ generic-service:
       DB_USERNAME: "DB_USERNAME"
       DB_PASSWORD: "DB_PASSWORD"
     offender-events-topic:
-      HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_ACCESS_KEY_ID: "access_key_id"
-      HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_SECRET_ACCESS_KEY: "secret_access_key"
       HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_ARN: "topic_arn"
-
-  # Disabled for DSO AKS cluster
-  allowlist: null
 
 cron:
   housekeeping_schedule: "*/10 * * * *"
