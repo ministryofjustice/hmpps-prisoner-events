@@ -18,14 +18,8 @@ jobs:
       - image: localstack/localstack:2.3
         environment:
           - SERVICES=sqs,sns
-          - ES_PORT_EXTERNAL=4571
-          - DEBUG=${DEBUG- }
           - LOCALSTACK_VOLUME_DIR=./volume
-          - DOCKER_HOST=unix:///var/run/docker.sock
-          - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
-          - AWS_EXECUTION_ENV=True
           - DEFAULT_REGION=eu-west-2
-          - TMPDIR=/private
       - image: gvenzl/oracle-xe:18-slim
         environment:
           - ORACLE_PASSWORD=test
