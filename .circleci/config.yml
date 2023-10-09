@@ -15,12 +15,12 @@ jobs:
   validate:
     docker:
       - image: cimg/openjdk:20.0
-      - image: localstack/localstack:1.3
+      - image: localstack/localstack:2.3
         environment:
           - SERVICES=sqs,sns
           - ES_PORT_EXTERNAL=4571
           - DEBUG=${DEBUG- }
-          - DATA_DIR=/tmp/localstack/data
+          - LOCALSTACK_VOLUME_DIR=./volume
           - DOCKER_HOST=unix:///var/run/docker.sock
           - LAMBDA_EXECUTOR=${LAMBDA_EXECUTOR- }
           - AWS_EXECUTION_ENV=True
