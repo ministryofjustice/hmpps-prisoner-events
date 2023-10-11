@@ -21,7 +21,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 
-  implementation("com.oracle.database.jdbc:ojdbc11:23.3.0.23.09")
+  implementation("com.oracle.database.jdbc:ojdbc11:23.2.0.0")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.2.1.0")
 
   implementation("org.apache.commons:commons-lang3:3.13.0")
@@ -50,8 +50,5 @@ tasks {
   }
   test {
     jvmArgs("-Doracle.jakarta.jms.useEmulatedXA=false")
-
-    // required for jjwt 0.12 - see https://github.com/jwtk/jjwt/issues/849
-    jvmArgs("--add-exports", "java.base/sun.security.util=ALL-UNNAMED")
   }
 }
