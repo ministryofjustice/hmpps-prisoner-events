@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
 import java.sql.ResultSet
+import java.sql.Types
 import java.time.LocalDate
 import java.time.LocalTime
 
@@ -58,7 +59,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       GET_EXCEPTION_MESSAGES,
       MapSqlParameterSource()
         .addValue("exceptionQueue", exceptionQueue)
-        .addValue("enqueuedBefore", enqueuedBefore),
+        .addValue("enqueuedBefore", enqueuedBefore, Types.TIMESTAMP),
     ) { resultSet: ResultSet, _: Int ->
       resultSet.getBytes("MSGID").let {
         StringBuilder()
