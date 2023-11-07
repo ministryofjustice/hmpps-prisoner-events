@@ -23,7 +23,7 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
   fun customOpenAPI(): OpenAPI = OpenAPI()
     .servers(
       listOf(
-        Server().url("https://prsnr-events-dev.aks-dev-1.studio-hosting.service.justice.gov.uk").description("Development"),
+        Server().url("https://prisoner-events-dev.prison.service.justice.gov.uk").description("Development"),
         Server().url("https://prsnr-events-pp.aks-live-1.studio-hosting.service.justice.gov.uk").description("PreProd"),
         Server().url("https://prisoner-events.aks-live-1.studio-hosting.service.justice.gov.uk").description("Prod"),
         Server().url("http://localhost:8080").description("Local"),
@@ -37,16 +37,11 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
     )
     .components(
       Components().addSecuritySchemes(
-        "bearer-jwt",
-        SecurityScheme()
-          .type(SecurityScheme.Type.HTTP)
-          .scheme("bearer")
-          .bearerFormat("JWT")
-          .`in`(SecurityScheme.In.HEADER)
-          .name("Authorization"),
+        "queue-admin-role",
+        SecurityScheme().addBearerJwtRequirement("ROLE_QUEUE_ADMIN"),
       ),
     )
-    .addSecurityItem(SecurityRequirement().addList("bearer-jwt", listOf("read", "write")))
+    .addSecurityItem(SecurityRequirement().addList("queue-admin-role", listOf("read", "write")))
 
   @Bean
   fun openAPICustomizer() = OpenApiCustomizer {
@@ -68,3 +63,11 @@ class OpenApiConfiguration(buildProperties: BuildProperties) {
     }
   }
 }
+
+private fun SecurityScheme.addBearerJwtRequirement(role: String): SecurityScheme =
+  type(SecurityScheme.Type.HTTP)
+    .scheme("bearer")
+    .bearerFormat("JWT")
+    .`in`(SecurityScheme.In.HEADER)
+    .name("Authorization")
+    .description("A HMPPS Auth access token with the `$role` role.")

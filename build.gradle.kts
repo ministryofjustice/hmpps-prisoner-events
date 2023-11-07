@@ -32,7 +32,11 @@ dependencies {
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.3")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.18")
+
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.18") {
+    exclude(group = "io.swagger.core.v3")
+  }
+  testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.18")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:localstack:1.19.1")
   testImplementation("org.testcontainers:oracle-xe:1.19.1")
