@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
@@ -56,6 +57,7 @@ class AQResource(private val aqService: AQService) {
   @Operation(
     summary = "Discards messages on the Oracle AQ exception queue",
     description = "Dequeue messages on the Oracle AQ exception queue for the specified original queue.",
+    security = [SecurityRequirement(name = "queue-admin-role")],
     responses = [
       ApiResponse(responseCode = "200", description = "success"),
       ApiResponse(
