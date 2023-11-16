@@ -1,0 +1,237 @@
+{
+  "_links": {
+    "root": {
+      "href": "/"
+    },
+    "self": {
+      "href": "/scans/b46c5aa9-d970-496d-850d-da6bd2564620/findings"
+    },
+    "help": {
+      "href": "https://help.veracode.com/reader/tS9CaFwL4_lbIEWWomsJoA/ovfZGgu96UINQxIuTqRDwg"
+    }
+  },
+  "scan_id": "b46c5aa9-d970-496d-850d-da6bd2564620",
+  "scan_status": "SUCCESS",
+  "message": "Scan successful. Results size: 12149 bytes",
+  "modules": [
+    "app.jar"
+  ],
+  "modules_count": 1,
+  "findings": [
+    {
+      "title": "spring.h2.console.enabled.",
+      "issue_id": 1003,
+      "image_path": "/tmp/tmp_zqze304/binary/source_1700147900685_zip/app.jar.aes",
+      "gob": "B",
+      "severity": 4,
+      "issue_type_id": "crypto",
+      "issue_type": "Exposed Dangerous Method or Function",
+      "cwe_id": "749",
+      "display_text": "\u003cspan\u003eThe application contains dangerous administrative functionality which is enabled via the spring.h2.console.enabled. configuration property. An attacker could use the exposed methods to perform sensitive operations on the application and leverage it to execute sophisticated attacks. These can amount to Denial-of-Service or tampering with application run-time behavior.\u003c/span\u003e \u003cspan\u003eEnsure that any administrative features or sensitive operations are not enabled in production if they are not needed. Set  to a value that prevents unathorized access or put other mitigating controls in place (e.g. network firewall rules) to prevent access by unauthorized parties. Ensure that proper authentication and authorization controls are in place for any required sensitive operations.\u003c/span\u003e \u003cspan\u003eReferences: \u003ca href\u003d\"https://cwe.mitre.org/data/definitions/749.html\"\u003eCWE\u003c/a\u003e\u003c/span\u003e",
+      "files": {
+        "source_file": {
+          "file": "BOOT-INF/classes/application-dev.yml",
+          "line": 10,
+          "function_name": "application-dev",
+          "qualified_function_name": "application-dev.application-dev.application-dev",
+          "function_prototype": "void application-dev(void)",
+          "scope": "application-dev.application-dev"
+        }
+      },
+      "flaw_match": {
+        "procedure_hash": "292666160",
+        "prototype_hash": "211846691",
+        "flaw_hash": "798351294",
+        "flaw_hash_count": 4,
+        "flaw_hash_ordinal": 4,
+        "cause_hash": "897930665",
+        "cause_hash_count": 1,
+        "cause_hash_ordinal": 1,
+        "cause_hash2": "0",
+        "cause_hash2_ordinal": "0"
+      },
+      "stack_dumps": {}
+    },
+    {
+      "title": "org.slf4j.Logger.info",
+      "issue_id": 1004,
+      "image_path": "file:/tmp/tmp_zqze304/binary/source_1700147900685_zip/app.jar.aes#zip:BOOT-INF/classes/uk/gov/justice/digital/hmpps/prisonerevents/service/AQService",
+      "gob": "B",
+      "severity": 3,
+      "issue_type_id": "taint",
+      "issue_type": "Improper Output Neutralization for Logs",
+      "cwe_id": "117",
+      "display_text": "\u003cspan\u003eThis call to org.slf4j.Logger.info() could result in a log forging attack.  Writing untrusted data into a log file allows an attacker to forge log entries or inject malicious content into log files.  Corrupted log files can be used to cover an attacker\u0027s tracks or as a delivery mechanism for an attack on a log viewing or processing utility.  For example, if a web administrator uses a browser-based utility to review logs, a cross-site scripting attack might be possible. The first argument to info() contains tainted data. The tainted data originated from an earlier call to AnnotationVirtualController.vc_annotation_entry.\u003c/span\u003e \u003cspan\u003eAvoid directly embedding user input in log files when possible.  Sanitize untrusted data used to construct log entries by using a safe logging mechanism such as the OWASP ESAPI Logger, which will automatically remove unexpected carriage returns and line feeds and can be configured to use HTML entity encoding for non-alphanumeric data.  Alternatively, some of the XSS escaping functions from the OWASP Java Encoder project will also sanitize CRLF sequences.  Only create a custom blocklist when absolutely necessary.  Always validate untrusted input to ensure that it conforms to the expected format, using centralized data validation routines when possible.\u003c/span\u003e \u003cspan\u003eReferences: \u003ca href\u003d\"https://cwe.mitre.org/data/definitions/117.html\"\u003eCWE\u003c/a\u003e \u003ca href\u003d\"https://owasp.org/www-community/attacks/Log_Injection\"\u003eOWASP\u003c/a\u003e \u003ca href\u003d\"https://docs.veracode.com/r/review_cleansers?tocId\u003dnYnZqAenFFZmB75MQrZwuA\"\u003eSupported Cleansers\u003c/a\u003e\u003c/span\u003e",
+      "files": {
+        "source_file": {
+          "file": "uk/gov/justice/digital/hmpps/prisonerevents/service/AQService",
+          "line": 60,
+          "function_name": "dequeueExceptions",
+          "qualified_function_name": "uk.gov.justice.digital.hmpps.prisonerevents.service.AQService.dequeueExceptions",
+          "function_prototype": "void dequeueExceptions(java.lang.String, java.time.LocalDate)",
+          "scope": "uk.gov.justice.digital.hmpps.prisonerevents.service.AQService"
+        }
+      },
+      "flaw_match": {
+        "procedure_hash": "647842173",
+        "prototype_hash": "2113345059",
+        "flaw_hash": "906529212",
+        "flaw_hash_count": 1,
+        "flaw_hash_ordinal": 1,
+        "cause_hash": "4210841743",
+        "cause_hash_count": 1,
+        "cause_hash_ordinal": 1,
+        "cause_hash2": "1419514234",
+        "cause_hash2_ordinal": "1"
+      },
+      "stack_dumps": {
+        "stack_dump": [
+          {}
+        ]
+      }
+    },
+    {
+      "title": "org.slf4j.Logger.info",
+      "issue_id": 1006,
+      "image_path": "file:/tmp/tmp_zqze304/binary/source_1700147900685_zip/app.jar.aes#zip:BOOT-INF/classes/uk/gov/justice/digital/hmpps/prisonerevents/service/AQService",
+      "gob": "B",
+      "severity": 3,
+      "issue_type_id": "taint",
+      "issue_type": "Improper Output Neutralization for Logs",
+      "cwe_id": "117",
+      "display_text": "\u003cspan\u003eThis call to org.slf4j.Logger.info() could result in a log forging attack.  Writing untrusted data into a log file allows an attacker to forge log entries or inject malicious content into log files.  Corrupted log files can be used to cover an attacker\u0027s tracks or as a delivery mechanism for an attack on a log viewing or processing utility.  For example, if a web administrator uses a browser-based utility to review logs, a cross-site scripting attack might be possible. The first argument to info() contains tainted data. The tainted data originated from an earlier call to AnnotationVirtualController.vc_annotation_entry.\u003c/span\u003e \u003cspan\u003eAvoid directly embedding user input in log files when possible.  Sanitize untrusted data used to construct log entries by using a safe logging mechanism such as the OWASP ESAPI Logger, which will automatically remove unexpected carriage returns and line feeds and can be configured to use HTML entity encoding for non-alphanumeric data.  Alternatively, some of the XSS escaping functions from the OWASP Java Encoder project will also sanitize CRLF sequences.  Only create a custom blocklist when absolutely necessary.  Always validate untrusted input to ensure that it conforms to the expected format, using centralized data validation routines when possible.\u003c/span\u003e \u003cspan\u003eReferences: \u003ca href\u003d\"https://cwe.mitre.org/data/definitions/117.html\"\u003eCWE\u003c/a\u003e \u003ca href\u003d\"https://owasp.org/www-community/attacks/Log_Injection\"\u003eOWASP\u003c/a\u003e \u003ca href\u003d\"https://docs.veracode.com/r/review_cleansers?tocId\u003dnYnZqAenFFZmB75MQrZwuA\"\u003eSupported Cleansers\u003c/a\u003e\u003c/span\u003e",
+      "files": {
+        "source_file": {
+          "file": "uk/gov/justice/digital/hmpps/prisonerevents/service/AQService",
+          "line": 64,
+          "function_name": "dequeueExceptions",
+          "qualified_function_name": "uk.gov.justice.digital.hmpps.prisonerevents.service.AQService.dequeueExceptions",
+          "function_prototype": "void dequeueExceptions(java.lang.String, java.time.LocalDate)",
+          "scope": "uk.gov.justice.digital.hmpps.prisonerevents.service.AQService"
+        }
+      },
+      "flaw_match": {
+        "procedure_hash": "647842173",
+        "prototype_hash": "2113345059",
+        "flaw_hash": "2033017802",
+        "flaw_hash_count": 1,
+        "flaw_hash_ordinal": 1,
+        "cause_hash": "269714893",
+        "cause_hash_count": 1,
+        "cause_hash_ordinal": 1,
+        "cause_hash2": "3343271892",
+        "cause_hash2_ordinal": "1"
+      },
+      "stack_dumps": {
+        "stack_dump": [
+          {}
+        ]
+      }
+    },
+    {
+      "title": "spring.devtools.add-properties.",
+      "issue_id": 1000,
+      "image_path": "/tmp/tmp_zqze304/binary/source_1700147900685_zip/app.jar.aes",
+      "gob": "B",
+      "severity": 3,
+      "issue_type_id": "crypto",
+      "issue_type": "Leftover Debug Code",
+      "cwe_id": "489",
+      "display_text": "\u003cspan\u003eThe spring.devtools.add-properties. configuration property may enable leftover debug functionality that creates and unintended entry point in a web application. Although this is an acceptable practice during product development, applications that are part of a production J2EE application should not have features enabled from their development environment platform. Whether this functionality can be remotely invoked depends on the configuration of the J2EE container and the application itself.\u003c/span\u003e \u003cspan\u003eEliminate unnecessary entry points in deployed web applications to reduce the attack surface. Ensure that this is not a backdoor disguised as debugging functionality. Ensure that the  configuration property is set to a sane default for production deployment and is not inadvertently allowing the application to be debugged remotely.\u003c/span\u003e \u003cspan\u003eReferences: \u003ca href\u003d\"https://cwe.mitre.org/data/definitions/489.html\"\u003eCWE\u003c/a\u003e\u003c/span\u003e",
+      "files": {
+        "source_file": {
+          "file": "BOOT-INF/classes/application.yml",
+          "line": 18,
+          "function_name": "application",
+          "qualified_function_name": "application.application.application",
+          "function_prototype": "void application(void)",
+          "scope": "application.application"
+        }
+      },
+      "flaw_match": {
+        "procedure_hash": "974924344",
+        "prototype_hash": "211846691",
+        "flaw_hash": "2665908792",
+        "flaw_hash_count": 7,
+        "flaw_hash_ordinal": 6,
+        "cause_hash": "3437647657",
+        "cause_hash_count": 1,
+        "cause_hash_ordinal": 1,
+        "cause_hash2": "0",
+        "cause_hash2_ordinal": "0"
+      },
+      "stack_dumps": {}
+    },
+    {
+      "title": "spring.devtools.add-properties.",
+      "issue_id": 1002,
+      "image_path": "/tmp/tmp_zqze304/binary/source_1700147900685_zip/app.jar.aes",
+      "gob": "B",
+      "severity": 3,
+      "issue_type_id": "crypto",
+      "issue_type": "Leftover Debug Code",
+      "cwe_id": "489",
+      "display_text": "\u003cspan\u003eThe spring.devtools.add-properties. configuration property may enable leftover debug functionality that creates and unintended entry point in a web application. Although this is an acceptable practice during product development, applications that are part of a production J2EE application should not have features enabled from their development environment platform. Whether this functionality can be remotely invoked depends on the configuration of the J2EE container and the application itself.\u003c/span\u003e \u003cspan\u003eEliminate unnecessary entry points in deployed web applications to reduce the attack surface. Ensure that this is not a backdoor disguised as debugging functionality. Ensure that the  configuration property is set to a sane default for production deployment and is not inadvertently allowing the application to be debugged remotely.\u003c/span\u003e \u003cspan\u003eReferences: \u003ca href\u003d\"https://cwe.mitre.org/data/definitions/489.html\"\u003eCWE\u003c/a\u003e\u003c/span\u003e",
+      "files": {
+        "source_file": {
+          "file": "BOOT-INF/classes/application-dev.yml",
+          "line": 9,
+          "function_name": "application-dev",
+          "qualified_function_name": "application-dev.application-dev.application-dev",
+          "function_prototype": "void application-dev(void)",
+          "scope": "application-dev.application-dev"
+        }
+      },
+      "flaw_match": {
+        "procedure_hash": "292666160",
+        "prototype_hash": "211846691",
+        "flaw_hash": "798351294",
+        "flaw_hash_count": 4,
+        "flaw_hash_ordinal": 3,
+        "cause_hash": "897930665",
+        "cause_hash_count": 1,
+        "cause_hash_ordinal": 1,
+        "cause_hash2": "0",
+        "cause_hash2_ordinal": "0"
+      },
+      "stack_dumps": {}
+    },
+    {
+      "title": "management.endpoint.health.show-details.",
+      "issue_id": 1001,
+      "image_path": "/tmp/tmp_zqze304/binary/source_1700147900685_zip/app.jar.aes",
+      "gob": "B",
+      "severity": 2,
+      "issue_type_id": "crypto",
+      "issue_type": "Information Exposure Through Sent Data",
+      "cwe_id": "201",
+      "display_text": "\u003cspan\u003eWhile processing an exception, the application calls the management.endpoint.health.show-details.() function, which may expose sensitive information about the application.  This information can be useful in executing other attacks and can also enable the attacker to target known vulnerabilities in application components. \u003c/span\u003e \u003cspan\u003eCapture exceptions for debugging purposes, but ensure that only generic error messages are returned to the end user that do not reveal any additional details.\u003c/span\u003e \u003cspan\u003eReferences: \u003ca href\u003d\"https://cwe.mitre.org/data/definitions/201.html\"\u003eCWE\u003c/a\u003e\u003c/span\u003e",
+      "files": {
+        "source_file": {
+          "file": "BOOT-INF/classes/application.yml",
+          "line": 25,
+          "function_name": "application",
+          "qualified_function_name": "application.application.application",
+          "function_prototype": "void application(void)",
+          "scope": "application.application"
+        }
+      },
+      "flaw_match": {
+        "procedure_hash": "974924344",
+        "prototype_hash": "211846691",
+        "flaw_hash": "1986422628",
+        "flaw_hash_count": 3,
+        "flaw_hash_ordinal": 2,
+        "cause_hash": "3050121532",
+        "cause_hash_count": 1,
+        "cause_hash_ordinal": 1,
+        "cause_hash2": "0",
+        "cause_hash2_ordinal": "0"
+      },
+      "stack_dumps": {}
+    }
+  ],
+  "selected_modules": [],
+  "pipeline_scan": "23.11.0-0",
+  "dev_stage": "DEVELOPMENT"
+}
