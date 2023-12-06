@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.10.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.10.1"
   kotlin("plugin.spring") version "1.9.21"
 }
 
@@ -20,10 +20,10 @@ dependencies {
   implementation("org.flywaydb:flyway-core")
   implementation("org.flywaydb:flyway-database-oracle")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
   implementation("com.oracle.database.jdbc:ojdbc11:23.3.0.23.09")
-  implementation("com.oracle.database.messaging:aqapi-jakarta:23.2.1.0")
+  implementation("com.oracle.database.messaging:aqapi-jakarta:23.3.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
 
