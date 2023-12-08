@@ -78,20 +78,20 @@ workflows:
             branches:
               only:
                 - mh-SDIT-959-suppress-dependency-telemetry
-#      - hmpps/deploy_env:
-#          name: deploy_dev
-#          env: "dev"
-#          jira_update: true
-#          pipeline_id: <<pipeline.id>>
-#          pipeline_number: <<pipeline.number>>
-#          context: hmpps-common-vars
-#          filters:
-#            branches:
-#              only:
-#                - main
-#          requires:
+      - hmpps/deploy_env:
+          name: deploy_dev
+          env: "dev"
+          jira_update: true
+          pipeline_id: <<pipeline.id>>
+          pipeline_number: <<pipeline.number>>
+          context: hmpps-common-vars
+          filters:
+            branches:
+              only:
+                - mh-SDIT-959-suppress-dependency-telemetry
+          requires:
 #            - validate
-#            - build_docker
+            - build_docker
 #            - helm_lint
 #      - request-preprod-approval:
 #          type: approval
@@ -108,7 +108,7 @@ workflows:
             - hmpps-common-vars
             - hmpps-prisoner-events-preprod
           requires:
-            - build_docker
+            - deploy_dev
           filters:
             branches:
               only:
