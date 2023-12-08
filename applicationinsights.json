@@ -45,7 +45,7 @@
           "telemetryType": "dependency",
           "attributes": [
             {
-              "key": "db.operation",
+              "key": "db.statement",
               "value": ".*getMaxIdentifierLength.*",
               "matchType": "regexp"
             }
