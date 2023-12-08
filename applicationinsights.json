@@ -40,17 +40,6 @@
             }
           ],
           "percentage": 0
-        },
-        {
-          "telemetryType": "dependency",
-          "attributes": [
-            {
-              "key": "db.statement",
-              "value": ".*getMaxIdentifierLength.*",
-              "matchType": "regexp"
-            }
-          ],
-          "percentage": 0
         }
       ]
     }
