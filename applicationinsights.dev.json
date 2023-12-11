@@ -29,17 +29,6 @@
             }
           ],
           "percentage": 100
-        },
-        {
-          "telemetryType": "exception",
-          "attributes": [
-            {
-              "key": "exception.type",
-              "value": "java.sql.SQLException",
-              "matchType": "strict"
-            }
-          ],
-          "percentage": 0
         }
       ]
     }
