@@ -10,7 +10,7 @@ configurations {
 dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:6.1.1")
+  implementation("org.springframework:spring-jms:6.1.2")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:2.1.1")
   implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
   implementation("org.springframework.boot:spring-boot-starter-security")
@@ -19,6 +19,7 @@ dependencies {
 
   implementation("org.flywaydb:flyway-core")
   implementation("org.flywaydb:flyway-database-oracle")
+  implementation("org.hibernate.orm:hibernate-community-dialects")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
