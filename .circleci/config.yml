@@ -15,7 +15,7 @@ jobs:
   validate:
     docker:
       - image: cimg/openjdk:21.0
-      - image: localstack/localstack:2.3
+      - image: localstack/localstack:3
         environment:
           - SERVICES=sqs,sns
           - LOCALSTACK_VOLUME_DIR=./volume
