@@ -42,7 +42,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     return offenderEventOf(
       Xtag(
         eventType = xtagEvent.jmsType,
-        nomisTimestamp = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, BST)),
+        nomisTimestamp = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, bst)),
         content = XtagContent(map),
       ),
     )
@@ -954,7 +954,7 @@ class OffenderEventsTransformer @Autowired constructor() {
     private val log = LoggerFactory.getLogger(this::class.java)
 
     // Xtag events are in British Summer Time all year round at rest in Oracle.
-    val BST = ZoneOffset.ofHours(1)
+    private val bst = ZoneOffset.ofHours(1)
 
     private val INCIDENT_TABLE_MAP = mapOf(
       "incident_cases" to "CASES",
@@ -980,8 +980,8 @@ class OffenderEventsTransformer @Autowired constructor() {
       }
     }
 
-    private const val datePattern = "[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd][dd-MMM-yyyy][dd-MMM-yy]"
-    private val caseInsensitiveFormatter = DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(datePattern).toFormatter()
+    private const val DATE_PATTERN = "[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd][dd-MMM-yyyy][dd-MMM-yy]"
+    private val caseInsensitiveFormatter = DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(DATE_PATTERN).toFormatter()
 
     fun localDateOf(date: String?): LocalDate? =
       try {
@@ -989,17 +989,17 @@ class OffenderEventsTransformer @Autowired constructor() {
           LocalDate.parse(it, caseInsensitiveFormatter)
         }
       } catch (dtpe: DateTimeParseException) {
-        log.error("Unable to parse $date into a LocalDateTime using pattern $datePattern", dtpe)
+        log.error("Unable to parse $date into a LocalDateTime using pattern $DATE_PATTERN", dtpe)
         null
       }
 
-    private const val timePattern = "[yyyy-MM-dd ]HH:mm:ss"
+    private const val TIME_PATTERN = "[yyyy-MM-dd ]HH:mm:ss"
 
     fun localTimeOf(dateTime: String?): LocalTime? =
       try {
-        dateTime?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern(timePattern)) }
+        dateTime?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern(TIME_PATTERN)) }
       } catch (dtpe: DateTimeParseException) {
-        log.error("Unable to parse $dateTime into a LocalTime using pattern $timePattern", dtpe)
+        log.error("Unable to parse $dateTime into a LocalTime using pattern $TIME_PATTERN", dtpe)
         null
       }
 
@@ -1013,15 +1013,15 @@ class OffenderEventsTransformer @Autowired constructor() {
         }
       }
 
-    private const val timeStampPattern = "yyyyMMddHHmmss.SSSSSSSSS"
+    private const val TIMESTAMP_PATTERN = "yyyyMMddHHmmss.SSSSSSSSS"
 
     fun localDateTimeOf(dateTime: String?): LocalDateTime? =
       try {
         dateTime?.let {
-          LocalDateTime.parse(it, DateTimeFormatter.ofPattern(timeStampPattern))
+          LocalDateTime.parse(it, DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN))
         }
       } catch (dtpe: DateTimeParseException) {
-        log.error("Unable to parse $dateTime into a LocalDateTime using pattern $timeStampPattern", dtpe)
+        log.error("Unable to parse $dateTime into a LocalDateTime using pattern $TIMESTAMP_PATTERN", dtpe)
         null
       }
   }

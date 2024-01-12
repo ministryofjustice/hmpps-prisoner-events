@@ -63,7 +63,11 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     ) { resultSet: ResultSet, _: Int ->
       resultSet.getBytes("MSGID").let {
         StringBuilder()
-          .apply { for (b in it) { append(String.format("%02X", b)) } }
+          .apply {
+            for (b in it) {
+              append(String.format("%02X", b))
+            }
+          }
           .run { "ID:$this" }
       }
     }
