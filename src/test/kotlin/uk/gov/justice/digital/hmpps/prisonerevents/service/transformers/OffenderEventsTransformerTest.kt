@@ -164,7 +164,7 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun S2_RESULT_IsMappedTo_SENTENCE_DATES_CHANGED() {
+  fun `S2_RESULT IsMappedTo SENTENCE_DATES_CHANGED`() {
     withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "S2_RESULT",
@@ -185,7 +185,7 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun OFF_SENT_OASYS_IsMappedTo_SENTENCE_CALCULATION_DATES_CHANGED() {
+  fun `OFF_SENT_OASYS IsMappedTo SENTENCE_CALCULATION_DATES_CHANGED`() {
     withCallTransformer<GenericOffenderEvent>(
       Xtag(
         eventType = "OFF_SENT_OASYS",

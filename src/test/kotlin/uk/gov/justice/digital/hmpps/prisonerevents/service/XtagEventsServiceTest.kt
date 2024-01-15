@@ -20,7 +20,7 @@ import java.time.LocalDateTime
 
 @ExtendWith(MockitoExtension::class)
 class XtagEventsServiceTest {
-  private val MOVEMENT_TIME = Timestamp.valueOf("2019-07-12 21:00:00.000")
+  private val movementTime = Timestamp.valueOf("2019-07-12 21:00:00.000")
 
   @Mock
   private lateinit var repository: SqlRepository
@@ -50,8 +50,8 @@ class XtagEventsServiceTest {
           fromAgency = "MDI",
           toAgency = "BAI",
           movementType = "REL",
-          movementDate = (MOVEMENT_TIME.toLocalDateTime().toLocalDate()),
-          movementTime = (MOVEMENT_TIME.toLocalDateTime().toLocalTime()),
+          movementDate = (movementTime.toLocalDateTime().toLocalDate()),
+          movementTime = (movementTime.toLocalDateTime().toLocalTime()),
           offenderNo = ("A2345GB"),
           directionCode = "IN",
         ),
@@ -76,7 +76,7 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
     assertThat(offenderEvent?.fromAgencyLocationId).isEqualTo("MDI")
     assertThat(offenderEvent?.toAgencyLocationId).isEqualTo("BAI")
-    assertThat(offenderEvent?.movementDateTime).isEqualTo(MOVEMENT_TIME.toLocalDateTime())
+    assertThat(offenderEvent?.movementDateTime).isEqualTo(movementTime.toLocalDateTime())
     assertThat(offenderEvent?.movementType).isEqualTo("REL")
     assertThat(offenderEvent?.directionCode).isEqualTo("IN")
   }
