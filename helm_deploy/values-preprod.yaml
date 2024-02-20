@@ -25,6 +25,7 @@ generic-service:
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     API_BASE_URL_OAUTH: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
+    HMPPS_SQS_USE_WEB_TOKEN: "false"
 
   namespace_secrets:
     offender-events-topic:
