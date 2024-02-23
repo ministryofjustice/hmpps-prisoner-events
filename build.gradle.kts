@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.2"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.3"
   kotlin("plugin.spring") version "1.9.22"
 }
 
@@ -8,10 +8,10 @@ configurations {
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.1.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.1.2")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:6.1.3")
+  implementation("org.springframework:spring-jms:6.1.4")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
 
   implementation("org.flywaydb:flyway-core")
@@ -36,8 +36,8 @@ dependencies {
   }
   testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.20")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.19.5")
-  testImplementation("org.testcontainers:oracle-xe:1.19.5")
+  testImplementation("org.testcontainers:localstack:1.19.6")
+  testImplementation("org.testcontainers:oracle-xe:1.19.6")
 }
 
 kotlin {
