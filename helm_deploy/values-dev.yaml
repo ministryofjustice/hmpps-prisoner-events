@@ -20,7 +20,7 @@ generic-service:
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
-    API_BASE_URL_OAUTH: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
+    API_BASE_URL_HMPPS_AUTH: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
     HMPPS_SQS_USE_WEB_TOKEN: true
 
 cron:
