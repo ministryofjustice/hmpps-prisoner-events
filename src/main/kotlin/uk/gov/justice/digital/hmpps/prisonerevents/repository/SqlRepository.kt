@@ -54,12 +54,13 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
   }
 
-  fun getExceptionMessageIds(exceptionQueue: String, enqueuedBefore: LocalDate? = null): List<String> =
+  fun getExceptionMessageIds(exceptionQueue: String, enqueuedBefore: LocalDate? = null, pageSize: Int = LIMIT): List<String> =
     jdbcTemplate.query(
       GET_EXCEPTION_MESSAGES,
       MapSqlParameterSource()
         .addValue("exceptionQueue", exceptionQueue)
-        .addValue("enqueuedBefore", enqueuedBefore, Types.TIMESTAMP),
+        .addValue("enqueuedBefore", enqueuedBefore, Types.TIMESTAMP)
+        .addValue("pageSize", pageSize),
     ) { resultSet: ResultSet, _: Int ->
       resultSet.getBytes("MSGID").let {
         StringBuilder()
@@ -121,7 +122,7 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
         AND EXCEPTION_QUEUE = :exceptionQueue
         AND (:enqueuedBefore is null OR ENQ_TIME < :enqueuedBefore)
-        AND ROWNUM <= $LIMIT
+        AND ROWNUM <= :pageSize
       ORDER BY ENQ_TIME
     """.trimIndent()
   }

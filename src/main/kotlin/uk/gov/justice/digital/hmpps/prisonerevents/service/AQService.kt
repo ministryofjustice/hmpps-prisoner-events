@@ -20,8 +20,8 @@ class AQService(
   private val retryJmsTemplate: JmsTemplate,
   private val telemetryClient: TelemetryClient?,
 ) {
-  fun requeueExceptions() {
-    val ids = sqlRepository.getExceptionMessageIds(QUEUE_NAME)
+  fun requeueExceptions(pageSize: Int) {
+    val ids = sqlRepository.getExceptionMessageIds(QUEUE_NAME, null, pageSize)
     val messageCount = ids.size
     if (messageCount == 0) {
       log.info("No messages found on exception queue $EXCEPTION_QUEUE_NAME")
