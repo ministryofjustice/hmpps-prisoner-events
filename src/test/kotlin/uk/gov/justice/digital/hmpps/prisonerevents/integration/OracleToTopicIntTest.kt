@@ -169,7 +169,6 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
       awaitExceptionQueueSizeToBe(1)
       awaitQueueSizeToBe(1)
-      assertThat(getNumberOfMessagesCurrentlyOnExceptionQueue()).isEqualTo(1)
 
       webTestClient
         .put().uri("/housekeeping?pageSize=1")
@@ -178,8 +177,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         .expectStatus().isOk
 
       awaitExceptionQueueSizeToBe(0)
-      awaitQueueSizeToBe(1)
-      assertThat(getNumberOfMessagesCurrentlyOnExceptionQueue()).isEqualTo(0)
+      awaitQueueSizeToBe(2)
     }
   }
 
