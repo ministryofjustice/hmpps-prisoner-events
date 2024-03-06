@@ -73,6 +73,13 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       }
     }
 
+  fun getExceptionMessageCount(exceptionQueue: String): Int =
+    jdbcTemplate.queryForObject(
+      GET_EXCEPTION_MESSAGE_COUNT,
+      MapSqlParameterSource().addValue("exceptionQueue", exceptionQueue),
+      Int::class.java,
+    )
+
   fun purgeExceptionQueue() {
     jdbcTemplate.update("DELETE FROM XTAG.XTAG_LISTENER_TAB", MapSqlParameterSource())
   }
@@ -124,6 +131,13 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         AND (:enqueuedBefore is null OR ENQ_TIME < :enqueuedBefore)
         AND ROWNUM <= :pageSize
       ORDER BY ENQ_TIME
+    """.trimIndent()
+
+    val GET_EXCEPTION_MESSAGE_COUNT = """
+      SELECT COUNT(MSGID)
+      FROM XTAG.XTAG_LISTENER_TAB
+      WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
+        AND EXCEPTION_QUEUE = :exceptionQueue
     """.trimIndent()
   }
 }
