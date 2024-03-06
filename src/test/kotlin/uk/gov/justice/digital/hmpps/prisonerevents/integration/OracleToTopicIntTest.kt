@@ -153,6 +153,32 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       awaitQueueSizeToBe(2)
       // Messages arrived at the topic and were sent to subscribed queue
     }
+
+    @Test
+    fun `Retry exception messages when messages present and page size set`() {
+      sabotageTopic()
+      repeat(2) { simulateTrigger() }
+      awaitExceptionQueueSizeToBe(2)
+      fixTopic()
+
+      webTestClient
+        .put().uri("/housekeeping?pageSize=1")
+        .headers(setAuthorisation(roles = emptyList()))
+        .exchange()
+        .expectStatus().isOk
+
+      awaitExceptionQueueSizeToBe(1)
+      awaitQueueSizeToBe(1)
+
+      webTestClient
+        .put().uri("/housekeeping?pageSize=1")
+        .headers(setAuthorisation(roles = emptyList()))
+        .exchange()
+        .expectStatus().isOk
+
+      awaitExceptionQueueSizeToBe(0)
+      awaitQueueSizeToBe(2)
+    }
   }
 
   @Nested

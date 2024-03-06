@@ -49,8 +49,11 @@ class AQResource(private val aqService: AQService) {
       ),
     ],
   )
-  fun requeueExceptions() =
-    aqService.requeueExceptions()
+  fun requeueExceptions(
+    @RequestParam(defaultValue = "500")
+    @Parameter(description = "Total messages to requeue", example = "2000", required = false)
+    pageSize: Int,
+  ) = aqService.requeueExceptions(pageSize)
 
   @DeleteMapping("/exceptions/{originalQueue}")
   @PreAuthorize("hasRole('ROLE_QUEUE_ADMIN')")
