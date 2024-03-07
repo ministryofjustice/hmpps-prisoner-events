@@ -29,8 +29,10 @@ class QueueHealth(private val aqService: AQService) : HealthIndicator {
   private fun checkDlqHealth(): List<Result<HealthDetail>> {
     val results = mutableListOf<Result<HealthDetail>>()
     results += success(HealthDetail("dlqName" to EXCEPTION_QUEUE_NAME))
-    results += success(HealthDetail("messagesOnDlq" to "${aqService.exceptionQueueMessageCount()}"))
-    return results
+    runCatching {
+      results += success(HealthDetail("messagesOnDlq" to "${aqService.exceptionQueueMessageCount()}"))
+    }.onFailure { throwable -> results += Result.failure(throwable) }
+    return results.toList()
   }
 
   private fun buildHealth(dlqResults: List<Result<HealthDetail>>): Health {
