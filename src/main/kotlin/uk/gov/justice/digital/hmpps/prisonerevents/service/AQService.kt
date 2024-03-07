@@ -71,6 +71,8 @@ class AQService(
     }
   }
 
+  fun exceptionQueueMessageCount() = sqlRepository.getExceptionMessageCount(EXCEPTION_QUEUE_NAME)
+
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
