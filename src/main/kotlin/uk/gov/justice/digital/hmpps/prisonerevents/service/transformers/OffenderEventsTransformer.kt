@@ -2,8 +2,8 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 
 import oracle.jakarta.jms.AQjmsMapMessage
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
 
 @Component
-class OffenderEventsTransformer @Autowired constructor() {
+class OffenderEventsTransformer {
 
   fun offenderEventOf(xtagEvent: AQjmsMapMessage): OffenderEvent? {
     val map = mutableMapOf<String, String>()
@@ -168,6 +168,11 @@ class OffenderEventsTransformer @Autowired constructor() {
         "PRISONER_ACTIVITY-UPDATE" -> prisonerActivityUpdateEventOf(xtag)
         "PRISONER_APPOINTMENT-UPDATE" -> prisonerAppointmentUpdateEventOf(xtag)
         "OFFENDER_CHARGES-UPDATED" -> offenderChargeEventOf(xtag)
+
+        "AGENCY_INTERNAL_LOCATIONS-UPDATED",
+        "AGY_INT_LOC_PROFILES-UPDATED",
+        "INT_LOC_USAGE_LOCATIONS-UPDATED",
+        -> agencyInternalLocationUpdatedEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -948,6 +953,19 @@ class OffenderEventsTransformer @Autowired constructor() {
     chargeId = xtag.content.p_offender_charge_id?.toLong(),
     recordDeleted = xtag.content.p_delete_flag == "Y",
     nomisEventType = xtag.eventType,
+  )
+
+  private fun agencyInternalLocationUpdatedEventOf(xtag: Xtag) = AgencyInternalLocationUpdatedEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    internalLocationId = xtag.content.p_internal_location_id?.toLong(),
+    prisonId = xtag.content.p_agy_loc_id,
+    description = xtag.content.p_description,
+    oldDescription = xtag.content.p_old_description,
+    auditModuleName = xtag.content.p_audit_module_name,
+    recordDeleted = xtag.content.p_delete_flag == "Y",
+    usageLocationId = xtag.content.p_usage_location_id?.toLong(),
   )
 
   companion object {

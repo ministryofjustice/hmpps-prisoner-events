@@ -124,6 +124,11 @@ class XtagContent(private val map: Map<String, String>) {
   val p_action by m
   val p_user by m
 
+  val p_internal_location_id by m
+  val p_description by m
+  val p_old_description by m
+  val p_usage_location_id by m
+
   val p_nomis_timestamp by m
 
   override fun toString(): String = map.toString()
