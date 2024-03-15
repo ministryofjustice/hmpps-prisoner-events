@@ -244,6 +244,24 @@ class OffenderChargeUpdatedEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class AgencyInternalLocationUpdatedEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val internalLocationId: Long?,
+  val prisonId: String?,
+  val description: String?,
+  val oldDescription: String?,
+  val auditModuleName: String?,
+  val recordDeleted: Boolean,
+  val usageLocationId: Long?,
+): OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
