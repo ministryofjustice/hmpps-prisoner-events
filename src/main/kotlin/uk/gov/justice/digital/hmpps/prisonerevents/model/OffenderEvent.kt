@@ -255,7 +255,7 @@ class AgencyInternalLocationUpdatedEvent(
   val auditModuleName: String?,
   val recordDeleted: Boolean,
   val usageLocationId: Long?,
-): OffenderEvent(
+) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
   nomisEventType = nomisEventType,
