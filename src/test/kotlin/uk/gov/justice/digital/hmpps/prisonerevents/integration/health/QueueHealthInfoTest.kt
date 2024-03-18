@@ -4,30 +4,38 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.Status
+import org.springframework.boot.actuate.info.Info
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
-import uk.gov.justice.digital.hmpps.prisonerevents.health.QueueHealth
+import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.health.QueueHealthInfo
 import uk.gov.justice.digital.hmpps.prisonerevents.service.AQService
 
-class QueueHealthTest {
+class QueueHealthInfoTest {
   private val aqService: AQService = mock()
 
   private val messagesOnDLQCount = 789
-  private val queueHealth = QueueHealth(aqService)
+  private val queueHealth = QueueHealthInfo(aqService)
+
+  private fun getQueueHealthInfo(): Health {
+    val builder = Info.Builder()
+    queueHealth.contribute(builder)
+    return builder.build().details["$QUEUE_NAME-health"] as Health
+  }
 
   @Test
   fun `should show status UP`() {
     mockHealthyQueue()
 
-    val health = queueHealth.health()
-
+    val health = getQueueHealthInfo()
     assertThat(health.status).isEqualTo(Status.UP)
   }
 
   @Test
   fun `should show DLQ status UP`() {
     mockHealthyQueue()
-    val health = queueHealth.health()
+    val health = getQueueHealthInfo()
 
     assertThat(health.details["dlqStatus"]).isEqualTo("UP")
   }
@@ -35,7 +43,7 @@ class QueueHealthTest {
   @Test
   fun `should show DLQ name`() {
     mockHealthyQueue()
-    val health = queueHealth.health()
+    val health = getQueueHealthInfo()
 
     assertThat(health.details["dlqName"]).isEqualTo(EXCEPTION_QUEUE_NAME)
   }
@@ -43,7 +51,7 @@ class QueueHealthTest {
   @Test
   fun `should show interesting DLQ attributes`() {
     mockHealthyQueue()
-    val health = queueHealth.health()
+    val health = getQueueHealthInfo()
 
     assertThat(health.details["messagesOnDlq"]).isEqualTo("$messagesOnDLQCount")
   }
@@ -51,7 +59,7 @@ class QueueHealthTest {
   @Test
   fun `should show status DOWN if DLQ status is down`() {
     mockDownQueue()
-    val health = queueHealth.health()
+    val health = getQueueHealthInfo()
 
     assertThat(health.status).isEqualTo(Status.DOWN)
     assertThat(health.details["dlqStatus"]).isEqualTo("DOWN")
@@ -60,7 +68,7 @@ class QueueHealthTest {
   @Test
   fun `should show DLQ name if DLQ status is down`() {
     mockDownQueue()
-    val health = queueHealth.health()
+    val health = getQueueHealthInfo()
 
     assertThat(health.details["dlqName"]).isEqualTo(EXCEPTION_QUEUE_NAME)
   }
@@ -68,7 +76,7 @@ class QueueHealthTest {
   @Test
   fun `should show exception causing DLQ status DOWN`() {
     mockDownQueue()
-    val health = queueHealth.health()
+    val health = getQueueHealthInfo()
 
     assertThat(health.details["error"] as String).contains("Exception")
   }
@@ -76,7 +84,7 @@ class QueueHealthTest {
   @Test
   fun `should show DLQ status DOWN if unable to retrieve DLQ attributes`() {
     mockDownQueue()
-    val health = queueHealth.health()
+    val health = getQueueHealthInfo()
 
     assertThat(health.details["dlqStatus"]).isEqualTo("DOWN")
   }

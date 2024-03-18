@@ -2,8 +2,6 @@ package uk.gov.justice.digital.hmpps.prisonerevents.integration.health
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
-import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.integration.IntegrationTestBase
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -19,20 +17,6 @@ class HealthCheckTest : IntegrationTestBase() {
       .expectStatus().isOk
       .expectBody()
       .jsonPath("status").isEqualTo("UP")
-  }
-
-  @Test
-  fun `Health page reports Nomis queue health`() {
-    webTestClient.get()
-      .uri("/health")
-      .exchange()
-      .expectStatus().isOk
-      .expectBody()
-      .jsonPath("status").isEqualTo("UP")
-      .jsonPath("components.$QUEUE_NAME-health.status").isEqualTo("UP")
-      .jsonPath("components.$QUEUE_NAME-health.details.dlqStatus").isEqualTo("UP")
-      .jsonPath("components.$QUEUE_NAME-health.details.dlqName").isEqualTo(EXCEPTION_QUEUE_NAME)
-      .jsonPath("components.$QUEUE_NAME-health.details.messagesOnDlq").isEqualTo(0)
   }
 
   @Test
