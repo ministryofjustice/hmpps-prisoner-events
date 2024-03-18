@@ -4,7 +4,8 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.actuate.health.Health
 import org.springframework.boot.actuate.health.Health.Builder
-import org.springframework.boot.actuate.health.HealthIndicator
+import org.springframework.boot.actuate.info.Info
+import org.springframework.boot.actuate.info.InfoContributor
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
@@ -12,13 +13,15 @@ import uk.gov.justice.digital.hmpps.prisonerevents.service.AQService
 import kotlin.Result.Companion.success
 
 @Component("$QUEUE_NAME-health")
-class QueueHealth(private val aqService: AQService) : HealthIndicator {
+class QueueHealthInfo(private val aqService: AQService) : InfoContributor {
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
-  override fun health(): Health = buildHealth(checkDlqHealth())
+  override fun contribute(builder: Info.Builder) {
+    builder.withDetail("$QUEUE_NAME-health", buildHealth(checkDlqHealth()))
+  }
 
   @JvmInline
   private value class HealthDetail(private val detail: Pair<String, String>) {
