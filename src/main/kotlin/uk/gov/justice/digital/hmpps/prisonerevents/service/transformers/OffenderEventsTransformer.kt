@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
@@ -708,11 +709,11 @@ class OffenderEventsTransformer {
     nomisEventType = xtag.eventType,
   )
 
-  private fun offenderBookingReassignedEventOf(xtag: Xtag) = GenericOffenderEvent(
+  private fun offenderBookingReassignedEventOf(xtag: Xtag) = OffenderBookingReassignedEvent(
     eventType = "OFFENDER_BOOKING-REASSIGNED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = xtag.content.p_offender_id?.toLong(),
-    previousOffenderId = xtag.content.p_old_offender_id?.toLong(),
+    offenderId = xtag.content.p_offender_id!!.toLong(),
+    previousOffenderId = xtag.content.p_old_offender_id!!.toLong(),
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     nomisEventType = xtag.eventType,
   )

@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
@@ -1322,7 +1323,7 @@ class OffenderEventsTransformerTest {
   @Test
   fun `offender booking updated mapped correctly`() {
     val now = LocalDateTime.now()
-    withCallTransformer<GenericOffenderEvent>(
+    withCallTransformer<OffenderBookingReassignedEvent>(
       Xtag(
         eventType = "OFF_BKB_UPD",
         nomisTimestamp = now,
@@ -1337,7 +1338,9 @@ class OffenderEventsTransformerTest {
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_BOOKING-REASSIGNED")
       assertThat(offenderId).isEqualTo(123L)
+      assertThat(offenderIdDisplay).isNull() // null since xtagEventsService will add the prison number
       assertThat(previousOffenderId).isEqualTo(456L)
+      assertThat(previousOffenderIdDisplay).isNull() // null since xtagEventsService will add the prison number
       assertThat(bookingId).isEqualTo(789)
       assertThat(nomisEventType).isEqualTo("OFF_BKB_UPD")
       assertThat(offenderIdDisplay).isNull()

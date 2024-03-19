@@ -1,15 +1,13 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Movement
@@ -18,19 +16,11 @@ import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-@ExtendWith(MockitoExtension::class)
 class XtagEventsServiceTest {
   private val movementTime = Timestamp.valueOf("2019-07-12 21:00:00.000")
 
-  @Mock
-  private lateinit var repository: SqlRepository
-
-  private lateinit var service: XtagEventsService
-
-  @BeforeEach
-  fun setUp() {
-    service = XtagEventsService(repository)
-  }
+  private val repository: SqlRepository = mock()
+  private val service: XtagEventsService = XtagEventsService(repository)
 
   @Test
   fun shouldAddNomsIdToOffenderAliasEvent() {
@@ -199,6 +189,25 @@ class XtagEventsServiceTest {
       ),
     )
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
+  }
+
+  @Test
+  fun `should add offender id and previous offender id to booking updated event`() {
+    whenever(repository.getNomsIdFromOffender(1234L)).thenReturn(listOf("A1234GB"))
+    whenever(repository.getNomsIdFromOffender(2345L)).thenReturn(listOf("A2345GC"))
+
+    val offenderEvent = service.addAdditionalEventData(
+      OffenderBookingReassignedEvent(
+        eventType = "OFFENDER_BOOKING-REASSIGNED",
+        eventDatetime = LocalDateTime.now(),
+        nomisEventType = "OFF_BKB_UPD",
+        bookingId = 12L,
+        offenderId = 1234L,
+        previousOffenderId = 2345L,
+      ),
+    )
+    assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234GB")
+    assertThat((offenderEvent as OffenderBookingReassignedEvent).previousOffenderIdDisplay).isEqualTo("A2345GC")
   }
 
   private fun assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId(eventName: String) {
