@@ -262,6 +262,25 @@ class AgencyInternalLocationUpdatedEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderBookingReassignedEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  offenderId: Long,
+  val previousOffenderId: Long,
+  var previousOffenderIdDisplay: String? = null,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+  offenderId = offenderId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
@@ -281,7 +300,6 @@ class GenericOffenderEvent(
   val recordDeleted: Boolean? = null,
   val rootOffenderId: Long? = null,
   val aliasOffenderId: Long? = null,
-  val previousOffenderId: Long? = null,
   val bookingNumber: String? = null,
   val previousBookingNumber: String? = null,
   val sanctionSeq: Long? = null,
