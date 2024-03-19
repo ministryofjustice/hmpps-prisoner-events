@@ -8,36 +8,36 @@ configurations {
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.2.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.2.2")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:6.1.4")
+  implementation("org.springframework:spring-jms:6.1.5")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.1")
 
   implementation("org.flywaydb:flyway-core")
   implementation("org.flywaydb:flyway-database-oracle")
   implementation("org.hibernate.orm:hibernate-community-dialects")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.4.0")
 
   implementation("com.oracle.database.jdbc:ojdbc11:23.3.0.23.09")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.3.1.0")
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
 
-  testImplementation("org.awaitility:awaitility-kotlin:4.2.0")
+  testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
   testImplementation("io.jsonwebtoken:jjwt-impl:0.12.5")
   testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.5")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
 
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.20") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.21") {
     exclude(group = "io.swagger.core.v3")
   }
   testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.20")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.19.6")
-  testImplementation("org.testcontainers:oracle-xe:1.19.6")
+  testImplementation("org.testcontainers:localstack:1.19.7")
+  testImplementation("org.testcontainers:oracle-xe:1.19.7")
 }
 
 kotlin {

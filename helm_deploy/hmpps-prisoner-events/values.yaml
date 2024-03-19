@@ -12,7 +12,7 @@ generic-service:
 
   ingress:
     annotations:
-      nginx.ingress.kubernetes.io/configuration-snippet: |
+      nginx.ingress.kubernetes.io/server-snippet: |
         server_tokens off;
         location /housekeeping {
           deny all;
