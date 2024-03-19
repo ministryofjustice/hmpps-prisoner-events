@@ -1732,8 +1732,9 @@ class OffenderEventsTransformerTest {
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
-            "p_offender_id" to "234",
             "p_root_offender_id" to "123",
+            "p_offender_book_id" to "456",
+            "p_alert_seq" to "789",
             "p_alert_date" to "2019-02-14",
             "p_alert_time" to "10:12:23",
             "p_alert_type" to "some type",
@@ -1746,6 +1747,8 @@ class OffenderEventsTransformerTest {
     ) {
       assertThat(eventType).isEqualTo("ALERT-DELETED")
       assertThat(rootOffenderId).isEqualTo(123L)
+      assertThat(bookingId).isEqualTo(456L)
+      assertThat(alertSeq).isEqualTo(789L)
       assertThat(alertDateTime).isEqualTo(LocalDateTime.parse("2019-02-14T10:12:23"))
       assertThat(alertType).isEqualTo("some type")
       assertThat(alertCode).isEqualTo("some code")

@@ -211,8 +211,9 @@ class OffenderEventsTransformer {
 
   private fun alertDeletedEventOf(xtag: Xtag) = AlertOffenderEvent(
     eventType = "ALERT-DELETED",
-    offenderId = xtag.content.p_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    alertSeq = xtag.content.p_alert_seq?.toLong(),
     alertDateTime = localDateTimeOf(xtag.content.p_alert_date, xtag.content.p_alert_time),
     alertType = xtag.content.p_alert_type,
     alertCode = xtag.content.p_alert_code,
