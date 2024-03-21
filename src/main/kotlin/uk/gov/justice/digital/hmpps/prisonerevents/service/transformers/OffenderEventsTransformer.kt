@@ -10,7 +10,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffende
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
-import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
@@ -169,6 +169,8 @@ class OffenderEventsTransformer {
         "PRISONER_ACTIVITY-UPDATE" -> prisonerActivityUpdateEventOf(xtag)
         "PRISONER_APPOINTMENT-UPDATE" -> prisonerAppointmentUpdateEventOf(xtag)
         "OFFENDER_CHARGES-UPDATED" -> offenderChargeEventOf(xtag)
+        "OFFENDER_CHARGES-INSERTED" -> offenderChargeEventOf(xtag)
+        "OFFENDER_CHARGES-DELETED" -> offenderChargeEventOf(xtag)
 
         "AGENCY_INTERNAL_LOCATIONS-UPDATED",
         "AGY_INT_LOC_PROFILES-UPDATED",
@@ -947,14 +949,14 @@ class OffenderEventsTransformer {
     user = xtag.content.p_user,
   )
 
-  private fun offenderChargeEventOf(xtag: Xtag) = OffenderChargeUpdatedEvent(
-    eventType = "OFFENDER_CHARGES-UPDATED",
+  private fun offenderChargeEventOf(xtag: Xtag) = OffenderChargeEvent(
+    eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
     chargeId = xtag.content.p_offender_charge_id?.toLong(),
-    recordDeleted = xtag.content.p_delete_flag == "Y",
     nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun agencyInternalLocationUpdatedEventOf(xtag: Xtag) = AgencyInternalLocationUpdatedEvent(
