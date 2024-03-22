@@ -244,6 +244,75 @@ class OffenderChargeEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class CourtAppearanceEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  val auditModuleName: String? = null,
+  val eventId: Long?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CourtEventChargeEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  val auditModuleName: String? = null,
+  val eventId: Long?,
+  val chargeId: Long?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CourtCaseEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  val auditModuleName: String? = null,
+  val caseId: Long?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class OrderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  val auditModuleName: String? = null,
+  val orderId: Long?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class AgencyInternalLocationUpdatedEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,

@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
@@ -15,6 +18,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassign
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
@@ -2766,6 +2770,172 @@ class OffenderEventsTransformerTest {
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(chargeId).isEqualTo(23456)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `court case update event mapped correctly`() {
+    courtCaseEventMappedCorrectly("OFFENDER_CASES-UPDATED")
+  }
+
+  @Test
+  fun `court case insert event mapped correctly`() {
+    courtCaseEventMappedCorrectly("OFFENDER_CASES-INSERTED")
+  }
+
+  @Test
+  fun `court case deleted event mapped correctly`() {
+    courtCaseEventMappedCorrectly("OFFENDER_CASES-DELETED")
+  }
+
+  private fun courtCaseEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtCaseEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_case_id" to "23456",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(caseId).isEqualTo(23456)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `court event charge update event mapped correctly`() {
+    courtEventChargeEventMappedCorrectly("COURT_EVENT_CHARGES-UPDATED")
+  }
+
+  @Test
+  fun `court event charge inserted event mapped correctly`() {
+    courtEventChargeEventMappedCorrectly("COURT_EVENT_CHARGES-INSERTED")
+  }
+
+  @Test
+  fun `court event charge deleted event mapped correctly`() {
+    courtEventChargeEventMappedCorrectly("COURT_EVENT_CHARGES-DELETED")
+  }
+
+  private fun courtEventChargeEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtEventChargeEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_charge_id" to "23456",
+            "p_event_id" to "65432",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(chargeId).isEqualTo(23456)
+      assertThat(eventId).isEqualTo(65432)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `court appearance update event mapped correctly`() {
+    courtAppearanceEventMappedCorrectly("COURT_EVENTS-UPDATED")
+  }
+
+  @Test
+  fun `court appearance inserted event mapped correctly`() {
+    courtAppearanceEventMappedCorrectly("COURT_EVENTS-INSERTED")
+  }
+
+  @Test
+  fun `court appearance deleted event mapped correctly`() {
+    courtAppearanceEventMappedCorrectly("COURT_EVENTS-DELETED")
+  }
+
+  private fun courtAppearanceEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtAppearanceEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_event_id" to "65432",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(eventId).isEqualTo(65432)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `order update event mapped correctly`() {
+    orderEventMappedCorrectly("ORDERS-UPDATED")
+  }
+
+  @Test
+  fun `order inserted event mapped correctly`() {
+    orderEventMappedCorrectly("ORDERS-INSERTED")
+  }
+
+  @Test
+  fun `order deleted event mapped correctly`() {
+    orderEventMappedCorrectly("ORDERS-DELETED")
+  }
+
+  private fun orderEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<OrderEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_order_id" to "23456",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(orderId).isEqualTo(23456)
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }

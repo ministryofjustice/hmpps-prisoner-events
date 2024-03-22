@@ -6,6 +6,9 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
@@ -13,6 +16,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassign
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
@@ -100,6 +104,7 @@ class OffenderEventsTransformer {
         } else {
           offenderIdentifierDeletedEventOf(xtag)
         }
+
         "OFFENDER_IDENTIFIERS-UPDATED" -> offenderIdentifierUpdatedEventOf(xtag)
 
         "S1_RESULT" -> if (!xtag.content.p_imprison_status_seq.isNullOrEmpty()) {
@@ -109,6 +114,7 @@ class OffenderEventsTransformer {
         } else {
           null
         }
+
         "OFFENDER_ASSESSMENTS-UPDATED" -> assessmentUpdatedEventOf(xtag)
 
         "OFF_ALERT_INSERT" -> alertInsertedEventOf(xtag)
@@ -168,9 +174,29 @@ class OffenderEventsTransformer {
         "VISITOR_RESTRICTS-UPDATED" -> visitorRestrictionEventOf(xtag)
         "PRISONER_ACTIVITY-UPDATE" -> prisonerActivityUpdateEventOf(xtag)
         "PRISONER_APPOINTMENT-UPDATE" -> prisonerAppointmentUpdateEventOf(xtag)
-        "OFFENDER_CHARGES-UPDATED" -> offenderChargeEventOf(xtag)
-        "OFFENDER_CHARGES-INSERTED" -> offenderChargeEventOf(xtag)
-        "OFFENDER_CHARGES-DELETED" -> offenderChargeEventOf(xtag)
+        "OFFENDER_CHARGES-UPDATED", "OFFENDER_CHARGES-INSERTED", "OFFENDER_CHARGES-DELETED" -> offenderChargeEventOf(
+          xtag,
+        )
+
+        "OFFENDER_CHARGES-UPDATED", "OFFENDER_CHARGES-INSERTED", "OFFENDER_CHARGES-DELETED" -> offenderChargeEventOf(
+          xtag,
+        )
+
+        "COURT_EVENTS-UPDATED", "COURT_EVENTS-INSERTED", "COURT_EVENTS-DELETED" -> courtAppearanceEventOf(
+          xtag,
+        )
+
+        "COURT_EVENT_CHARGES-UPDATED", "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED" -> courtEventChargeEventOf(
+          xtag,
+        )
+
+        "OFFENDER_CASES-UPDATED", "OFFENDER_CASES-INSERTED", "OFFENDER_CASES-DELETED" -> courtCaseEventOf(
+          xtag,
+        )
+
+        "ORDERS-UPDATED", "ORDERS-INSERTED", "ORDERS-DELETED" -> orderEventOf(
+          xtag,
+        )
 
         "AGENCY_INTERNAL_LOCATIONS-UPDATED",
         "AGY_INT_LOC_PROFILES-UPDATED",
@@ -959,6 +985,47 @@ class OffenderEventsTransformer {
     auditModuleName = xtag.content.p_audit_module_name,
   )
 
+  private fun courtAppearanceEventOf(xtag: Xtag) = CourtAppearanceEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    eventId = xtag.content.p_event_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun courtEventChargeEventOf(xtag: Xtag) = CourtEventChargeEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    eventId = xtag.content.p_event_id?.toLong(),
+    chargeId = xtag.content.p_offender_charge_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun courtCaseEventOf(xtag: Xtag) = CourtCaseEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    caseId = xtag.content.p_case_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun orderEventOf(xtag: Xtag) = OrderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    orderId = xtag.content.p_order_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
   private fun agencyInternalLocationUpdatedEventOf(xtag: Xtag) = AgencyInternalLocationUpdatedEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
@@ -1003,7 +1070,8 @@ class OffenderEventsTransformer {
     }
 
     private const val DATE_PATTERN = "[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd][dd-MMM-yyyy][dd-MMM-yy]"
-    private val caseInsensitiveFormatter = DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(DATE_PATTERN).toFormatter()
+    private val caseInsensitiveFormatter =
+      DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(DATE_PATTERN).toFormatter()
 
     fun localDateOf(date: String?): LocalDate? =
       try {

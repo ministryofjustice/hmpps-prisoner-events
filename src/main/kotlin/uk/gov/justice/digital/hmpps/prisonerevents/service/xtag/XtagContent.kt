@@ -131,5 +131,8 @@ class XtagContent(private val map: Map<String, String>) {
 
   val p_nomis_timestamp by m
 
+  val p_case_id by m
+  val p_order_id by m
+
   override fun toString(): String = map.toString()
 }
