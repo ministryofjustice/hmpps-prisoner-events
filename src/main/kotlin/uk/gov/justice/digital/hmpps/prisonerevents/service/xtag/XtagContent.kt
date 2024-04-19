@@ -134,7 +134,6 @@ class XtagContent(private val map: Map<String, String>) {
 
   val p_phone_id by m
   val p_phone_type by m
-  val p_phone_no by m
 
   override fun toString(): String = map.toString()
 }

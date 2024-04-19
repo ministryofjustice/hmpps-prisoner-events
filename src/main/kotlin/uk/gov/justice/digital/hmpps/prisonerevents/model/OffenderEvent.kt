@@ -359,7 +359,6 @@ class OffenderPhoneNumberEvent(
   val addressId: Long? = null,
   val phoneId: Long?,
   val phoneType: String?,
-  val phoneNo: String?,
   val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,

@@ -3071,7 +3071,6 @@ class OffenderEventsTransformerTest {
       assertThat(phoneId).isEqualTo(1326483)
       assertThat(phoneType).isEqualTo("HOME")
       assertThat(auditModuleName).isEqualTo("OCDADDRE")
-      assertThat(phoneNo).isEqualTo("0987654321")
       assertThat(offenderId).isEqualTo(2465630)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }
@@ -3100,7 +3099,6 @@ class OffenderEventsTransformerTest {
       assertThat(phoneId).isEqualTo(1326483)
       assertThat(phoneType).isEqualTo("HOME")
       assertThat(auditModuleName).isEqualTo("OCDADDRE")
-      assertThat(phoneNo).isEqualTo("0987654321")
       assertThat(offenderId).isEqualTo(2465630)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }
@@ -3129,7 +3127,6 @@ class OffenderEventsTransformerTest {
       assertThat(phoneId).isEqualTo(1326483)
       assertThat(phoneType).isEqualTo("HOME")
       assertThat(auditModuleName).isEqualTo("OCDADDRE")
-      assertThat(phoneNo).isEqualTo("0987654321")
       assertThat(offenderId).isEqualTo(2465630)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }
@@ -3158,7 +3155,6 @@ class OffenderEventsTransformerTest {
       assertThat(phoneId).isEqualTo(1326483)
       assertThat(phoneType).isEqualTo("HOME")
       assertThat(auditModuleName).isEqualTo("OCDADDRE")
-      assertThat(phoneNo).isEqualTo("0987654321")
       assertThat(addressId).isEqualTo(2465630)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }
@@ -3187,7 +3183,6 @@ class OffenderEventsTransformerTest {
       assertThat(phoneId).isEqualTo(1326483)
       assertThat(phoneType).isEqualTo("HOME")
       assertThat(auditModuleName).isEqualTo("OCDADDRE")
-      assertThat(phoneNo).isEqualTo("0987654321")
       assertThat(addressId).isEqualTo(2465630)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }
@@ -3216,7 +3211,6 @@ class OffenderEventsTransformerTest {
       assertThat(phoneId).isEqualTo(1326483)
       assertThat(phoneType).isEqualTo("HOME")
       assertThat(auditModuleName).isEqualTo("OCDADDRE")
-      assertThat(phoneNo).isEqualTo("0987654321")
       assertThat(addressId).isEqualTo(2465630)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }

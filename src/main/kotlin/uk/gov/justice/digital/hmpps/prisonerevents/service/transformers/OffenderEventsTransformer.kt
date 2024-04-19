@@ -1051,7 +1051,6 @@ class OffenderEventsTransformer {
     offenderIdDisplay = xtag.content.p_offender_id_display,
     phoneId = xtag.content.p_phone_id?.toLong(),
     phoneType = xtag.content.p_phone_type,
-    phoneNo = xtag.content.p_phone_no,
     auditModuleName = xtag.content.p_audit_module_name,
     offenderId = if (xtag.content.p_owner_class == "OFF") {
       xtag.content.p_owner_id?.toLong()
