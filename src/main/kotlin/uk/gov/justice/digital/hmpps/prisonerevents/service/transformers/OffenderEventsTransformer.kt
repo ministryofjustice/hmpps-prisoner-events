@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassign
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
@@ -178,10 +179,6 @@ class OffenderEventsTransformer {
           xtag,
         )
 
-        "OFFENDER_CHARGES-UPDATED", "OFFENDER_CHARGES-INSERTED", "OFFENDER_CHARGES-DELETED" -> offenderChargeEventOf(
-          xtag,
-        )
-
         "COURT_EVENTS-UPDATED", "COURT_EVENTS-INSERTED", "COURT_EVENTS-DELETED" -> courtAppearanceEventOf(
           xtag,
         )
@@ -202,6 +199,8 @@ class OffenderEventsTransformer {
         "AGY_INT_LOC_PROFILES-UPDATED",
         "INT_LOC_USAGE_LOCATIONS-UPDATED",
         -> agencyInternalLocationUpdatedEventOf(xtag)
+
+        "PHONES-INSERTED", "PHONES-UPDATED", "PHONES-DELETED" -> offenderPhoneNoEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1037,6 +1036,32 @@ class OffenderEventsTransformer {
     auditModuleName = xtag.content.p_audit_module_name,
     recordDeleted = xtag.content.p_delete_flag == "Y",
     usageLocationId = xtag.content.p_usage_location_id?.toLong(),
+  )
+
+  private fun offenderPhoneNoEventOf(xtag: Xtag) = OffenderPhoneNumberEvent(
+    eventType = if (xtag.content.p_owner_class == "OFF") {
+      xtag.eventType?.replace("PHONES-", "OFFENDER_PHONE-")
+    } else if (xtag.content.p_owner_class == "ADDR") {
+      xtag.eventType?.replace("PHONES-", "OFFENDER_ADDRESS_PHONE-")
+    } else {
+      xtag.eventType
+    },
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    phoneId = xtag.content.p_phone_id?.toLong(),
+    phoneType = xtag.content.p_phone_type,
+    auditModuleName = xtag.content.p_audit_module_name,
+    offenderId = if (xtag.content.p_owner_class == "OFF") {
+      xtag.content.p_owner_id?.toLong()
+    } else {
+      null
+    },
+    addressId = if (xtag.content.p_owner_class == "ADDR") {
+      xtag.content.p_owner_id?.toLong()
+    } else {
+      null
+    },
   )
 
   companion object {

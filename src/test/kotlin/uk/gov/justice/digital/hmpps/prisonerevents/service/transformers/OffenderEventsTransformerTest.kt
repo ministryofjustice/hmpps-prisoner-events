@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassign
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
@@ -3044,6 +3045,174 @@ class OffenderEventsTransformerTest {
       assertThat(internalLocationId).isEqualTo(34567)
       assertThat(auditModuleName).isEqualTo("module")
       assertThat(recordDeleted).isTrue()
+    }
+  }
+
+  @Test
+  fun `Offender phone number inserted mapped correctly`() {
+    withCallTransformer<OffenderPhoneNumberEvent>(
+      Xtag(
+        eventType = "PHONES-INSERTED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_phone_id" to "1326483",
+            "p_phone_type" to "HOME",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_phone_no" to "0987654321",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "OFF",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_PHONE-INSERTED")
+      assertThat(phoneId).isEqualTo(1326483)
+      assertThat(phoneType).isEqualTo("HOME")
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(offenderId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `Offender phone number updated mapped correctly`() {
+    withCallTransformer<OffenderPhoneNumberEvent>(
+      Xtag(
+        eventType = "PHONES-UPDATED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_phone_id" to "1326483",
+            "p_phone_type" to "HOME",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_phone_no" to "0987654321",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "OFF",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_PHONE-UPDATED")
+      assertThat(phoneId).isEqualTo(1326483)
+      assertThat(phoneType).isEqualTo("HOME")
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(offenderId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `Offender phone number deleted mapped correctly`() {
+    withCallTransformer<OffenderPhoneNumberEvent>(
+      Xtag(
+        eventType = "PHONES-DELETED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_phone_id" to "1326483",
+            "p_phone_type" to "HOME",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_phone_no" to "0987654321",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "OFF",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_PHONE-DELETED")
+      assertThat(phoneId).isEqualTo(1326483)
+      assertThat(phoneType).isEqualTo("HOME")
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(offenderId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `Offender address phone number inserted mapped correctly`() {
+    withCallTransformer<OffenderPhoneNumberEvent>(
+      Xtag(
+        eventType = "PHONES-INSERTED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_phone_id" to "1326483",
+            "p_phone_type" to "HOME",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_phone_no" to "0987654321",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "ADDR",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_ADDRESS_PHONE-INSERTED")
+      assertThat(phoneId).isEqualTo(1326483)
+      assertThat(phoneType).isEqualTo("HOME")
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(addressId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `Offender address phone number updated mapped correctly`() {
+    withCallTransformer<OffenderPhoneNumberEvent>(
+      Xtag(
+        eventType = "PHONES-UPDATED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_phone_id" to "1326483",
+            "p_phone_type" to "HOME",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_phone_no" to "0987654321",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "ADDR",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_ADDRESS_PHONE-UPDATED")
+      assertThat(phoneId).isEqualTo(1326483)
+      assertThat(phoneType).isEqualTo("HOME")
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(addressId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `Offender address phone number deleted mapped correctly`() {
+    withCallTransformer<OffenderPhoneNumberEvent>(
+      Xtag(
+        eventType = "PHONES-DELETED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_phone_id" to "1326483",
+            "p_phone_type" to "HOME",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_phone_no" to "0987654321",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "ADDR",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_ADDRESS_PHONE-DELETED")
+      assertThat(phoneId).isEqualTo(1326483)
+      assertThat(phoneType).isEqualTo("HOME")
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(addressId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }
   }
 

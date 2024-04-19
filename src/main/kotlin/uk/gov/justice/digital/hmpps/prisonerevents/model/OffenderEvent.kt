@@ -350,6 +350,25 @@ class OffenderBookingReassignedEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderPhoneNumberEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  offenderId: Long? = null,
+  val addressId: Long? = null,
+  val phoneId: Long?,
+  val phoneType: String?,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  offenderId = offenderId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
