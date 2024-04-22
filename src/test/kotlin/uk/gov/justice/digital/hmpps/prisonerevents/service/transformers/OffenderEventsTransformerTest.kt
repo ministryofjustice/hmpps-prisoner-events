@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
@@ -3212,6 +3213,90 @@ class OffenderEventsTransformerTest {
       assertThat(phoneType).isEqualTo("HOME")
       assertThat(auditModuleName).isEqualTo("OCDADDRE")
       assertThat(addressId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `Offender email address inserted mapped correctly`() {
+    withCallTransformer<OffenderEmailEvent>(
+      Xtag(
+        eventType = "INTERNET_ADDRESSES-INSERTED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_internet_address_class" to "EMAIL",
+            "p_internet_address_id" to "140204",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_internet_address" to "davide@davidee.com",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "OFF",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_EMAIL-INSERTED")
+      assertThat(internetAddressClass).isEqualTo("EMAIL")
+      assertThat(internetAddressId).isEqualTo(140204)
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(offenderId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `Offender email address updated mapped correctly`() {
+    withCallTransformer<OffenderEmailEvent>(
+      Xtag(
+        eventType = "INTERNET_ADDRESSES-UPDATED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_internet_address_class" to "EMAIL",
+            "p_internet_address_id" to "140204",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_internet_address" to "davide@davidee.com",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "OFF",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_EMAIL-UPDATED")
+      assertThat(internetAddressClass).isEqualTo("EMAIL")
+      assertThat(internetAddressId).isEqualTo(140204)
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(offenderId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `Offender email address deleted mapped correctly`() {
+    withCallTransformer<OffenderEmailEvent>(
+      Xtag(
+        eventType = "INTERNET_ADDRESSES-DELETED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_internet_address_class" to "EMAIL",
+            "p_internet_address_id" to "140204",
+            "p_audit_module_name" to "OCDADDRE",
+            "p_internet_address" to "davide@davidee.com",
+            "p_owner_id" to "2465630",
+            "p_owner_class" to "OFF",
+            "p_offender_id_display" to "G4560UH",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_EMAIL-DELETED")
+      assertThat(internetAddressClass).isEqualTo("EMAIL")
+      assertThat(internetAddressId).isEqualTo(140204)
+      assertThat(auditModuleName).isEqualTo("OCDADDRE")
+      assertThat(offenderId).isEqualTo(2465630)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }
   }

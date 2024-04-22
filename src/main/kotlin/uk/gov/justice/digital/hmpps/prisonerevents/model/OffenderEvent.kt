@@ -369,6 +369,24 @@ class OffenderPhoneNumberEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderEmailEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  offenderId: Long? = null,
+  val internetAddressId: Long?,
+  val internetAddressClass: String?,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  offenderId = offenderId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,

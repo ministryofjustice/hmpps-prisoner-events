@@ -135,5 +135,8 @@ class XtagContent(private val map: Map<String, String>) {
   val p_phone_id by m
   val p_phone_type by m
 
+  val p_internet_address_class by m
+  val p_internet_address_id by m
+
   override fun toString(): String = map.toString()
 }
