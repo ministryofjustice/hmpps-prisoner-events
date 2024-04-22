@@ -1068,7 +1068,7 @@ class OffenderEventsTransformer {
   )
 
   private fun offenderEmailEventOf(xtag: Xtag) = OffenderEmailEvent(
-    eventType = if (xtag.content.p_internet_address_class == "EMAIL") {
+    eventType = if (xtag.content.p_internet_address_class == "EMAIL" && xtag.content.p_owner_class == "OFF") {
       xtag.eventType?.replace("INTERNET_ADDRESSES-", "OFFENDER_EMAIL-")
     } else {
       xtag.content.p_event_type
