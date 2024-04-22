@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
@@ -201,6 +202,8 @@ class OffenderEventsTransformer {
         -> agencyInternalLocationUpdatedEventOf(xtag)
 
         "PHONES-INSERTED", "PHONES-UPDATED", "PHONES-DELETED" -> offenderPhoneNoEventOf(xtag)
+
+        "INTERNET_ADDRESSES-INSERTED", "INTERNET_ADDRESSES-UPDATED", "INTERNET_ADDRESSES-DELETED" -> offenderEmailEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1058,6 +1061,25 @@ class OffenderEventsTransformer {
       null
     },
     addressId = if (xtag.content.p_owner_class == "ADDR") {
+      xtag.content.p_owner_id?.toLong()
+    } else {
+      null
+    },
+  )
+
+  private fun offenderEmailEventOf(xtag: Xtag) = OffenderEmailEvent(
+    eventType = if (xtag.content.p_internet_address_class == "EMAIL") {
+      xtag.eventType?.replace("INTERNET_ADDRESSES-", "OFFENDER_EMAIL-")
+    } else {
+      xtag.content.p_event_type
+    },
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    internetAddressId = xtag.content.p_internet_address_id?.toLong(),
+    internetAddressClass = xtag.content.p_internet_address_class,
+    auditModuleName = xtag.content.p_audit_module_name,
+    offenderId = if (xtag.content.p_owner_class == "OFF") {
       xtag.content.p_owner_id?.toLong()
     } else {
       null
