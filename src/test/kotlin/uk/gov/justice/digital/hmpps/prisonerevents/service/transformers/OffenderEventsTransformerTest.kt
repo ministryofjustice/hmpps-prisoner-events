@@ -2315,7 +2315,7 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun `address inserted mapped correctly`() {
+  fun `person address inserted mapped correctly`() {
     val now = LocalDateTime.now()
     withCallTransformer<GenericOffenderEvent>(
       Xtag(
@@ -2326,7 +2326,7 @@ class OffenderEventsTransformerTest {
             "p_root_offender_id" to "123",
             "p_address_id" to "234",
             "p_owner_id" to "345",
-            "p_owner_class" to "class",
+            "p_owner_class" to "PER",
             "p_address_end_date" to "2019-02-03",
             "p_primary_addr_flag" to "Y",
             "p_mail_addr_flag" to "N",
@@ -2335,13 +2335,46 @@ class OffenderEventsTransformerTest {
         ),
       ),
     ) {
-      // The ADDRESSES_XTAG_EVENTS trigger only fires for owner_class = 'PER'
-      // There is no event for other owner class inserts, only updates and deletes.
       assertThat(eventType).isEqualTo("PERSON_ADDRESS-INSERTED")
       assertThat(rootOffenderId).isEqualTo(123L)
       assertThat(addressId).isEqualTo(234L)
       assertThat(ownerId).isEqualTo(345L)
-      assertThat(ownerClass).isEqualTo("class")
+      assertThat(ownerClass).isEqualTo("PER")
+      assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
+      assertThat(primaryAddressFlag).isEqualTo("Y")
+      assertThat(mailAddressFlag).isEqualTo("N")
+      assertThat(personId).isEqualTo(567L)
+      assertThat(nomisEventType).isEqualTo("ADDR_INS")
+      assertThat(offenderIdDisplay).isNull()
+    }
+  }
+
+  @Test
+  fun `offender address inserted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "ADDR_INS",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_root_offender_id" to "123",
+            "p_address_id" to "234",
+            "p_owner_id" to "345",
+            "p_owner_class" to "OFF",
+            "p_address_end_date" to "2019-02-03",
+            "p_primary_addr_flag" to "Y",
+            "p_mail_addr_flag" to "N",
+            "p_person_id" to "567",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_ADDRESS-INSERTED")
+      assertThat(rootOffenderId).isEqualTo(123L)
+      assertThat(addressId).isEqualTo(234L)
+      assertThat(ownerId).isEqualTo(345L)
+      assertThat(ownerClass).isEqualTo("OFF")
       assertThat(addressEndDate).isEqualTo(LocalDate.parse("2019-02-03"))
       assertThat(primaryAddressFlag).isEqualTo("Y")
       assertThat(mailAddressFlag).isEqualTo("N")
