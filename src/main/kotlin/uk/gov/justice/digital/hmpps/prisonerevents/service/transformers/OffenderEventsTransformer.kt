@@ -144,7 +144,7 @@ class OffenderEventsTransformer {
         "OFF_EMPLOYMENTS_DEL" -> offenderEmploymentDeletedEventOf(xtag)
         "D5_RESULT" -> hdcConditionChanged(xtag)
         "D4_RESULT" -> hdcFineInserted(xtag)
-        "ADDR_INS" -> personAddressInserted(xtag)
+        "ADDR_INS" -> addressInserted(xtag)
         "ADDR_UPD" -> addressUpdatedOrDeleted(xtag)
 
         "OFF_SENT_OASYS" -> sentenceCalculationDateChangedEventOf(xtag)
@@ -330,8 +330,12 @@ class OffenderEventsTransformer {
     nomisEventType = xtag.eventType,
   )
 
-  private fun personAddressInserted(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "PERSON_ADDRESS-INSERTED",
+  private fun addressInserted(xtag: Xtag) = GenericOffenderEvent(
+    eventType = when (xtag.content.p_owner_class) {
+      "PER" -> "PERSON_ADDRESS-INSERTED"
+      "OFF" -> "OFFENDER_ADDRESS-INSERTED"
+      else -> "ADDRESS-INSERTED"
+    },
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     addressId = xtag.content.p_address_id?.toLong(),
     ownerId = xtag.content.p_owner_id?.toLong(),
