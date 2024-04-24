@@ -40,5 +40,11 @@ generic-service:
     offender-events-topic:
       HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_ARN: "topic_arn"
 
+generic-prometheus-alerts:
+  targetApplication: prison-api
+  alertSeverity: syscon
+  applicationAlertsEnabled: false
+  ingressAlertsEnabled: false
+
 cron:
   housekeeping_schedule: "*/10 * * * *"
