@@ -2895,20 +2895,20 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `court appearance update event mapped correctly`() {
-    courtAppearanceEventMappedCorrectly("COURT_EVENTS-UPDATED")
+    courtAppearanceEventMappedCorrectly(eventName = "COURT_EVENT-UPDATED", translatedEventName = "COURT_EVENTS-UPDATED")
   }
 
   @Test
   fun `court appearance inserted event mapped correctly`() {
-    courtAppearanceEventMappedCorrectly("COURT_EVENTS-INSERTED")
+    courtAppearanceEventMappedCorrectly(eventName = "COURT_EVENT-INSERTED", translatedEventName = "COURT_EVENTS-INSERTED")
   }
 
   @Test
   fun `court appearance deleted event mapped correctly`() {
-    courtAppearanceEventMappedCorrectly("COURT_EVENTS-DELETED")
+    courtAppearanceEventMappedCorrectly(eventName = "COURT_EVENT-DELETED", translatedEventName = "COURT_EVENTS-DELETED")
   }
 
-  private fun courtAppearanceEventMappedCorrectly(eventName: String) {
+  private fun courtAppearanceEventMappedCorrectly(eventName: String, translatedEventName: String) {
     val now = LocalDateTime.now()
     withCallTransformer<CourtAppearanceEvent>(
       Xtag(
@@ -2924,7 +2924,7 @@ class OffenderEventsTransformerTest {
         ),
       ),
     ) {
-      assertThat(eventType).isEqualTo(eventName)
+      assertThat(eventType).isEqualTo(translatedEventName)
       assertThat(offenderId).isNull()
       assertThat(nomisEventType).isEqualTo(eventName)
       assertThat(offenderIdDisplay).isEqualTo("A234BC")

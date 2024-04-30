@@ -180,7 +180,7 @@ class OffenderEventsTransformer {
           xtag,
         )
 
-        "COURT_EVENTS-UPDATED", "COURT_EVENTS-INSERTED", "COURT_EVENTS-DELETED" -> courtAppearanceEventOf(
+        "COURT_EVENT-UPDATED", "COURT_EVENT-INSERTED", "COURT_EVENT-DELETED" -> courtAppearanceEventOf(
           xtag,
         )
 
@@ -992,7 +992,7 @@ class OffenderEventsTransformer {
   )
 
   private fun courtAppearanceEventOf(xtag: Xtag) = CourtAppearanceEvent(
-    eventType = xtag.eventType,
+    eventType = xtag.eventType!!.replace(oldValue = "COURT_EVENT", newValue = "COURT_EVENTS"),
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
