@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
@@ -208,6 +209,38 @@ class XtagEventsServiceTest {
     )
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234GB")
     assertThat((offenderEvent as OffenderBookingReassignedEvent).previousOffenderIdDisplay).isEqualTo("A2345GC")
+  }
+
+  @Test
+  fun `should add offender number for offender address inserted event`() {
+    whenever(repository.getNomsIdFromOffender(1234L)).thenReturn(listOf("A1234GB"))
+
+    val offenderEvent = service.addAdditionalEventData(
+      GenericOffenderEvent(
+        eventType = "OFFENDER_ADDRESS-INSERTED",
+        eventDatetime = LocalDateTime.now(),
+        nomisEventType = "ADDR_INS",
+        ownerClass = "OFF",
+        ownerId = 1234L,
+      ),
+    )
+    assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234GB")
+  }
+
+  @Test
+  fun `should add offender number for offender address udpated event`() {
+    whenever(repository.getNomsIdFromOffender(1234L)).thenReturn(listOf("A1234GB"))
+
+    val offenderEvent = service.addAdditionalEventData(
+      GenericOffenderEvent(
+        eventType = "OFFENDER_ADDRESS-UPDATED",
+        eventDatetime = LocalDateTime.now(),
+        nomisEventType = "ADDR_UPD",
+        ownerClass = "OFF",
+        ownerId = 1234L,
+      ),
+    )
+    assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234GB")
   }
 
   private fun assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId(eventName: String) {
