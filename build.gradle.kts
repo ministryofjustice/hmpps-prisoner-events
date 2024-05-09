@@ -20,7 +20,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
 
-  implementation("com.oracle.database.jdbc:ojdbc11:23.3.0.23.09")
+  implementation("com.oracle.database.jdbc:ojdbc11:23.4.0.24.05")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.3.1.0")
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
@@ -36,8 +36,8 @@ dependencies {
   }
   testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.21")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.19.7")
-  testImplementation("org.testcontainers:oracle-xe:1.19.7")
+  testImplementation("org.testcontainers:localstack:1.19.8")
+  testImplementation("org.testcontainers:oracle-xe:1.19.8")
 }
 
 kotlin {
