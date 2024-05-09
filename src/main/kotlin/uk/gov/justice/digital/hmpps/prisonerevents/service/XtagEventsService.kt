@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service
 
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
@@ -47,6 +48,11 @@ class XtagEventsService(
         oe as OffenderBookingReassignedEvent
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.offenderId!!).firstOrNull()
         oe.previousOffenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.previousOffenderId).firstOrNull()
+      }
+
+      "OFFENDER_ADDRESS-INSERTED", "OFFENDER_ADDRESS-UPDATED" -> {
+        oe as GenericOffenderEvent
+        oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.ownerId!!).firstOrNull()
       }
     }
     return oe
