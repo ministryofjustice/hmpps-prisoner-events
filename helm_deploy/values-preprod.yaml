@@ -1,36 +1,33 @@
----
 # Per environment values which override defaults in hmpps-prisoner-events/values.yaml
 
 generic-service:
   replicaCount: 2
 
-  poddisruptionbudget:
-    enabled: true
-    minAvailable: 3
-
   ingress:
-    host: prsnr-events-pp.aks-live-1.studio-hosting.service.justice.gov.uk
-    annotations:
-      # this magic line automatically generates a certificate for the ingress
-      cert-manager.io/cluster-issuer: letsencrypt-production
+    host: prisoner-events-preprod.prison.service.justice.gov.uk
+    dso_enabled: false
 
-  # Disabled for DSO AKS cluster
-  allowlist: null
+  serviceAccountName: hmpps-prisoner-events
 
   scheduledDowntime:
     enabled: true
     startup: '16 6 * * 1-5' # Start at 6.16am UTC Monday-Friday
     shutdown: '48 21 * * 1-5' # Stop at 9.48pm UTC Monday-Friday
 
+  allowlist:
+    groups:
+      - internal
+
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     API_BASE_URL_HMPPS_AUTH: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
-    HMPPS_SQS_USE_WEB_TOKEN: "false"
+    HMPPS_SQS_USE_WEB_TOKEN: true
 
-  namespace_secrets:
-    offender-events-topic:
-      HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_ACCESS_KEY_ID: "access_key_id"
-      HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_SECRET_ACCESS_KEY: "secret_access_key"
+generic-prometheus-alerts:
+  applicationAlertsEnabled: true
+  ingressAlertsEnabled: true
+  businessHoursOnly: true
+  alertSeverity: syscon-nonprod
 
 cron:
   housekeeping_schedule: "*/10 7-20 * * 1-5"
