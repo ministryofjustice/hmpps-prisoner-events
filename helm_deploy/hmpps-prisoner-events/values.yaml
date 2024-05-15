@@ -19,9 +19,14 @@ generic-service:
           return 401;
         }
     enabled: true
-    dso_enabled: true
     host: app-hostname.local    # override per environment
     tlsSecretName: hmpps-prisoner-events-cert
+
+  serviceAccountName: hmpps-prisoner-events
+
+  allowlist:
+    groups:
+      - internal
 
   # Environment variables to load into the deployment
   env:
@@ -41,10 +46,8 @@ generic-service:
       HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_ARN: "topic_arn"
 
 generic-prometheus-alerts:
-  targetApplication: prison-api
+  targetApplication: hmpps-prisoner-events
   alertSeverity: syscon
-  applicationAlertsEnabled: false
-  ingressAlertsEnabled: false
 
 cron:
   housekeeping_schedule: "*/10 * * * *"
