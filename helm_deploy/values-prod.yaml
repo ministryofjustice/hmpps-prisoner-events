@@ -1,7 +1,7 @@
 # Per environment values which override defaults in hmpps-prisoner-events/values.yaml
 
 generic-service:
-  replicaCount: 4
+  replicaCount: 0
 
   ingress:
     host: prisoner-events.prison.service.justice.gov.uk
