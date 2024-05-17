@@ -1,25 +1,10 @@
----
 # Per environment values which override defaults in hmpps-prisoner-events/values.yaml
 
 generic-service:
-  poddisruptionbudget:
-    enabled: true
-    minAvailable: 3
+  replicaCount: 0
 
   ingress:
-    host: prisoner-events.aks-live-1.studio-hosting.service.justice.gov.uk
-    annotations:
-      # this magic line automatically generates a certificate for the ingress
-      cert-manager.io/cluster-issuer: letsencrypt-production
-
-  # Disabled for DSO AKS cluster
-  allowlist: null
+    host: prisoner-events.prison.service.justice.gov.uk
 
   env:
     API_BASE_URL_HMPPS_AUTH: https://sign-in.hmpps.service.justice.gov.uk/auth
-    HMPPS_SQS_USE_WEB_TOKEN: "false"
-
-  namespace_secrets:
-    offender-events-topic:
-      HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_ACCESS_KEY_ID: "access_key_id"
-      HMPPS_SQS_TOPICS_PRISONEVENTTOPIC_SECRET_ACCESS_KEY: "secret_access_key"
