@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "5.15.6"
-  kotlin("plugin.spring") version "1.9.23"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.0"
+  kotlin("plugin.spring") version "2.0.0"
 }
 
 configurations {
@@ -8,13 +8,12 @@ configurations {
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:0.2.4")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.0.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:6.1.6")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:3.1.3")
+  implementation("org.springframework:spring-jms:6.1.8")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.0.0")
 
-  implementation("org.flywaydb:flyway-core")
   implementation("org.flywaydb:flyway-database-oracle")
   implementation("org.hibernate.orm:hibernate-community-dialects")
 
@@ -34,7 +33,7 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.22") {
     exclude(group = "io.swagger.core.v3")
   }
-  testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.21")
+  testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.22")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:localstack:1.19.8")
   testImplementation("org.testcontainers:oracle-xe:1.19.8")
@@ -46,9 +45,7 @@ kotlin {
 
 tasks {
   withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-      jvmTarget = "21"
-    }
+    compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
   }
   test {
     jvmArgs("-Doracle.jakarta.jms.useEmulatedXA=false")
