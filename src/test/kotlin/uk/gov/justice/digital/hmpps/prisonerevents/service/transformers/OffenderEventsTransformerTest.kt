@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
@@ -3330,6 +3331,110 @@ class OffenderEventsTransformerTest {
       assertThat(internetAddressId).isEqualTo(140204)
       assertThat(auditModuleName).isEqualTo("OCDADDRE")
       assertThat(offenderId).isEqualTo(2465630)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `OFFENDER_CONTACT-INSERTED mapped correctly`() {
+    withCallTransformer<OffenderContactEvent>(
+      Xtag(
+        eventType = "OFFENDER_CONTACT-INSERTED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_offender_contact_person_id" to "7550868",
+            "p_person_id" to "4729911",
+            "p_audit_module_name" to "OIDVIRES",
+            "p_offender_id_display" to "G4560UH",
+            "p_offender_book_id" to "1215922",
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_relationship_type" to "BRO",
+            "p_active_flag" to "N",
+            "p_contact_type" to "S",
+            "p_next_of_kin_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CONTACT-INSERTED")
+      assertThat(approvedVisitor).isFalse()
+      assertThat(personId).isEqualTo(4729911)
+      assertThat(contactId).isEqualTo(7550868)
+      assertThat(auditModuleName).isEqualTo("OIDVIRES")
+      assertThat(bookingId).isEqualTo(1215922)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `OFFENDER_CONTACT-UPDATED mapped correctly`() {
+    withCallTransformer<OffenderContactEvent>(
+      Xtag(
+        eventType = "OFFENDER_CONTACT-UPDATED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_offender_contact_person_id" to "7550868",
+            "p_person_id" to "4729911",
+            "p_audit_module_name" to "OIDVIRES",
+            "p_approved_visitor_flag" to "Y",
+            "p_offender_id_display" to "G4560UH",
+            "p_offender_book_id" to "1215922",
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_relationship_type" to "BRO",
+            "p_active_flag" to "N",
+            "p_contact_type" to "S",
+            "p_next_of_kin_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CONTACT-UPDATED")
+      assertThat(approvedVisitor).isTrue()
+      assertThat(personId).isEqualTo(4729911)
+      assertThat(contactId).isEqualTo(7550868)
+      assertThat(auditModuleName).isEqualTo("OIDVIRES")
+      assertThat(bookingId).isEqualTo(1215922)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `OFFENDER_CONTACT-DELETED mapped correctly`() {
+    withCallTransformer<OffenderContactEvent>(
+      Xtag(
+        eventType = "OFFENDER_CONTACT-DELETED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_offender_contact_person_id" to "7550868",
+            "p_person_id" to "4729911",
+            "p_audit_module_name" to "OIDVIRES",
+            "p_approved_visitor_flag" to "Y",
+            "p_offender_id_display" to "G4560UH",
+            "p_offender_book_id" to "1215922",
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_relationship_type" to "BRO",
+            "p_active_flag" to "N",
+            "p_contact_type" to "S",
+            "p_next_of_kin_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CONTACT-DELETED")
+      assertThat(approvedVisitor).isTrue()
+      assertThat(personId).isEqualTo(4729911)
+      assertThat(contactId).isEqualTo(7550868)
+      assertThat(auditModuleName).isEqualTo("OIDVIRES")
+      assertThat(bookingId).isEqualTo(1215922)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
     }
   }

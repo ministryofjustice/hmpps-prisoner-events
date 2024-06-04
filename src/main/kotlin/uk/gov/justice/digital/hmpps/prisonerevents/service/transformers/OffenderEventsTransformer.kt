@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
@@ -204,7 +205,7 @@ class OffenderEventsTransformer {
         "PHONES-INSERTED", "PHONES-UPDATED", "PHONES-DELETED" -> offenderPhoneNoEventOf(xtag)
 
         "INTERNET_ADDRESSES-INSERTED", "INTERNET_ADDRESSES-UPDATED", "INTERNET_ADDRESSES-DELETED" -> offenderEmailEventOf(xtag)
-
+        "OFFENDER_CONTACT-INSERTED", "OFFENDER_CONTACT-UPDATED", "OFFENDER_CONTACT-DELETED" -> offenderContactEventOf(xtag)
         else -> OffenderEvent(
           eventType = xtag.eventType,
           eventDatetime = xtag.nomisTimestamp,
@@ -1088,6 +1089,16 @@ class OffenderEventsTransformer {
     } else {
       null
     },
+  )
+  private fun offenderContactEventOf(xtag: Xtag) = OffenderContactEvent(
+    eventType = xtag.eventType!!,
+    eventDatetime = xtag.nomisTimestamp!!,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display!!,
+    personId = xtag.content.p_person_id!!.toLong(),
+    approvedVisitor = xtag.content.p_approved_visitor_flag == "Y",
+    auditModuleName = xtag.content.p_audit_module_name!!,
+    contactId = xtag.content.p_offender_contact_person_id!!.toLong(),
   )
 
   companion object {
