@@ -86,6 +86,26 @@ class SqlRepositoryTest : IntegrationTestBase() {
     assertThat(repository.getNomsIdFromRestriction(999L)).isEmpty()
   }
 
+  @Test
+  fun getCreatedByUserOffenderContact() {
+    seedOffenders()
+    seedBookings()
+    seedOffenderContactPersons()
+
+    val username = repository.getCreatedByUserOffenderContact(1000L)
+    assertThat(username).isEqualTo("USER1")
+  }
+
+  @Test
+  fun getModifiedByUserOffenderContact() {
+    seedOffenders()
+    seedBookings()
+    seedOffenderContactPersons()
+
+    val username = repository.getModifiedByUserOffenderContact(1000L)
+    assertThat(username).isEqualTo("USER2")
+  }
+
   private fun seedOffenders() {
     jdbcTemplate.update(
       """insert into OFFENDERS(
@@ -157,13 +177,18 @@ class SqlRepositoryTest : IntegrationTestBase() {
           PERSON_ID,
           CONTACT_TYPE,
           RELATIONSHIP_TYPE,
-          OFFENDER_CONTACT_PERSON_ID
+          OFFENDER_CONTACT_PERSON_ID,
+          CREATE_USER_ID,
+          MODIFY_USER_ID
         ) values (
           1234,
           100,
           'S',
           'BRO',
-          1000)""",
+          1000,
+          'USER1',
+          'USER2'
+          )""",
     )
   }
 

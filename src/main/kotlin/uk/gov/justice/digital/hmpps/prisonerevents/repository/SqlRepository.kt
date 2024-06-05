@@ -54,6 +54,28 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
   }
 
+  fun getCreatedByUserOffenderContact(offenderContactPersonId: Long): String? {
+    return jdbcTemplate.queryForObject(
+      """
+        SELECT CREATE_USER_ID
+        FROM OFFENDER_CONTACT_PERSONS
+        WHERE OFFENDER_CONTACT_PERSON_ID = :offenderContactPersonId
+    """,
+      MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
+    ) { resultSet: ResultSet, _: Int -> resultSet.getString("CREATE_USER_ID") }
+  }
+
+  fun getModifiedByUserOffenderContact(offenderContactPersonId: Long): String? {
+    return jdbcTemplate.queryForObject(
+      """
+        SELECT MODIFY_USER_ID
+        FROM OFFENDER_CONTACT_PERSONS
+        WHERE OFFENDER_CONTACT_PERSON_ID = :offenderContactPersonId
+    """,
+      MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
+    ) { resultSet: ResultSet, _: Int -> resultSet.getString("MODIFY_USER_ID") }
+  }
+
   fun getExceptionMessageIds(exceptionQueue: String, enqueuedBefore: LocalDate? = null, pageSize: Int = LIMIT): List<String> =
     jdbcTemplate.query(
       GET_EXCEPTION_MESSAGES,
