@@ -392,6 +392,7 @@ class OffenderContactEvent(
   eventDatetime: LocalDateTime,
   offenderIdDisplay: String,
   bookingId: Long,
+  var username: String? = null,
   val personId: Long,
   val contactId: Long,
   val approvedVisitor: Boolean,
