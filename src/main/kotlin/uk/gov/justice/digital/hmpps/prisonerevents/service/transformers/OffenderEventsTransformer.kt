@@ -154,8 +154,9 @@ class OffenderEventsTransformer {
         "BED_ASSIGNMENT_HISTORY-INSERTED" -> offenderBedAssignmentEventOf(xtag)
         "CONFIRMED_RELEASE_DATE-CHANGED" -> confirmedReleaseDateOf(xtag)
         "OFFENDER-INSERTED", "OFFENDER-UPDATED", "OFFENDER-DELETED" -> offenderUpdatedOf(xtag)
-        "OFF_IDENT_MARKS-CHANGED", "OFF_PROFILE_DETS-CHANGED", "OFF_PHYS_ATTR-CHANGED" ->
-          offenderPhysicalDetailsUpdatedOf(xtag)
+        "OFF_IDENT_MARKS-CHANGED" -> offenderIdentifyingMarksUpdatedOf(xtag)
+        "OFF_PHYS_ATTR-CHANGED" -> offenderPhysicalAttributesUpdatedOf(xtag)
+        "OFF_PROFILE_DETS-CHANGED" -> offenderPhysicalDetailsUpdatedOf(xtag)
 
         "EXTERNAL_MOVEMENT-CHANGED" -> externalMovementRecordEventOf(xtag, null)
 
@@ -834,6 +835,20 @@ class OffenderEventsTransformer {
 
   private fun offenderUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+  )
+
+  private fun offenderIdentifyingMarksUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
+    eventType = "OFFENDER_IDENTIFYING_MARKS-CHANGED",
+    eventDatetime = xtag.nomisTimestamp,
+    offenderId = xtag.content.p_offender_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+  )
+
+  private fun offenderPhysicalAttributesUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
+    eventType = "OFFENDER_PHYSICAL_ATTRIBUTES-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
     offenderId = xtag.content.p_offender_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
