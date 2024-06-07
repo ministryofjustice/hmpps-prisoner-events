@@ -620,7 +620,7 @@ class OffenderEventsTransformerTest {
         content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
       ),
     ) {
-      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
+      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_ATTRIBUTES-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
@@ -650,7 +650,7 @@ class OffenderEventsTransformerTest {
         content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
       ),
     ) {
-      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
+      assertThat(eventType).isEqualTo("OFFENDER_IDENTIFYING_MARKS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
