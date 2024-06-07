@@ -42,6 +42,159 @@ class AlertOffenderEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+open class CSIPReportOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+
+  val rootOffenderId: Long? = null,
+  val csipReportId: Long? = null,
+  val auditModuleName: String? = null,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CSIPPlanOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+  rootOffenderId: Long? = null,
+  csipReportId: Long? = null,
+  auditModuleName: String? = null,
+
+  val csipPlanId: Long? = null,
+) : CSIPReportOffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+
+  rootOffenderId = rootOffenderId,
+  csipReportId = csipReportId,
+  auditModuleName = auditModuleName,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+open class CSIPReviewOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+  rootOffenderId: Long? = null,
+  csipReportId: Long? = null,
+  auditModuleName: String? = null,
+
+  val csipReviewId: Long? = null,
+) : CSIPReportOffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+
+  rootOffenderId = rootOffenderId,
+  csipReportId = csipReportId,
+  auditModuleName = auditModuleName,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CSIPAttendeeOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+  rootOffenderId: Long? = null,
+  csipReportId: Long? = null,
+  csipReviewId: Long? = null,
+  auditModuleName: String? = null,
+
+  val csipAttendeeId: Long? = null,
+) : CSIPReviewOffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+
+  rootOffenderId = rootOffenderId,
+  csipReportId = csipReportId,
+  csipReviewId = csipReviewId,
+  auditModuleName = auditModuleName,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CSIPFactorOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+  rootOffenderId: Long? = null,
+  csipReportId: Long? = null,
+  auditModuleName: String? = null,
+
+  val csipFactorId: Long? = null,
+) : CSIPReportOffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+
+  rootOffenderId = rootOffenderId,
+  csipReportId = csipReportId,
+  auditModuleName = auditModuleName,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CSIPInterviewOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+  rootOffenderId: Long? = null,
+  csipReportId: Long? = null,
+  auditModuleName: String? = null,
+
+  val csipInterviewId: Long? = null,
+) : CSIPReportOffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderId = offenderId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+
+  rootOffenderId = rootOffenderId,
+  csipReportId = csipReportId,
+  auditModuleName = auditModuleName,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class ExternalMovementOffenderEvent(
   eventType: String?,
   eventDatetime: LocalDateTime? = null,

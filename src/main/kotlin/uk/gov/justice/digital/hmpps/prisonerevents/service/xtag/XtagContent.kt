@@ -89,6 +89,13 @@ class XtagContent(private val map: Map<String, String>) {
   val p_case_note_type by m
   val p_case_note_sub_type by m
 
+  val p_csip_id by m
+  val p_attendee_id by m
+  val p_csip_factor_id by m
+  val p_csip_intvw_id by m
+  val p_plan_id by m
+  val p_review_id by m
+
   val p_offender_key_date_adjust_id by m
   val p_offender_sentence_adjust_id by m
 
