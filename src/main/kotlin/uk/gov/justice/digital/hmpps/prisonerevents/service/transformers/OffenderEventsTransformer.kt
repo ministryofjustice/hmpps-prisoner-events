@@ -936,21 +936,21 @@ class OffenderEventsTransformer {
   private fun offenderIdentifyingMarksUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = "OFFENDER_IDENTIFYING_MARKS-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = xtag.content.p_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
   )
 
   private fun offenderPhysicalAttributesUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = "OFFENDER_PHYSICAL_ATTRIBUTES-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = xtag.content.p_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
   )
 
   private fun offenderPhysicalDetailsUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = "OFFENDER_PHYSICAL_DETAILS-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = xtag.content.p_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
   )
 
