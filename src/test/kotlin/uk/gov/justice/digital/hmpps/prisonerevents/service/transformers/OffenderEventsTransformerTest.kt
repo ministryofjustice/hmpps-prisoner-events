@@ -2911,7 +2911,10 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `court appearance inserted event mapped correctly`() {
-    courtAppearanceEventMappedCorrectly(eventName = "COURT_EVENT-INSERTED", translatedEventName = "COURT_EVENTS-INSERTED")
+    courtAppearanceEventMappedCorrectly(
+      eventName = "COURT_EVENT-INSERTED",
+      translatedEventName = "COURT_EVENTS-INSERTED",
+    )
   }
 
   @Test
@@ -3112,8 +3115,6 @@ class OffenderEventsTransformerTest {
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
-
-
 
   @Test
   fun `Agency Internal Location Update Event mapped correctly`() {
