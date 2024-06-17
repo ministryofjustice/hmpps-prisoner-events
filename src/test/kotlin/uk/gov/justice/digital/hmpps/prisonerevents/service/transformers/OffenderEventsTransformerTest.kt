@@ -28,6 +28,9 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
@@ -2982,6 +2985,135 @@ class OffenderEventsTransformerTest {
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
+
+  @Test
+  fun `offender sentence update event mapped correctly`() {
+    offenderSentenceEventMappedCorrectly("OFFENDER_SENTENCES-UPDATED")
+  }
+
+  @Test
+  fun `offender sentence inserted event mapped correctly`() {
+    offenderSentenceEventMappedCorrectly("OFFENDER_SENTENCES-INSERTED")
+  }
+
+  @Test
+  fun `offender sentence deleted event mapped correctly`() {
+    offenderSentenceEventMappedCorrectly("OFFENDER_SENTENCES-DELETED")
+  }
+
+  private fun offenderSentenceEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderSentenceEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_sentence_seq" to "2",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `offender sentence charge update event mapped correctly`() {
+    offenderSentenceChargeEventMappedCorrectly("OFFENDER_SENTENCE_CHARGES-UPDATED")
+  }
+
+  @Test
+  fun `offender sentence charge inserted event mapped correctly`() {
+    offenderSentenceChargeEventMappedCorrectly("OFFENDER_SENTENCE_CHARGES-INSERTED")
+  }
+
+  @Test
+  fun `offender sentence charge deleted event mapped correctly`() {
+    offenderSentenceChargeEventMappedCorrectly("OFFENDER_SENTENCE_CHARGES-DELETED")
+  }
+
+  private fun offenderSentenceChargeEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderSentenceChargeEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_sentence_seq" to "2",
+            "p_offender_charge_id" to "3",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(chargeId).isEqualTo(3)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `offender sentence term update event mapped correctly`() {
+    offenderSentenceTermEventMappedCorrectly("OFFENDER_SENTENCE_TERMS-UPDATED")
+  }
+
+  @Test
+  fun `offender sentence term inserted event mapped correctly`() {
+    offenderSentenceTermEventMappedCorrectly("OFFENDER_SENTENCE_TERMS-INSERTED")
+  }
+
+  @Test
+  fun `offender sentence term deleted event mapped correctly`() {
+    offenderSentenceTermEventMappedCorrectly("OFFENDER_SENTENCE_TERMS-DELETED")
+  }
+
+  private fun offenderSentenceTermEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderSentenceTermEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_sentence_seq" to "2",
+            "p_term_seq" to "3",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(termSequence).isEqualTo(3)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+
 
   @Test
   fun `Agency Internal Location Update Event mapped correctly`() {
