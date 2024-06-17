@@ -624,11 +624,12 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_PHYS_ATTR-CHANGED",
         nomisTimestamp = fixedEventTime,
-        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC", "p_offender_book_id" to "12345")),
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_ATTRIBUTES-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345)
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
   }
@@ -639,11 +640,12 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_PROFILE_DETS-CHANGED",
         nomisTimestamp = fixedEventTime,
-        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC", "p_offender_book_id" to "12345")),
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345)
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
   }
@@ -654,11 +656,12 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_IDENT_MARKS-CHANGED",
         nomisTimestamp = fixedEventTime,
-        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC", "p_offender_book_id" to "12345")),
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_IDENTIFYING_MARKS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345)
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
   }
