@@ -1158,7 +1158,7 @@ class OffenderEventsTransformer {
   )
 
   private fun offenderSentenceEventOf(xtag: Xtag) = OffenderSentenceEvent(
-    eventType = xtag.eventType,
+    eventType = xtag.eventType!!.replace(oldValue = "OFF_SENT", newValue = "OFFENDER_SENTENCES"),
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
@@ -1168,7 +1168,7 @@ class OffenderEventsTransformer {
   )
 
   private fun offenderSentenceChargeEventOf(xtag: Xtag) = OffenderSentenceChargeEvent(
-    eventType = xtag.eventType,
+    eventType = xtag.eventType!!.replace(oldValue = "OFF_SENT_CHRG", newValue = "OFFENDER_SENTENCE_CHARGES"),
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
@@ -1179,7 +1179,7 @@ class OffenderEventsTransformer {
   )
 
   private fun offenderSentenceTermEventOf(xtag: Xtag) = OffenderSentenceTermEvent(
-    eventType = xtag.eventType,
+    eventType = xtag.eventType!!.replace(oldValue = "OFF_SENT_TERM", newValue = "OFFENDER_SENTENCE_TERMS"),
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
