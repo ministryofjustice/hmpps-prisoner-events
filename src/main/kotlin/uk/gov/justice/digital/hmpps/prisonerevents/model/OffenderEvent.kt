@@ -195,6 +195,27 @@ class CSIPInterviewOffenderEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class IWPDocumentOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime? = null,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  nomisEventType: String? = null,
+
+  val documentId: Long? = null,
+  val documentName: String? = null,
+  val templateId: Long? = null,
+  val templateName: String? = null,
+  val auditModuleName: String? = null,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class ExternalMovementOffenderEvent(
   eventType: String?,
   eventDatetime: LocalDateTime? = null,

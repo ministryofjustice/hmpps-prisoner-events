@@ -97,6 +97,11 @@ class XtagContent(private val map: Map<String, String>) {
   val p_plan_id by m
   val p_review_id by m
 
+  val p_document_id by m
+  val p_document_name by m
+  val p_template_id by m
+  val p_template_name by m
+
   val p_offender_key_date_adjust_id by m
   val p_offender_sentence_adjust_id by m
 

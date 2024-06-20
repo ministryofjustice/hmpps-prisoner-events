@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
@@ -4141,6 +4142,106 @@ class OffenderEventsTransformerTest {
           assertThat(csipInterviewId).isEqualTo(34567L)
           assertThat(auditModuleName).isEqualTo("csip")
         }
+      }
+    }
+  }
+
+  @Nested
+  inner class IWPDocumentEvents {
+
+    @Test
+    fun `IWP Document inserted mapped correctly`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<IWPDocumentOffenderEvent>(
+        Xtag(
+          eventType = "IWP_DOCUMENTS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_book_id" to "1214881",
+              "p_offender_id_display" to "AB1234C",
+              "p_document_id" to "126677",
+              "p_document_name" to "CSIPA2_HMP.doc",
+              "p_template_id" to "1011",
+              "p_template_name" to "CSIPA2_HMP",
+              "p_audit_module_name" to "OIUIWPGN",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("IWP_DOCUMENTS-INSERTED")
+        assertThat(bookingId).isEqualTo(1214881L)
+        assertThat(nomisEventType).isEqualTo("IWP_DOCUMENTS-INSERTED")
+        assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+        assertThat(documentId).isEqualTo(126677L)
+        assertThat(documentName).isEqualTo("CSIPA2_HMP.doc")
+        assertThat(templateId).isEqualTo(1011L)
+        assertThat(templateName).isEqualTo("CSIPA2_HMP")
+        assertThat(auditModuleName).isEqualTo("OIUIWPGN")
+      }
+    }
+
+    @Test
+    fun `IWP Document updated mapped correctly`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<IWPDocumentOffenderEvent>(
+        Xtag(
+          eventType = "IWP_DOCUMENTS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_book_id" to "1214881",
+              "p_offender_id_display" to "AB1234C",
+              "p_document_id" to "126677",
+              "p_document_name" to "CSIPA2_HMP.doc",
+              "p_template_id" to "1011",
+              "p_template_name" to "CSIPA2_HMP",
+              "p_audit_module_name" to "OIUIWPGN",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("IWP_DOCUMENTS-UPDATED")
+        assertThat(bookingId).isEqualTo(1214881L)
+        assertThat(nomisEventType).isEqualTo("IWP_DOCUMENTS-UPDATED")
+        assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+        assertThat(documentId).isEqualTo(126677L)
+        assertThat(documentName).isEqualTo("CSIPA2_HMP.doc")
+        assertThat(templateId).isEqualTo(1011L)
+        assertThat(templateName).isEqualTo("CSIPA2_HMP")
+        assertThat(auditModuleName).isEqualTo("OIUIWPGN")
+      }
+    }
+
+    @Test
+    fun `IWP Document deleted mapped correctly`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<IWPDocumentOffenderEvent>(
+        Xtag(
+          eventType = "IWP_DOCUMENTS-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_book_id" to "1214881",
+              "p_offender_id_display" to "AB1234C",
+              "p_document_id" to "126677",
+              "p_document_name" to "CSIPA2_HMP.doc",
+              "p_template_id" to "1011",
+              "p_template_name" to "CSIPA2_HMP",
+              "p_audit_module_name" to "OIUIWPGN",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("IWP_DOCUMENTS-DELETED")
+        assertThat(bookingId).isEqualTo(1214881L)
+        assertThat(nomisEventType).isEqualTo("IWP_DOCUMENTS-DELETED")
+        assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+        assertThat(documentId).isEqualTo(126677L)
+        assertThat(documentName).isEqualTo("CSIPA2_HMP.doc")
+        assertThat(templateId).isEqualTo(1011L)
+        assertThat(templateName).isEqualTo("CSIPA2_HMP")
+        assertThat(auditModuleName).isEqualTo("OIUIWPGN")
       }
     }
   }
