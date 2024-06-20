@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
@@ -227,6 +228,8 @@ class OffenderEventsTransformer {
         "OFFENDER_SENTENCES-UPDATED", "OFFENDER_SENTENCES-INSERTED", "OFFENDER_SENTENCES-DELETED" -> offenderSentenceEventOf(xtag)
         "OFFENDER_SENTENCE_CHARGES-UPDATED", "OFFENDER_SENTENCE_CHARGES-INSERTED", "OFFENDER_SENTENCE_CHARGES-DELETED" -> offenderSentenceChargeEventOf(xtag)
         "OFFENDER_SENTENCE_TERMS-UPDATED", "OFFENDER_SENTENCE_TERMS-INSERTED", "OFFENDER_SENTENCE_TERMS-DELETED" -> offenderSentenceTermEventOf(xtag)
+
+        "IWP_DOCUMENTS-INSERTED", "IWP_DOCUMENTS-UPDATED", "IWP_DOCUMENTS-DELETED" -> iwpDocumentEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -694,6 +697,19 @@ class OffenderEventsTransformer {
     offenderIdDisplay = xtag.content.p_offender_id_display,
     auditModuleName = xtag.content.p_audit_module_name,
     nomisEventType = xtag.eventType,
+  )
+
+  private fun iwpDocumentEventOf(xtag: Xtag) = IWPDocumentOffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
+    nomisEventType = xtag.eventType,
+    documentId = xtag.content.p_document_id?.toLong(),
+    documentName = xtag.content.p_document_name,
+    templateId = xtag.content.p_template_id?.toLong(),
+    templateName = xtag.content.p_template_name,
   )
 
   private fun offenderIdentifierInsertedEventOf(xtag: Xtag) = OffenderIdentifierUpdatedEvent(
