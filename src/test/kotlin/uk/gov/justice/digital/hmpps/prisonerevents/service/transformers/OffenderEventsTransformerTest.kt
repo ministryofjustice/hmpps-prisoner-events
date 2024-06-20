@@ -2995,17 +2995,17 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender sentence update event mapped correctly`() {
-    offenderSentenceEventMappedCorrectly("OFFENDER_SENTENCES-UPDATED")
+    offenderSentenceEventMappedCorrectly("OFF_SENT-UPDATED")
   }
 
   @Test
   fun `offender sentence inserted event mapped correctly`() {
-    offenderSentenceEventMappedCorrectly("OFFENDER_SENTENCES-INSERTED")
+    offenderSentenceEventMappedCorrectly("OFF_SENT-INSERTED")
   }
 
   @Test
   fun `offender sentence deleted event mapped correctly`() {
-    offenderSentenceEventMappedCorrectly("OFFENDER_SENTENCES-DELETED")
+    offenderSentenceEventMappedCorrectly("OFF_SENT-DELETED")
   }
 
   private fun offenderSentenceEventMappedCorrectly(eventName: String) {
@@ -3036,17 +3036,17 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender sentence charge update event mapped correctly`() {
-    offenderSentenceChargeEventMappedCorrectly("OFFENDER_SENTENCE_CHARGES-UPDATED")
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-UPDATED")
   }
 
   @Test
   fun `offender sentence charge inserted event mapped correctly`() {
-    offenderSentenceChargeEventMappedCorrectly("OFFENDER_SENTENCE_CHARGES-INSERTED")
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-INSERTED")
   }
 
   @Test
   fun `offender sentence charge deleted event mapped correctly`() {
-    offenderSentenceChargeEventMappedCorrectly("OFFENDER_SENTENCE_CHARGES-DELETED")
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-DELETED")
   }
 
   private fun offenderSentenceChargeEventMappedCorrectly(eventName: String) {
@@ -3079,17 +3079,17 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender sentence term update event mapped correctly`() {
-    offenderSentenceTermEventMappedCorrectly("OFFENDER_SENTENCE_TERMS-UPDATED")
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-UPDATED")
   }
 
   @Test
   fun `offender sentence term inserted event mapped correctly`() {
-    offenderSentenceTermEventMappedCorrectly("OFFENDER_SENTENCE_TERMS-INSERTED")
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-INSERTED")
   }
 
   @Test
   fun `offender sentence term deleted event mapped correctly`() {
-    offenderSentenceTermEventMappedCorrectly("OFFENDER_SENTENCE_TERMS-DELETED")
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-DELETED")
   }
 
   private fun offenderSentenceTermEventMappedCorrectly(eventName: String) {
