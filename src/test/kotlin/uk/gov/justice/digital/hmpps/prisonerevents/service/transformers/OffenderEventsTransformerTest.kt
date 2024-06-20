@@ -2995,24 +2995,24 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender sentence update event mapped correctly`() {
-    offenderSentenceEventMappedCorrectly("OFF_SENT-UPDATED")
+    offenderSentenceEventMappedCorrectly("OFF_SENT-UPDATED", "OFFENDER_SENTENCES-UPDATED")
   }
 
   @Test
   fun `offender sentence inserted event mapped correctly`() {
-    offenderSentenceEventMappedCorrectly("OFF_SENT-INSERTED")
+    offenderSentenceEventMappedCorrectly("OFF_SENT-INSERTED", "OFFENDER_SENTENCES-INSERTED")
   }
 
   @Test
   fun `offender sentence deleted event mapped correctly`() {
-    offenderSentenceEventMappedCorrectly("OFF_SENT-DELETED")
+    offenderSentenceEventMappedCorrectly("OFF_SENT-DELETED", "OFFENDER_SENTENCES-DELETED")
   }
 
-  private fun offenderSentenceEventMappedCorrectly(eventName: String) {
+  private fun offenderSentenceEventMappedCorrectly(xtagEventName: String, dpsEventName: String) {
     val now = LocalDateTime.now()
     withCallTransformer<OffenderSentenceEvent>(
       Xtag(
-        eventType = eventName,
+        eventType = xtagEventName,
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
@@ -3024,9 +3024,9 @@ class OffenderEventsTransformerTest {
         ),
       ),
     ) {
-      assertThat(eventType).isEqualTo(eventName)
+      assertThat(eventType).isEqualTo(dpsEventName)
       assertThat(offenderId).isNull()
-      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(nomisEventType).isEqualTo(xtagEventName)
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(sentenceSeq).isEqualTo(2)
@@ -3036,24 +3036,24 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender sentence charge update event mapped correctly`() {
-    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-UPDATED")
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-UPDATED", "OFFENDER_SENTENCE_CHARGES-UPDATED")
   }
 
   @Test
   fun `offender sentence charge inserted event mapped correctly`() {
-    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-INSERTED")
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-INSERTED", "OFFENDER_SENTENCE_CHARGES-INSERTED")
   }
 
   @Test
   fun `offender sentence charge deleted event mapped correctly`() {
-    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-DELETED")
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-DELETED", "OFFENDER_SENTENCE_CHARGES-DELETED")
   }
 
-  private fun offenderSentenceChargeEventMappedCorrectly(eventName: String) {
+  private fun offenderSentenceChargeEventMappedCorrectly(xtagEventName: String, dpsEventName: String) {
     val now = LocalDateTime.now()
     withCallTransformer<OffenderSentenceChargeEvent>(
       Xtag(
-        eventType = eventName,
+        eventType = xtagEventName,
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
@@ -3066,9 +3066,9 @@ class OffenderEventsTransformerTest {
         ),
       ),
     ) {
-      assertThat(eventType).isEqualTo(eventName)
+      assertThat(eventType).isEqualTo(dpsEventName)
       assertThat(offenderId).isNull()
-      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(nomisEventType).isEqualTo(xtagEventName)
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(sentenceSeq).isEqualTo(2)
@@ -3079,24 +3079,24 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender sentence term update event mapped correctly`() {
-    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-UPDATED")
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-UPDATED", "OFFENDER_SENTENCE_TERMS-UPDATED")
   }
 
   @Test
   fun `offender sentence term inserted event mapped correctly`() {
-    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-INSERTED")
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-INSERTED", "OFFENDER_SENTENCE_TERMS-INSERTED")
   }
 
   @Test
   fun `offender sentence term deleted event mapped correctly`() {
-    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-DELETED")
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-DELETED", "OFFENDER_SENTENCE_TERMS-DELETED")
   }
 
-  private fun offenderSentenceTermEventMappedCorrectly(eventName: String) {
+  private fun offenderSentenceTermEventMappedCorrectly(xtagEventName: String, dpsEventName: String) {
     val now = LocalDateTime.now()
     withCallTransformer<OffenderSentenceTermEvent>(
       Xtag(
-        eventType = eventName,
+        eventType = xtagEventName,
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
@@ -3109,9 +3109,9 @@ class OffenderEventsTransformerTest {
         ),
       ),
     ) {
-      assertThat(eventType).isEqualTo(eventName)
+      assertThat(eventType).isEqualTo(dpsEventName)
       assertThat(offenderId).isNull()
-      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(nomisEventType).isEqualTo(xtagEventName)
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(sentenceSeq).isEqualTo(2)
