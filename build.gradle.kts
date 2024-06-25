@@ -24,9 +24,8 @@ dependencies {
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
 
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.2-beta")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
-  testImplementation("io.jsonwebtoken:jjwt-impl:0.12.6")
-  testImplementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
 
