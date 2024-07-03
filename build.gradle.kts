@@ -8,7 +8,7 @@ configurations {
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.0.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.0.2-beta-3")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework:spring-jms:6.1.8")
@@ -24,7 +24,7 @@ dependencies {
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.2-beta")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.2-beta-3")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
