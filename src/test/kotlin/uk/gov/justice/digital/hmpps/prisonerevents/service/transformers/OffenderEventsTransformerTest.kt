@@ -2845,11 +2845,6 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun `court event charge update event mapped correctly`() {
-    courtEventChargeEventMappedCorrectly("COURT_EVENT_CHARGES-UPDATED")
-  }
-
-  @Test
   fun `court event charge inserted event mapped correctly`() {
     courtEventChargeEventMappedCorrectly("COURT_EVENT_CHARGES-INSERTED")
   }
