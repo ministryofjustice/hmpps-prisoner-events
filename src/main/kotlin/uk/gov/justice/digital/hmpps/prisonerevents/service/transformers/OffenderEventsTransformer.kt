@@ -195,7 +195,7 @@ class OffenderEventsTransformer {
           xtag,
         )
 
-        "COURT_EVENT_CHARGES-UPDATED", "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED" -> courtEventChargeEventOf(
+        "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED" -> courtEventChargeEventOf(
           xtag,
         )
 
