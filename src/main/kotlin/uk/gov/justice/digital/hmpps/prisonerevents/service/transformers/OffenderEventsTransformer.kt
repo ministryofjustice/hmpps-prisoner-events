@@ -149,7 +149,6 @@ class OffenderEventsTransformer {
         "ADDR_UPD" -> addressUpdatedOrDeleted(xtag)
 
         "OFF_SENT_OASYS" -> sentenceCalculationDateChangedEventOf(xtag)
-        "C_NOTIFICATION" -> courtSentenceChangedEventOf(xtag)
         "IEDT_OUT" -> offenderTransferOutOfLidsEventOf(xtag)
         "BED_ASSIGNMENT_HISTORY-INSERTED" -> offenderBedAssignmentEventOf(xtag)
         "CONFIRMED_RELEASE_DATE-CHANGED" -> confirmedReleaseDateOf(xtag)
@@ -229,13 +228,6 @@ class OffenderEventsTransformer {
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     bedAssignmentSeq = xtag.content.p_bed_assign_seq?.toInt(),
     livingUnitId = xtag.content.p_living_unit_id?.toLong(),
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-  )
-
-  private fun courtSentenceChangedEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "COURT_SENTENCE-CHANGED",
-    bookingId = xtag.content.p_offender_book_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
