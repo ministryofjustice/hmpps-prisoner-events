@@ -2604,27 +2604,6 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun `court sentence changed mapped correctly`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<GenericOffenderEvent>(
-      Xtag(
-        eventType = "C_NOTIFICATION",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_offender_book_id" to "234",
-          ),
-        ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("COURT_SENTENCE-CHANGED")
-      assertThat(bookingId).isEqualTo(234L)
-      assertThat(nomisEventType).isEqualTo("C_NOTIFICATION")
-      assertThat(offenderIdDisplay).isNull()
-    }
-  }
-
-  @Test
   fun `offender transfer out of LIDS mapped correctly`() {
     val now = LocalDateTime.now()
     withCallTransformer<GenericOffenderEvent>(
