@@ -4,15 +4,23 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 
 import oracle.jakarta.jms.AQjmsMapMessage
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPAttendeeOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPFactorOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPInterviewOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPPlanOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
@@ -21,6 +29,9 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
@@ -617,11 +628,12 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_PHYS_ATTR-CHANGED",
         nomisTimestamp = fixedEventTime,
-        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC", "p_offender_book_id" to "12345")),
       ),
     ) {
-      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
+      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_ATTRIBUTES-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345)
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
   }
@@ -632,11 +644,12 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_PROFILE_DETS-CHANGED",
         nomisTimestamp = fixedEventTime,
-        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC", "p_offender_book_id" to "12345")),
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345)
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
   }
@@ -647,11 +660,12 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_IDENT_MARKS-CHANGED",
         nomisTimestamp = fixedEventTime,
-        content = XtagContent(mapOf("p_offender_id_display" to "A123BC")),
+        content = XtagContent(mapOf("p_offender_id_display" to "A123BC", "p_offender_book_id" to "12345")),
       ),
     ) {
-      assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
+      assertThat(eventType).isEqualTo("OFFENDER_IDENTIFYING_MARKS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345)
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
     }
   }
@@ -2880,7 +2894,10 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `court appearance inserted event mapped correctly`() {
-    courtAppearanceEventMappedCorrectly(eventName = "COURT_EVENT-INSERTED", translatedEventName = "COURT_EVENTS-INSERTED")
+    courtAppearanceEventMappedCorrectly(
+      eventName = "COURT_EVENT-INSERTED",
+      translatedEventName = "COURT_EVENTS-INSERTED",
+    )
   }
 
   @Test
@@ -2951,6 +2968,133 @@ class OffenderEventsTransformerTest {
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(orderId).isEqualTo(23456)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `offender sentence update event mapped correctly`() {
+    offenderSentenceEventMappedCorrectly("OFF_SENT-UPDATED", "OFFENDER_SENTENCES-UPDATED")
+  }
+
+  @Test
+  fun `offender sentence inserted event mapped correctly`() {
+    offenderSentenceEventMappedCorrectly("OFF_SENT-INSERTED", "OFFENDER_SENTENCES-INSERTED")
+  }
+
+  @Test
+  fun `offender sentence deleted event mapped correctly`() {
+    offenderSentenceEventMappedCorrectly("OFF_SENT-DELETED", "OFFENDER_SENTENCES-DELETED")
+  }
+
+  private fun offenderSentenceEventMappedCorrectly(xtagEventName: String, dpsEventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderSentenceEvent>(
+      Xtag(
+        eventType = xtagEventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_sentence_seq" to "2",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(dpsEventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(xtagEventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `offender sentence charge update event mapped correctly`() {
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-UPDATED", "OFFENDER_SENTENCE_CHARGES-UPDATED")
+  }
+
+  @Test
+  fun `offender sentence charge inserted event mapped correctly`() {
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-INSERTED", "OFFENDER_SENTENCE_CHARGES-INSERTED")
+  }
+
+  @Test
+  fun `offender sentence charge deleted event mapped correctly`() {
+    offenderSentenceChargeEventMappedCorrectly("OFF_SENT_CHRG-DELETED", "OFFENDER_SENTENCE_CHARGES-DELETED")
+  }
+
+  private fun offenderSentenceChargeEventMappedCorrectly(xtagEventName: String, dpsEventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderSentenceChargeEvent>(
+      Xtag(
+        eventType = xtagEventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_sentence_seq" to "2",
+            "p_offender_charge_id" to "3",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(dpsEventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(xtagEventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(chargeId).isEqualTo(3)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `offender sentence term update event mapped correctly`() {
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-UPDATED", "OFFENDER_SENTENCE_TERMS-UPDATED")
+  }
+
+  @Test
+  fun `offender sentence term inserted event mapped correctly`() {
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-INSERTED", "OFFENDER_SENTENCE_TERMS-INSERTED")
+  }
+
+  @Test
+  fun `offender sentence term deleted event mapped correctly`() {
+    offenderSentenceTermEventMappedCorrectly("OFF_SENT_TERM-DELETED", "OFFENDER_SENTENCE_TERMS-DELETED")
+  }
+
+  private fun offenderSentenceTermEventMappedCorrectly(xtagEventName: String, dpsEventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderSentenceTermEvent>(
+      Xtag(
+        eventType = xtagEventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_sentence_seq" to "2",
+            "p_term_seq" to "3",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(dpsEventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(xtagEventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(termSequence).isEqualTo(3)
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
@@ -3341,6 +3485,42 @@ class OffenderEventsTransformerTest {
       assertThat(eventType).isEqualTo("OFFENDER_CONTACT-INSERTED")
       assertThat(approvedVisitor).isFalse()
       assertThat(personId).isEqualTo(4729911)
+      assertThat(contactRootOffenderId).isNull()
+      assertThat(contactId).isEqualTo(7550868)
+      assertThat(auditModuleName).isEqualTo("OIDVIRES")
+      assertThat(bookingId).isEqualTo(1215922)
+      assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `OFFENDER_CONTACT-INSERTED with null person Id mapped correctly`() {
+    withCallTransformer<OffenderContactEvent>(
+      Xtag(
+        eventType = "OFFENDER_CONTACT-INSERTED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_offender_contact_person_id" to "7550868",
+            "p_contact_root_offender_id" to "4729911",
+            "p_audit_module_name" to "OIDVIRES",
+            "p_offender_id_display" to "G4560UH",
+            "p_offender_book_id" to "1215922",
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_relationship_type" to "BRO",
+            "p_active_flag" to "N",
+            "p_contact_type" to "S",
+            "p_next_of_kin_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CONTACT-INSERTED")
+      assertThat(approvedVisitor).isFalse()
+      assertThat(contactRootOffenderId).isEqualTo(4729911)
+      assertThat(personId).isNull()
       assertThat(contactId).isEqualTo(7550868)
       assertThat(auditModuleName).isEqualTo("OIDVIRES")
       assertThat(bookingId).isEqualTo(1215922)
@@ -3415,6 +3595,669 @@ class OffenderEventsTransformerTest {
       assertThat(auditModuleName).isEqualTo("OIDVIRES")
       assertThat(bookingId).isEqualTo(1215922)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Nested
+  inner class CSIPEvents {
+
+    @Nested
+    inner class CSIPReportEvents {
+      @Test
+      fun `CSIP Report inserted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPReportOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_REPORTS-INSERTED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_REPORTS-INSERTED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_REPORTS-INSERTED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Report updated mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPReportOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_REPORTS-UPDATED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_REPORTS-UPDATED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_REPORTS-UPDATED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Report deleted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPReportOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_REPORTS-DELETED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_REPORTS-DELETED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_REPORTS-DELETED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+    }
+
+    @Nested
+    inner class CSIPPlanEvents {
+
+      @Test
+      fun `CSIP Plan inserted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPPlanOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_PLANS-INSERTED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_plan_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_PLANS-INSERTED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_PLANS-INSERTED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipPlanId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Plan updated mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPPlanOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_PLANS-UPDATED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_plan_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_PLANS-UPDATED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_PLANS-UPDATED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipPlanId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Plan deleted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPPlanOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_PLANS-DELETED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_plan_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_PLANS-DELETED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_PLANS-DELETED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipPlanId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+    }
+
+    @Nested
+    inner class CSIPReviewEvents {
+      @Test
+      fun `CSIP Review inserted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPReviewOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_REVIEWS-INSERTED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_review_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_REVIEWS-INSERTED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_REVIEWS-INSERTED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipReviewId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Review updated mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPReviewOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_REVIEWS-UPDATED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_review_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_REVIEWS-UPDATED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_REVIEWS-UPDATED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipReviewId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Review deleted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPReviewOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_REVIEWS-DELETED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_review_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_REVIEWS-DELETED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_REVIEWS-DELETED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipReviewId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+    }
+
+    @Nested
+    inner class CSIPAttendeeEvents {
+      @Test
+      fun `CSIP Attendee inserted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPAttendeeOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_ATTENDEES-INSERTED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_review_id" to "123",
+                "p_attendee_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_ATTENDEES-INSERTED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_ATTENDEES-INSERTED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipReviewId).isEqualTo(123L)
+          assertThat(csipAttendeeId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Attendee updated mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPAttendeeOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_ATTENDEES-UPDATED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_review_id" to "123",
+                "p_attendee_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_ATTENDEES-UPDATED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_ATTENDEES-UPDATED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipReviewId).isEqualTo(123L)
+          assertThat(csipAttendeeId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Attendee deleted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPAttendeeOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_ATTENDEES-DELETED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_review_id" to "123",
+                "p_attendee_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_ATTENDEES-DELETED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_ATTENDEES-DELETED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipReviewId).isEqualTo(123L)
+          assertThat(csipAttendeeId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+    }
+
+    @Nested
+    inner class CSIPFactorsEvents {
+      @Test
+      fun `CSIP Factor inserted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPFactorOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_FACTORS-INSERTED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_csip_factor_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_FACTORS-INSERTED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_FACTORS-INSERTED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipFactorId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Factor updated mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPFactorOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_FACTORS-UPDATED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_csip_factor_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_FACTORS-UPDATED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_FACTORS-UPDATED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipFactorId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Factor deleted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPFactorOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_FACTORS-DELETED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_csip_factor_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_FACTORS-DELETED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_FACTORS-DELETED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipFactorId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+    }
+
+    @Nested
+    inner class CSIPInterviewEvents {
+      @Test
+      fun `CSIP Interview inserted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPInterviewOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_INTVW-INSERTED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_csip_intvw_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_INTVW-INSERTED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_INTVW-INSERTED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipInterviewId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Interview updated mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPInterviewOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_INTVW-UPDATED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_csip_intvw_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_INTVW-UPDATED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_INTVW-UPDATED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipInterviewId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+
+      @Test
+      fun `CSIP Interview deleted mapped correctly`() {
+        val now = LocalDateTime.now()
+        withCallTransformer<CSIPInterviewOffenderEvent>(
+          Xtag(
+            eventType = "CSIP_INTVW-DELETED",
+            nomisTimestamp = now,
+            content = XtagContent(
+              mapOf(
+                "p_offender_book_id" to "234",
+                "p_offender_id_display" to "AB1234C",
+                "p_csip_id" to "54321",
+                "p_csip_intvw_id" to "34567",
+                "p_root_offender_id" to "12345",
+                "p_audit_module_name" to "csip",
+              ),
+            ),
+          ),
+        ) {
+          assertThat(eventType).isEqualTo("CSIP_INTVW-DELETED")
+          assertThat(bookingId).isEqualTo(234L)
+          assertThat(nomisEventType).isEqualTo("CSIP_INTVW-DELETED")
+          assertThat(rootOffenderId).isEqualTo(12345L)
+          assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+          assertThat(csipReportId).isEqualTo(54321L)
+          assertThat(csipInterviewId).isEqualTo(34567L)
+          assertThat(auditModuleName).isEqualTo("csip")
+        }
+      }
+    }
+  }
+
+  @Nested
+  inner class IWPDocumentEvents {
+
+    @Test
+    fun `IWP Document inserted mapped correctly`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<IWPDocumentOffenderEvent>(
+        Xtag(
+          eventType = "IWP_DOCUMENTS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_book_id" to "1214881",
+              "p_offender_id_display" to "AB1234C",
+              "p_document_id" to "126677",
+              "p_document_name" to "CSIPA2_HMP.doc",
+              "p_template_id" to "1011",
+              "p_template_name" to "CSIPA2_HMP",
+              "p_audit_module_name" to "OIUIWPGN",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("IWP_DOCUMENTS-INSERTED")
+        assertThat(bookingId).isEqualTo(1214881L)
+        assertThat(nomisEventType).isEqualTo("IWP_DOCUMENTS-INSERTED")
+        assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+        assertThat(documentId).isEqualTo(126677L)
+        assertThat(documentName).isEqualTo("CSIPA2_HMP.doc")
+        assertThat(templateId).isEqualTo(1011L)
+        assertThat(templateName).isEqualTo("CSIPA2_HMP")
+        assertThat(auditModuleName).isEqualTo("OIUIWPGN")
+      }
+    }
+
+    @Test
+    fun `IWP Document updated mapped correctly`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<IWPDocumentOffenderEvent>(
+        Xtag(
+          eventType = "IWP_DOCUMENTS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_book_id" to "1214881",
+              "p_offender_id_display" to "AB1234C",
+              "p_document_id" to "126677",
+              "p_document_name" to "CSIPA2_HMP.doc",
+              "p_template_id" to "1011",
+              "p_template_name" to "CSIPA2_HMP",
+              "p_audit_module_name" to "OIUIWPGN",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("IWP_DOCUMENTS-UPDATED")
+        assertThat(bookingId).isEqualTo(1214881L)
+        assertThat(nomisEventType).isEqualTo("IWP_DOCUMENTS-UPDATED")
+        assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+        assertThat(documentId).isEqualTo(126677L)
+        assertThat(documentName).isEqualTo("CSIPA2_HMP.doc")
+        assertThat(templateId).isEqualTo(1011L)
+        assertThat(templateName).isEqualTo("CSIPA2_HMP")
+        assertThat(auditModuleName).isEqualTo("OIUIWPGN")
+      }
+    }
+
+    @Test
+    fun `IWP Document deleted mapped correctly`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<IWPDocumentOffenderEvent>(
+        Xtag(
+          eventType = "IWP_DOCUMENTS-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_book_id" to "1214881",
+              "p_offender_id_display" to "AB1234C",
+              "p_document_id" to "126677",
+              "p_document_name" to "CSIPA2_HMP.doc",
+              "p_template_id" to "1011",
+              "p_template_name" to "CSIPA2_HMP",
+              "p_audit_module_name" to "OIUIWPGN",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("IWP_DOCUMENTS-DELETED")
+        assertThat(bookingId).isEqualTo(1214881L)
+        assertThat(nomisEventType).isEqualTo("IWP_DOCUMENTS-DELETED")
+        assertThat(offenderIdDisplay).isEqualTo("AB1234C")
+        assertThat(documentId).isEqualTo(126677L)
+        assertThat(documentName).isEqualTo("CSIPA2_HMP.doc")
+        assertThat(templateId).isEqualTo(1011L)
+        assertThat(templateName).isEqualTo("CSIPA2_HMP")
+        assertThat(auditModuleName).isEqualTo("OIUIWPGN")
+      }
     }
   }
 

@@ -27,6 +27,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_evaluation_result_code by m
   val p_imprison_status_seq by m
   val p_sentence_seq by m
+  val p_term_seq by m
   val p_result_seq by m
   val p_offender_charge_id by m
   val p_charge_seq by m
@@ -34,6 +35,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_movement_seq by m
   val p_owner_id by m
   val p_person_id by m
+  val p_contact_root_offender_id by m
   val p_alias_offender_id by m
   val p_address_id by m
   val p_old_offender_id by m
@@ -88,6 +90,18 @@ class XtagContent(private val map: Map<String, String>) {
   val p_case_note_id by m
   val p_case_note_type by m
   val p_case_note_sub_type by m
+
+  val p_csip_id by m
+  val p_attendee_id by m
+  val p_csip_factor_id by m
+  val p_csip_intvw_id by m
+  val p_plan_id by m
+  val p_review_id by m
+
+  val p_document_id by m
+  val p_document_name by m
+  val p_template_id by m
+  val p_template_name by m
 
   val p_offender_key_date_adjust_id by m
   val p_offender_sentence_adjust_id by m

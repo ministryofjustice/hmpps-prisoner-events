@@ -6,11 +6,18 @@ import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPAttendeeOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPFactorOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPInterviewOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPPlanOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
@@ -19,6 +26,9 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
@@ -153,8 +163,9 @@ class OffenderEventsTransformer {
         "BED_ASSIGNMENT_HISTORY-INSERTED" -> offenderBedAssignmentEventOf(xtag)
         "CONFIRMED_RELEASE_DATE-CHANGED" -> confirmedReleaseDateOf(xtag)
         "OFFENDER-INSERTED", "OFFENDER-UPDATED", "OFFENDER-DELETED" -> offenderUpdatedOf(xtag)
-        "OFF_IDENT_MARKS-CHANGED", "OFF_PROFILE_DETS-CHANGED", "OFF_PHYS_ATTR-CHANGED" ->
-          offenderPhysicalDetailsUpdatedOf(xtag)
+        "OFF_IDENT_MARKS-CHANGED" -> offenderIdentifyingMarksUpdatedOf(xtag)
+        "OFF_PHYS_ATTR-CHANGED" -> offenderPhysicalAttributesUpdatedOf(xtag)
+        "OFF_PROFILE_DETS-CHANGED" -> offenderPhysicalDetailsUpdatedOf(xtag)
 
         "EXTERNAL_MOVEMENT-CHANGED" -> externalMovementRecordEventOf(xtag, null)
 
@@ -205,6 +216,20 @@ class OffenderEventsTransformer {
 
         "INTERNET_ADDRESSES-INSERTED", "INTERNET_ADDRESSES-UPDATED", "INTERNET_ADDRESSES-DELETED" -> offenderEmailEventOf(xtag)
         "OFFENDER_CONTACT-INSERTED", "OFFENDER_CONTACT-UPDATED", "OFFENDER_CONTACT-DELETED" -> offenderContactEventOf(xtag)
+
+        "CSIP_REPORTS-INSERTED", "CSIP_REPORTS-UPDATED", "CSIP_REPORTS-DELETED" -> csipReportEventOf(xtag)
+        "CSIP_PLANS-INSERTED", "CSIP_PLANS-UPDATED", "CSIP_PLANS-DELETED" -> csipPlanEventOf(xtag)
+        "CSIP_REVIEWS-INSERTED", "CSIP_REVIEWS-UPDATED", "CSIP_REVIEWS-DELETED" -> csipReviewEventOf(xtag)
+        "CSIP_ATTENDEES-INSERTED", "CSIP_ATTENDEES-UPDATED", "CSIP_ATTENDEES-DELETED" -> csipAttendeeEventOf(xtag)
+        "CSIP_FACTORS-INSERTED", "CSIP_FACTORS-UPDATED", "CSIP_FACTORS-DELETED" -> csipFactorEventOf(xtag)
+        "CSIP_INTVW-INSERTED", "CSIP_INTVW-UPDATED", "CSIP_INTVW-DELETED" -> csipInterviewEventOf(xtag)
+
+        "OFF_SENT-UPDATED", "OFF_SENT-INSERTED", "OFF_SENT-DELETED" -> offenderSentenceEventOf(xtag)
+        "OFF_SENT_CHRG-UPDATED", "OFF_SENT_CHRG-INSERTED", "OFF_SENT_CHRG-DELETED" -> offenderSentenceChargeEventOf(xtag)
+        "OFF_SENT_TERM-UPDATED", "OFF_SENT_TERM-INSERTED", "OFF_SENT_TERM-DELETED" -> offenderSentenceTermEventOf(xtag)
+
+        "IWP_DOCUMENTS-INSERTED", "IWP_DOCUMENTS-UPDATED", "IWP_DOCUMENTS-DELETED" -> iwpDocumentEventOf(xtag)
+
         else -> OffenderEvent(
           eventType = xtag.eventType,
           eventDatetime = xtag.nomisTimestamp,
@@ -594,6 +619,91 @@ class OffenderEventsTransformer {
     )
   }
 
+  private fun csipReportEventOf(xtag: Xtag) = CSIPReportOffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    csipReportId = xtag.content.p_csip_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun csipPlanEventOf(xtag: Xtag) = CSIPPlanOffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    csipReportId = xtag.content.p_csip_id?.toLong(),
+    csipPlanId = xtag.content.p_plan_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun csipReviewEventOf(xtag: Xtag) = CSIPReviewOffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    csipReportId = xtag.content.p_csip_id?.toLong(),
+    csipReviewId = xtag.content.p_review_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun csipAttendeeEventOf(xtag: Xtag) = CSIPAttendeeOffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    csipReportId = xtag.content.p_csip_id?.toLong(),
+    csipReviewId = xtag.content.p_review_id?.toLong(),
+    csipAttendeeId = xtag.content.p_attendee_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun csipFactorEventOf(xtag: Xtag) = CSIPFactorOffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    csipReportId = xtag.content.p_csip_id?.toLong(),
+    csipFactorId = xtag.content.p_csip_factor_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun csipInterviewEventOf(xtag: Xtag) = CSIPInterviewOffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    csipReportId = xtag.content.p_csip_id?.toLong(),
+    csipInterviewId = xtag.content.p_csip_intvw_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun iwpDocumentEventOf(xtag: Xtag) = IWPDocumentOffenderEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
+    nomisEventType = xtag.eventType,
+    documentId = xtag.content.p_document_id?.toLong(),
+    documentName = xtag.content.p_document_name,
+    templateId = xtag.content.p_template_id?.toLong(),
+    templateName = xtag.content.p_template_name,
+  )
+
   private fun offenderIdentifierInsertedEventOf(xtag: Xtag) = OffenderIdentifierUpdatedEvent(
     eventType = "OFFENDER_IDENTIFIER-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
@@ -831,10 +941,24 @@ class OffenderEventsTransformer {
     offenderIdDisplay = xtag.content.p_offender_id_display,
   )
 
+  private fun offenderIdentifyingMarksUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
+    eventType = "OFFENDER_IDENTIFYING_MARKS-CHANGED",
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+  )
+
+  private fun offenderPhysicalAttributesUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
+    eventType = "OFFENDER_PHYSICAL_ATTRIBUTES-CHANGED",
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+  )
+
   private fun offenderPhysicalDetailsUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = "OFFENDER_PHYSICAL_DETAILS-CHANGED",
     eventDatetime = xtag.nomisTimestamp,
-    offenderId = xtag.content.p_offender_id?.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
   )
 
@@ -1025,6 +1149,38 @@ class OffenderEventsTransformer {
     auditModuleName = xtag.content.p_audit_module_name,
   )
 
+  private fun offenderSentenceEventOf(xtag: Xtag) = OffenderSentenceEvent(
+    eventType = xtag.eventType!!.replace(oldValue = "OFF_SENT", newValue = "OFFENDER_SENTENCES"),
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    sentenceSeq = xtag.content.p_sentence_seq?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun offenderSentenceChargeEventOf(xtag: Xtag) = OffenderSentenceChargeEvent(
+    eventType = xtag.eventType!!.replace(oldValue = "OFF_SENT_CHRG", newValue = "OFFENDER_SENTENCE_CHARGES"),
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    sentenceSeq = xtag.content.p_sentence_seq?.toLong(),
+    chargeId = xtag.content.p_offender_charge_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun offenderSentenceTermEventOf(xtag: Xtag) = OffenderSentenceTermEvent(
+    eventType = xtag.eventType!!.replace(oldValue = "OFF_SENT_TERM", newValue = "OFFENDER_SENTENCE_TERMS"),
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    sentenceSeq = xtag.content.p_sentence_seq?.toLong(),
+    termSequence = xtag.content.p_term_seq?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
   private fun agencyInternalLocationUpdatedEventOf(xtag: Xtag) = AgencyInternalLocationUpdatedEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
@@ -1082,12 +1238,14 @@ class OffenderEventsTransformer {
       null
     },
   )
+
   private fun offenderContactEventOf(xtag: Xtag) = OffenderContactEvent(
     eventType = xtag.eventType!!,
     eventDatetime = xtag.nomisTimestamp!!,
     bookingId = xtag.content.p_offender_book_id!!.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display!!,
-    personId = xtag.content.p_person_id!!.toLong(),
+    personId = xtag.content.p_person_id?.toLong(),
+    contactRootOffenderId = xtag.content.p_contact_root_offender_id?.toLong(),
     approvedVisitor = xtag.content.p_approved_visitor_flag == "Y",
     auditModuleName = xtag.content.p_audit_module_name!!,
     contactId = xtag.content.p_offender_contact_person_id!!.toLong(),
