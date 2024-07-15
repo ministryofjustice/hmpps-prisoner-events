@@ -3524,6 +3524,34 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
+  fun `OFFENDER_CONTACT-INSERTED with null audit module does not break`() {
+    withCallTransformer<OffenderContactEvent>(
+      Xtag(
+        eventType = "OFFENDER_CONTACT-INSERTED",
+        nomisTimestamp = LocalDateTime.now(),
+        content = XtagContent(
+          mapOf(
+            "p_offender_contact_person_id" to "7550868",
+            "p_contact_root_offender_id" to "4729911",
+            "p_offender_id_display" to "G4560UH",
+            "p_offender_book_id" to "1215922",
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_relationship_type" to "BRO",
+            "p_active_flag" to "N",
+            "p_contact_type" to "S",
+            "p_next_of_kin_flag" to "N",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CONTACT-INSERTED")
+      assertThat(auditModuleName).isEqualTo("UNKNOWN")
+    }
+  }
+
+  @Test
   fun `OFFENDER_CONTACT-UPDATED mapped correctly`() {
     withCallTransformer<OffenderContactEvent>(
       Xtag(
