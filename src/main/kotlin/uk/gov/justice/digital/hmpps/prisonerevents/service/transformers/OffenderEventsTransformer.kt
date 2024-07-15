@@ -46,6 +46,8 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 import java.time.format.DateTimeParseException
 
+private const val EMPTY_AUDIT_MODULE = "UNKNOWN"
+
 @Component
 class OffenderEventsTransformer {
 
@@ -1247,7 +1249,7 @@ class OffenderEventsTransformer {
     personId = xtag.content.p_person_id?.toLong(),
     contactRootOffenderId = xtag.content.p_contact_root_offender_id?.toLong(),
     approvedVisitor = xtag.content.p_approved_visitor_flag == "Y",
-    auditModuleName = xtag.content.p_audit_module_name!!,
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     contactId = xtag.content.p_offender_contact_person_id!!.toLong(),
   )
 
@@ -1273,12 +1275,10 @@ class OffenderEventsTransformer {
       }
     }
 
-    fun externalMovementEventOf(xtag: Xtag): String {
-      return when (xtag.content.p_record_deleted) {
-        "N" -> "EXTERNAL_MOVEMENT_RECORD-INSERTED"
-        "Y" -> "EXTERNAL_MOVEMENT_RECORD-DELETED"
-        else -> "EXTERNAL_MOVEMENT_RECORD-UPDATED"
-      }
+    fun externalMovementEventOf(xtag: Xtag): String = when (xtag.content.p_record_deleted) {
+      "N" -> "EXTERNAL_MOVEMENT_RECORD-INSERTED"
+      "Y" -> "EXTERNAL_MOVEMENT_RECORD-DELETED"
+      else -> "EXTERNAL_MOVEMENT_RECORD-UPDATED"
     }
 
     private const val DATE_PATTERN = "[yyyy-MM-dd HH:mm:ss][yyyy-MM-dd][dd-MMM-yyyy][dd-MMM-yy]"
