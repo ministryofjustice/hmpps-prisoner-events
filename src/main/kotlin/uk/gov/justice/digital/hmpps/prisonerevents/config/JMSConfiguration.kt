@@ -34,11 +34,13 @@ class JMSConfiguration {
     dataSource: DataSource,
     jmsReceiver: JMSReceiver,
     @Value("\${jms.connection.concurrentConsumers:1}") concurrentConsumers: Int,
+    @Value("\${jms.connection.maxConcurrentConsumers:1}") maxConcurrentConsumers: Int,
   ): DefaultMessageListenerContainer =
     DefaultMessageListenerContainer().apply {
       this.destinationName = FULL_QUEUE_NAME
       this.connectionFactory = listenerConnectionFactory
       this.cacheLevel = DefaultMessageListenerContainer.CACHE_SESSION
+      this.maxConcurrentConsumers = maxConcurrentConsumers
       this.concurrentConsumers = concurrentConsumers
       this.exceptionListener = ExceptionListener {
         log.error("DefaultMessageListenerContainer exceptionListener detected error:", it)
