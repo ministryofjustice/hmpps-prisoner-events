@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.prisonerevents.config
 import jakarta.jms.ConnectionFactory
 import jakarta.jms.ExceptionListener
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jms.connection.JmsTransactionManager
@@ -32,11 +33,13 @@ class JMSConfiguration {
     listenerConnectionFactory: ConnectionFactory,
     dataSource: DataSource,
     jmsReceiver: JMSReceiver,
+    @Value("\${jms.connection.concurrentConsumers:1}") concurrentConsumers: Int,
   ): DefaultMessageListenerContainer =
     DefaultMessageListenerContainer().apply {
       this.destinationName = FULL_QUEUE_NAME
       this.connectionFactory = listenerConnectionFactory
       this.cacheLevel = DefaultMessageListenerContainer.CACHE_SESSION
+      this.concurrentConsumers = concurrentConsumers
       this.exceptionListener = ExceptionListener {
         log.error("DefaultMessageListenerContainer exceptionListener detected error:", it)
       }
