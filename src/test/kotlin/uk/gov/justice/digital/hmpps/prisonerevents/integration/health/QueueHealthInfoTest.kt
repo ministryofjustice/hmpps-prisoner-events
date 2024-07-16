@@ -16,6 +16,7 @@ class QueueHealthInfoTest {
   private val aqService: AQService = mock()
 
   private val messagesOnDLQCount = 789
+  private val messagesOnQueueCount = 7
   private val queueHealth = QueueHealthInfo(aqService)
 
   private fun getQueueHealthInfo(): Health {
@@ -57,6 +58,14 @@ class QueueHealthInfoTest {
   }
 
   @Test
+  fun `should show queue depth for main queue`() {
+    mockHealthyQueue()
+    val health = getQueueHealthInfo()
+
+    assertThat(health.details["messagesOnQueue"]).isEqualTo("$messagesOnQueueCount")
+  }
+
+  @Test
   fun `should show status DOWN if DLQ status is down`() {
     mockDownQueue()
     val health = getQueueHealthInfo()
@@ -91,6 +100,7 @@ class QueueHealthInfoTest {
 
   private fun mockHealthyQueue() {
     whenever(aqService.exceptionQueueMessageCount()).thenReturn(messagesOnDLQCount)
+    whenever(aqService.queueMessageCount()).thenReturn(messagesOnQueueCount)
   }
 
   private fun mockDownQueue() {

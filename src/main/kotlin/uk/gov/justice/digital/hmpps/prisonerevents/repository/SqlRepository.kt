@@ -14,67 +14,55 @@ const val LIMIT = 500
 @Repository
 class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
-  fun getNomsIdFromOffender(offenderId: Long): Collection<String> {
-    return jdbcTemplate.query(
-      GET_OFFENDER,
-      MapSqlParameterSource().addValue("offenderId", offenderId),
-    ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
+  fun getNomsIdFromOffender(offenderId: Long): Collection<String> = jdbcTemplate.query(
+    GET_OFFENDER,
+    MapSqlParameterSource().addValue("offenderId", offenderId),
+  ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
+
+  fun getNomsIdFromBooking(bookingId: Long): Collection<String> = jdbcTemplate.query(
+    GET_BOOKING,
+    MapSqlParameterSource().addValue("bookingId", bookingId),
+  ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
+
+  fun getMovement(bookingId: Long, sequenceNumber: Int): Collection<Movement> = jdbcTemplate.query(
+    GET_MOVEMENT_BY_BOOKING_AND_SEQUENCE,
+    MapSqlParameterSource()
+      .addValue("bookingId", bookingId)
+      .addValue("sequenceNumber", sequenceNumber),
+  ) { resultSet: ResultSet, _: Int ->
+    Movement(
+      resultSet.getString("OFFENDER_NO"),
+      resultSet.getString("FROM_AGENCY"),
+      resultSet.getString("TO_AGENCY"),
+      resultSet.getString("MOVEMENT_TYPE"),
+      resultSet.getString("DIRECTION_CODE"),
+      resultSet.getDate("MOVEMENT_DATE").toLocalDate(),
+      resultSet.getTime("MOVEMENT_TIME").toLocalTime(),
+    )
   }
 
-  fun getNomsIdFromBooking(bookingId: Long): Collection<String> {
-    return jdbcTemplate.query(
-      GET_BOOKING,
-      MapSqlParameterSource().addValue("bookingId", bookingId),
-    ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
-  }
+  fun getNomsIdFromRestriction(offenderPersonRestrictId: Long): Collection<String> = jdbcTemplate.query(
+    GET_NOMS_ID_FROM_RESTRICTION,
+    MapSqlParameterSource().addValue("offenderPersonRestrictId", offenderPersonRestrictId),
+  ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
 
-  fun getMovement(bookingId: Long, sequenceNumber: Int): Collection<Movement> {
-    return jdbcTemplate.query(
-      GET_MOVEMENT_BY_BOOKING_AND_SEQUENCE,
-      MapSqlParameterSource()
-        .addValue("bookingId", bookingId)
-        .addValue("sequenceNumber", sequenceNumber),
-    ) { resultSet: ResultSet, _: Int ->
-      Movement(
-        resultSet.getString("OFFENDER_NO"),
-        resultSet.getString("FROM_AGENCY"),
-        resultSet.getString("TO_AGENCY"),
-        resultSet.getString("MOVEMENT_TYPE"),
-        resultSet.getString("DIRECTION_CODE"),
-        resultSet.getDate("MOVEMENT_DATE").toLocalDate(),
-        resultSet.getTime("MOVEMENT_TIME").toLocalTime(),
-      )
-    }
-  }
-
-  fun getNomsIdFromRestriction(offenderPersonRestrictId: Long): Collection<String> {
-    return jdbcTemplate.query(
-      GET_NOMS_ID_FROM_RESTRICTION,
-      MapSqlParameterSource().addValue("offenderPersonRestrictId", offenderPersonRestrictId),
-    ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
-  }
-
-  fun getCreatedByUserOffenderContact(offenderContactPersonId: Long): String? {
-    return jdbcTemplate.queryForObject(
-      """
+  fun getCreatedByUserOffenderContact(offenderContactPersonId: Long): String? = jdbcTemplate.queryForObject(
+    """
         SELECT CREATE_USER_ID
         FROM OFFENDER_CONTACT_PERSONS
         WHERE OFFENDER_CONTACT_PERSON_ID = :offenderContactPersonId
     """,
-      MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
-    ) { resultSet: ResultSet, _: Int -> resultSet.getString("CREATE_USER_ID") }
-  }
+    MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
+  ) { resultSet: ResultSet, _: Int -> resultSet.getString("CREATE_USER_ID") }
 
-  fun getModifiedByUserOffenderContact(offenderContactPersonId: Long): String? {
-    return jdbcTemplate.queryForObject(
-      """
+  fun getModifiedByUserOffenderContact(offenderContactPersonId: Long): String? = jdbcTemplate.queryForObject(
+    """
         SELECT MODIFY_USER_ID
         FROM OFFENDER_CONTACT_PERSONS
         WHERE OFFENDER_CONTACT_PERSON_ID = :offenderContactPersonId
     """,
-      MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
-    ) { resultSet: ResultSet, _: Int -> resultSet.getString("MODIFY_USER_ID") }
-  }
+    MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
+  ) { resultSet: ResultSet, _: Int -> resultSet.getString("MODIFY_USER_ID") }
 
   fun getExceptionMessageIds(exceptionQueue: String, enqueuedBefore: LocalDate? = null, pageSize: Int = LIMIT): List<String> =
     jdbcTemplate.query(
@@ -95,10 +83,26 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       }
     }
 
-  fun getExceptionMessageCount(exceptionQueue: String): Int =
+  fun getExceptionMessageCount(exceptionQueue: String): Int? =
     jdbcTemplate.queryForObject(
-      GET_EXCEPTION_MESSAGE_COUNT,
+      """
+        SELECT COUNT(MSGID)
+        FROM XTAG.XTAG_LISTENER_TAB
+        WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
+          AND EXCEPTION_QUEUE = :exceptionQueue
+      """.trimIndent(),
       MapSqlParameterSource().addValue("exceptionQueue", exceptionQueue),
+      Int::class.java,
+    )
+
+  fun getMessageCount(queueName: String): Int? =
+    jdbcTemplate.queryForObject(
+      """
+      SELECT COUNT(*)
+      FROM XTAG.XTAG_LISTENER_TAB
+      WHERE Q_NAME = :queueName
+    """,
+      MapSqlParameterSource().addValue("queueName", queueName),
       Int::class.java,
     )
 
@@ -153,13 +157,6 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
         AND (:enqueuedBefore is null OR ENQ_TIME < :enqueuedBefore)
         AND ROWNUM <= :pageSize
       ORDER BY ENQ_TIME
-    """.trimIndent()
-
-    val GET_EXCEPTION_MESSAGE_COUNT = """
-      SELECT COUNT(MSGID)
-      FROM XTAG.XTAG_LISTENER_TAB
-      WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
-        AND EXCEPTION_QUEUE = :exceptionQueue
     """.trimIndent()
   }
 }
