@@ -100,7 +100,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
       """
       SELECT COUNT(*)
       FROM XTAG.XTAG_LISTENER_TAB
-      WHERE Q_NAME = :queueName
+      WHERE Q_NAME = :queueName 
+      AND DEQ_TIME IS NULL
     """,
       MapSqlParameterSource().addValue("queueName", queueName),
       Int::class.java,
