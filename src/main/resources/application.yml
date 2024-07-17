@@ -89,3 +89,4 @@ hmpps.sqs:
   topics:
     prisoneventtopic:
       asyncClient: true
+      propagateTracing: true
