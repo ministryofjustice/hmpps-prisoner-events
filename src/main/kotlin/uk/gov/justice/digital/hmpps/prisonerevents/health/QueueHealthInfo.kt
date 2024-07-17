@@ -29,10 +29,13 @@ class QueueHealthInfo(private val aqService: AQService) : InfoContributor {
     fun value() = detail.second
   }
 
-  private fun checkDlqHealth(): List<Result<HealthDetail>> = buildList {
-    add(success(HealthDetail("dlqName" to EXCEPTION_QUEUE_NAME)))
-    add(check { HealthDetail("messagesOnDlq" to "${aqService.exceptionQueueMessageCount()}") })
-    add(check { HealthDetail("messagesOnQueue" to "${aqService.queueMessageCount()}") })
+  private fun checkDlqHealth(): List<Result<HealthDetail>> {
+    val results = mutableListOf<Result<HealthDetail>>()
+    results += success(HealthDetail("dlqName" to EXCEPTION_QUEUE_NAME))
+    runCatching {
+      results += success(HealthDetail("messagesOnDlq" to "${aqService.exceptionQueueMessageCount()}"))
+    }.onFailure { throwable -> results += Result.failure(throwable) }
+    return results.toList()
   }
 
   private fun buildHealth(dlqResults: List<Result<HealthDetail>>): Health {
@@ -57,8 +60,4 @@ class QueueHealthInfo(private val aqService: AQService) : InfoContributor {
         withException(throwable)
           .also { log.error("Queue health for queueId $EXCEPTION_QUEUE_NAME failed due to exception", throwable) }
       }
-
-  private fun check(check: () -> HealthDetail): Result<HealthDetail> = runCatching {
-    success(check())
-  }.onFailure { throwable -> return Result.failure(throwable) }.getOrThrow()
 }
