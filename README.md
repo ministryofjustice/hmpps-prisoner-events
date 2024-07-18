@@ -6,6 +6,13 @@
 
 Read XTAG events from Nomis and send to the AWS prison events topic.
 
+# Queue health
+
+By default queue health is not displayed since retrieving queue depth and DLQ depth suspected to be an intensive operation for Oracle
+
+However this variation of the `/info` endpoint will show queue details: `/info?show-queue-details=true`
+
+ 
 # Running Integration tests
 
 The integration tests require a running instance of Oracle-XE and a running instance of AWS SQS localstack. Start these using:
