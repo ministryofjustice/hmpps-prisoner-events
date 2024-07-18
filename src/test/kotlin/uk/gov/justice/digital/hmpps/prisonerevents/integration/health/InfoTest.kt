@@ -31,9 +31,9 @@ class InfoTest : IntegrationTestBase() {
   }
 
   @Test
-  fun `Info page reports Nomis queue info`() {
+  fun `Info page reports Nomis queue info when requested`() {
     webTestClient.get()
-      .uri("/info")
+      .uri("/info?show-queue-details=true")
       .exchange()
       .expectStatus().isOk
       .expectBody()
@@ -41,5 +41,15 @@ class InfoTest : IntegrationTestBase() {
       .jsonPath("$QUEUE_NAME-health.details.dlqStatus").isEqualTo("UP")
       .jsonPath("$QUEUE_NAME-health.details.dlqName").isEqualTo(EXCEPTION_QUEUE_NAME)
       .jsonPath("$QUEUE_NAME-health.details.messagesOnDlq").isEqualTo(0)
+  }
+
+  @Test
+  fun `Info page does not report Nomis queue info when not requested`() {
+    webTestClient.get()
+      .uri("/info")
+      .exchange()
+      .expectStatus().isOk
+      .expectBody()
+      .jsonPath("$QUEUE_NAME-health.status").doesNotExist()
   }
 }

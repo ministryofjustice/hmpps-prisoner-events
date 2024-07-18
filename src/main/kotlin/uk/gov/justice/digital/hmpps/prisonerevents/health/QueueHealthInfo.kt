@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.health
 
+import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.boot.actuate.health.Health
@@ -13,14 +14,17 @@ import uk.gov.justice.digital.hmpps.prisonerevents.service.AQService
 import kotlin.Result.Companion.success
 
 @Component("$QUEUE_NAME-health")
-class QueueHealthInfo(private val aqService: AQService) : InfoContributor {
+class QueueHealthInfo(private val aqService: AQService, private val request: HttpServletRequest) : InfoContributor {
 
   companion object {
     val log: Logger = LoggerFactory.getLogger(this::class.java)
   }
 
   override fun contribute(builder: Info.Builder) {
-    builder.withDetail("$QUEUE_NAME-health", buildHealth(checkDlqHealth()))
+    val showQueueDetails = request.getParameter("show-queue-details")?.toBoolean() ?: false
+    if (showQueueDetails) {
+      builder.withDetail("$QUEUE_NAME-health", buildHealth(checkDlqHealth()))
+    }
   }
 
   @JvmInline

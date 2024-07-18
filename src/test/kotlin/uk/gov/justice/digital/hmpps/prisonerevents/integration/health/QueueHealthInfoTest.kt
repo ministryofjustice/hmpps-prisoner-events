@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.integration.health
 
+import jakarta.servlet.http.HttpServletRequest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
@@ -14,10 +16,16 @@ import uk.gov.justice.digital.hmpps.prisonerevents.service.AQService
 
 class QueueHealthInfoTest {
   private val aqService: AQService = mock()
+  private val request: HttpServletRequest = mock()
 
   private val messagesOnDLQCount = 789
   private val messagesOnQueueCount = 7
-  private val queueHealth = QueueHealthInfo(aqService)
+  private val queueHealth = QueueHealthInfo(aqService, request)
+
+  @BeforeEach
+  fun setUp() {
+    whenever(request.getParameter("show-queue-details")).thenReturn("true")
+  }
 
   private fun getQueueHealthInfo(): Health {
     val builder = Info.Builder()
