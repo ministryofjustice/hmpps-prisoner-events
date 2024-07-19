@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
-import io.opentelemetry.api.trace.SpanKind
-import io.opentelemetry.instrumentation.annotations.WithSpan
 import jakarta.jms.Message
 import jakarta.jms.MessageListener
 import oracle.jakarta.jms.AQjmsMapMessage
@@ -16,7 +14,6 @@ class JMSReceiver(
   private val eventsEmitter: PrisonEventsEmitter,
 ) : MessageListener {
 
-  @WithSpan(value = "nomis-XTAG_DPS-queue", kind = SpanKind.SERVER)
   override fun onMessage(message: Message) {
     xtagEventsService.addAdditionalEventData(
       offenderEventsTransformer.offenderEventOf(
