@@ -23,7 +23,6 @@ dependencies {
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.3.1.0")
 
   implementation("org.apache.commons:commons-lang3:3.14.0")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.4.0")
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.2-beta-3")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
