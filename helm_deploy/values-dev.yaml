@@ -16,6 +16,7 @@ generic-service:
     API_BASE_URL_HMPPS_AUTH: https://sign-in-dev.hmpps.service.justice.gov.uk/auth
     JMS_CONNECTION_CONCURRENTCONSUMERS: 1
     JMS_CONNECTION_MAXCONCURRENTCONSUMERS: 1
+    JMS_CONNECTION_ORACLE_TRACELEVEL: 0
 
 generic-prometheus-alerts:
   businessHoursOnly: true
