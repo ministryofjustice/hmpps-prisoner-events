@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.prisonerevents.config
 
 import jakarta.jms.ConnectionFactory
 import jakarta.jms.ExceptionListener
+import oracle.jakarta.jms.AQjmsOracleDebug
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -35,6 +36,7 @@ class JMSConfiguration {
     jmsReceiver: JMSReceiver,
     @Value("\${jms.connection.concurrentConsumers:1}") concurrentConsumers: Int,
     @Value("\${jms.connection.maxConcurrentConsumers:1}") maxConcurrentConsumers: Int,
+    @Value("\${jms.connection.oracle.traceLevel:0}") oracleTraceLevel: Int,
   ): DefaultMessageListenerContainer =
     DefaultMessageListenerContainer().apply {
       this.destinationName = FULL_QUEUE_NAME
@@ -56,6 +58,8 @@ class JMSConfiguration {
       this.setTransactionManager(manager)
 
       this.messageListener = jmsReceiver
+
+      AQjmsOracleDebug.setTraceLevel(oracleTraceLevel)
     }
 
   companion object {
