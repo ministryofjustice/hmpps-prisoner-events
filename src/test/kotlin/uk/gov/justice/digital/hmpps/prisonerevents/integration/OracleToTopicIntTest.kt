@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.integration
 
 import jakarta.jms.ConnectionFactory
+import jakarta.jms.MessageProducer
+import jakarta.jms.Session
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
@@ -18,6 +20,7 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.jms.core.JmsTemplate
+import org.springframework.jms.core.ProducerCallback
 import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
@@ -90,6 +93,27 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         assertThat(body().contains("""\"eventType\":\"OFFENDER_MOVEMENT-RECEPTION\"""")).isTrue
         assertThat(body().contains("""\"bookingId\":1234567""")).isTrue
         assertThat(body().contains("""\"movementSeq\":4""")).isTrue
+      }
+    }
+
+    @Test
+    fun `will consume all prison offender events message`() {
+      val count = 10
+      simulateBatchTrigger(count)
+
+      awaitQueueSizeToBe(count)
+
+      (1..count).forEach { _ ->
+
+        val receiveMessageResult = prisonEventQueueSqsClient.receiveMessage(
+          ReceiveMessageRequest.builder().queueUrl(prisonEventQueueUrl).build(),
+        )
+        with(receiveMessageResult.get().messages().first()) {
+          assertThat(body().contains("""\"nomisEventType\":\"OFF_RECEP_OASYS\"""")).isTrue
+          assertThat(body().contains("""\"eventType\":\"OFFENDER_MOVEMENT-RECEPTION\"""")).isTrue
+          assertThat(body().contains("""\"bookingId\":1234567""")).isTrue
+          assertThat(body().contains("""\"movementSeq\":4""")).isTrue
+        }
       }
     }
 
@@ -251,6 +275,21 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         setString("eventType", "OFF_RECEP_OASYS")
       }
     }
+  }
+  private fun simulateBatchTrigger(count: Int) {
+    val producerCallback: ProducerCallback<*> = ProducerCallback { session: Session, producer: MessageProducer ->
+      (1..count).forEach { _ ->
+        producer.send(
+          session.createMapMessage().apply {
+            jmsType = "OFF_RECEP_OASYS"
+            setLong("p_offender_book_id", 1234567L)
+            setInt("p_movement_seq", 4)
+            setString("eventType", "OFF_RECEP_OASYS")
+          },
+        )
+      }
+    }
+    jmsTemplate.execute(producerCallback)
   }
 
   fun purgeQueues() {
