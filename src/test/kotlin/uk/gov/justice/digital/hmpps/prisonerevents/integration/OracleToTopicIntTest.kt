@@ -10,12 +10,15 @@ import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mockingDetails
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.SpyBean
@@ -37,11 +40,15 @@ import java.net.SocketException
 import java.time.Duration
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
+import javax.sql.DataSource
 
 class OracleToTopicIntTest : IntegrationTestBase() {
 
   @SpyBean
   private lateinit var hmppsQueueService: HmppsQueueService
+
+  @SpyBean
+  private lateinit var dataSource: DataSource
 
   @Autowired
   private lateinit var retryConnectionFactory: ConnectionFactory
@@ -79,6 +86,11 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
   @Nested
   inner class Consume {
+    @BeforeEach
+    fun setUp() {
+      Mockito.reset(dataSource)
+    }
+
     @Test
     fun `will consume a prison offender events message`() {
       simulateTrigger()
@@ -97,7 +109,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     }
 
     @Test
-    fun `will consume all prison offender events message`() {
+    fun `will consume all prison offender events message with a handful of connections`() {
       val count = 10
       simulateBatchTrigger(count)
 
@@ -109,12 +121,12 @@ class OracleToTopicIntTest : IntegrationTestBase() {
           ReceiveMessageRequest.builder().queueUrl(prisonEventQueueUrl).build(),
         )
         with(receiveMessageResult.get().messages().first()) {
-          assertThat(body().contains("""\"nomisEventType\":\"OFF_RECEP_OASYS\"""")).isTrue
-          assertThat(body().contains("""\"eventType\":\"OFFENDER_MOVEMENT-RECEPTION\"""")).isTrue
-          assertThat(body().contains("""\"bookingId\":1234567""")).isTrue
-          assertThat(body().contains("""\"movementSeq\":4""")).isTrue
+          assertThat(body().contains("""\"eventType\":\"AGY_INT_LOC_PROFILES-UPDATED\"""")).isTrue
         }
       }
+
+      // connection for the listener and one for the jms template
+      verify(dataSource, times(2)).connection
     }
 
     @Test
@@ -281,10 +293,12 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       (1..count).forEach { _ ->
         producer.send(
           session.createMapMessage().apply {
-            jmsType = "OFF_RECEP_OASYS"
-            setLong("p_offender_book_id", 1234567L)
-            setInt("p_movement_seq", 4)
-            setString("eventType", "OFF_RECEP_OASYS")
+            jmsType = "AGY_INT_LOC_PROFILES-UPDATED"
+            setLong("p_internal_location_id", 34567)
+            setString("p_int_loc_profile_type", "TYPE")
+            setString("p_int_loc_profile_code", "CODE")
+            setString("p_audit_module_name", "module")
+            setString("p_delete_flag", "N")
           },
         )
       }

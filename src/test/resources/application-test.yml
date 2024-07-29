@@ -44,7 +44,7 @@ hmpps:
       prisoneventtestqueue:
         queueName: ${random.uuid}
         subscribeTopicId: prisoneventtopic
-        subscribeFilter: '{"eventType":[ "OFFENDER_MOVEMENT-RECEPTION", "OFFENDER_MOVEMENT-DISCHARGE", "PRISONER_ACTIVITY-UPDATE", "PRISONER_APPOINTMENT-UPDATE" ] }'
+        subscribeFilter: '{"eventType":[ "OFFENDER_MOVEMENT-RECEPTION", "OFFENDER_MOVEMENT-DISCHARGE", "PRISONER_ACTIVITY-UPDATE", "PRISONER_APPOINTMENT-UPDATE", "AGY_INT_LOC_PROFILES-UPDATED" ] }'
     topics:
       prisoneventtopic:
         arn: arn:aws:sns:eu-west-2:000000000000:${random.uuid}
