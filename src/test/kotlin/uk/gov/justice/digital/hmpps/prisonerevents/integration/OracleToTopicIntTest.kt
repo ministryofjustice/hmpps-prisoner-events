@@ -1,6 +1,8 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.integration
 
 import jakarta.jms.ConnectionFactory
+import jakarta.jms.MessageProducer
+import jakarta.jms.Session
 import org.assertj.core.api.Assertions.assertThat
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
@@ -8,16 +10,20 @@ import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mockingDetails
 import org.mockito.kotlin.reset
 import org.mockito.kotlin.spy
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.jms.core.JmsTemplate
+import org.springframework.jms.core.ProducerCallback
 import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
@@ -34,11 +40,15 @@ import java.net.SocketException
 import java.time.Duration
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
+import javax.sql.DataSource
 
 class OracleToTopicIntTest : IntegrationTestBase() {
 
   @SpyBean
   private lateinit var hmppsQueueService: HmppsQueueService
+
+  @SpyBean
+  private lateinit var dataSource: DataSource
 
   @Autowired
   private lateinit var retryConnectionFactory: ConnectionFactory
@@ -76,6 +86,11 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
   @Nested
   inner class Consume {
+    @BeforeEach
+    fun setUp() {
+      Mockito.reset(dataSource)
+    }
+
     @Test
     fun `will consume a prison offender events message`() {
       simulateTrigger()
@@ -91,6 +106,27 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         assertThat(body().contains("""\"bookingId\":1234567""")).isTrue
         assertThat(body().contains("""\"movementSeq\":4""")).isTrue
       }
+    }
+
+    @Test
+    fun `will consume all prison offender events message with a handful of connections`() {
+      val count = 10
+      simulateBatchTrigger(count)
+
+      awaitQueueSizeToBe(count)
+
+      (1..count).forEach { _ ->
+
+        val receiveMessageResult = prisonEventQueueSqsClient.receiveMessage(
+          ReceiveMessageRequest.builder().queueUrl(prisonEventQueueUrl).build(),
+        )
+        with(receiveMessageResult.get().messages().first()) {
+          assertThat(body().contains("""\"eventType\":\"AGY_INT_LOC_PROFILES-UPDATED\"""")).isTrue
+        }
+      }
+
+      // connection for the listener and one for the jms template
+      verify(dataSource, times(2)).connection
     }
 
     @Test
@@ -251,6 +287,23 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         setString("eventType", "OFF_RECEP_OASYS")
       }
     }
+  }
+  private fun simulateBatchTrigger(count: Int) {
+    val producerCallback: ProducerCallback<*> = ProducerCallback { session: Session, producer: MessageProducer ->
+      (1..count).forEach { _ ->
+        producer.send(
+          session.createMapMessage().apply {
+            jmsType = "AGY_INT_LOC_PROFILES-UPDATED"
+            setLong("p_internal_location_id", 34567)
+            setString("p_int_loc_profile_type", "TYPE")
+            setString("p_int_loc_profile_code", "CODE")
+            setString("p_audit_module_name", "module")
+            setString("p_delete_flag", "N")
+          },
+        )
+      }
+    }
+    jmsTemplate.execute(producerCallback)
   }
 
   fun purgeQueues() {
