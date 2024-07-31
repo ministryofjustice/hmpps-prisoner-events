@@ -17,6 +17,8 @@ spring:
     url: jdbc:oracle:thin:@//localhost:1521/XE
     username: HMPPS_EVENT_API
     password: test
+    hikari:
+      initialization-fail-timeout: -1
 
   test:
     database:
