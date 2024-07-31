@@ -19,6 +19,9 @@ class OracleAQConfiguration {
   // see https://docs.oracle.com/en/database/oracle/oracle-database/21/jajdb/oracle/jdbc/OracleConnection.html
   @Bean
   fun listenerDataSource(dataSourceProperties: DataSourceProperties): DataSource = OracleDataSource().apply {
+    println("************ listener password is ${dataSourceProperties.password}")
+    println("************ listener url is ${dataSourceProperties.url}")
+    println("************ listener username is ${dataSourceProperties.username}")
     this.url = dataSourceProperties.url
     this.user = dataSourceProperties.username
     this.setPassword(dataSourceProperties.password)
@@ -31,6 +34,9 @@ class OracleAQConfiguration {
     // since the data source is not auto-configured we need to set the hikari properties manually from config and set
     // the data source properties as well
     poolConfig.apply {
+      println("************ password is ${dataSourceProperties.password}")
+      println("************ url is ${dataSourceProperties.url}")
+      println("************ username is ${dataSourceProperties.username}")
       this.jdbcUrl = dataSourceProperties.url
       this.username = dataSourceProperties.username
       this.password = dataSourceProperties.password
