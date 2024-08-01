@@ -13,10 +13,13 @@ import org.mockito.kotlin.doCallRealMethod
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mockingDetails
 import org.mockito.kotlin.reset
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.SpyBean
+import org.springframework.context.annotation.Bean
+import org.springframework.context.annotation.Import
 import org.springframework.jms.core.JmsTemplate
 import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
@@ -28,16 +31,31 @@ import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import uk.gov.justice.hmpps.sqs.HmppsTopic
+import uk.gov.justice.hmpps.sqs.HmppsSqsProperties
+import uk.gov.justice.hmpps.sqs.HmppsTopicFactory
 import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.net.SocketException
 import java.time.Duration
 import java.time.LocalDate
 import java.util.concurrent.CompletableFuture
 
+@TestConfiguration
+class SnsConfig(private val hmppsTopicFactory: HmppsTopicFactory) {
+  @Bean("prisoneventtopic-sns-client")
+  fun topicSnsClient(
+    hmppsSqsProperties: HmppsSqsProperties,
+  ): SnsAsyncClient =
+    hmppsTopicFactory.createSnsAsyncClient(topicId = "prisoneventtopic", topicConfig = HmppsSqsProperties.TopicConfig(arn = hmppsSqsProperties.topics["prisoneventtopic"]!!.arn), hmppsSqsProperties = hmppsSqsProperties)
+}
+
+@Import(SnsConfig::class)
 class OracleToTopicIntTest : IntegrationTestBase() {
 
   @SpyBean
+  @Qualifier("prisoneventtopic-sns-client")
+  protected lateinit var snsClient: SnsAsyncClient
+
+  @Autowired
   private lateinit var hmppsQueueService: HmppsQueueService
 
   @Autowired
@@ -54,22 +72,8 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   internal val prisonEventQueueSqsClient by lazy { prisonEventQueue.sqsClient }
   internal val prisonEventQueueUrl by lazy { prisonEventQueue.queueUrl }
 
-  companion object {
-    private var isTopicSpySetUp = false
-    private lateinit var snsClient: SnsAsyncClient
-  }
-
   @BeforeEach
   fun setup() {
-    if (!isTopicSpySetUp) {
-      val realTopic = hmppsQueueService.findByTopicId("prisoneventtopic")!!
-      val realSnsClient = realTopic.snsClient
-      snsClient = spy(realSnsClient)
-      val mockTopic = HmppsTopic(arn = realTopic.arn, snsClient = snsClient, id = "prisoneventtopic")
-      whenever(hmppsQueueService.findByTopicId("prisoneventtopic")).thenReturn(mockTopic)
-      isTopicSpySetUp = true
-    }
-    // Ensure publish is called normally and call logging is reset
     reset(snsClient)
     purgeQueues()
   }

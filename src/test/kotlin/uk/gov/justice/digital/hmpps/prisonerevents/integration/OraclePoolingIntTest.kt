@@ -11,7 +11,6 @@ import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.times
@@ -23,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDO
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.jms.core.ProducerCallback
+import org.springframework.test.annotation.DirtiesContext
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
@@ -40,7 +40,7 @@ import javax.sql.DataSource
     "spring.datasource.hikari.maximum-pool-size=4",
   ],
 )
-@Disabled("Needed to check hikari configuration - currently breaks due to SNS topic Spy being broken")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class OraclePoolingIntTest : IntegrationTestBase() {
 
   @SpyBean
