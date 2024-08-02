@@ -73,7 +73,7 @@ class OffenderEventsTransformer {
       log.warn("Bad xtag: {}", xtag)
       return null
     }
-    log.debug("Processing Xtag {}...", xtag)
+    log.debug("Processing {}...", xtag)
     return try {
       when (xtag.eventType) {
         "P8_RESULT" -> riskScoreEventOf(xtag)
