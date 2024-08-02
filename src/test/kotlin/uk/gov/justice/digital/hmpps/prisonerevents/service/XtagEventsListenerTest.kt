@@ -21,9 +21,9 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer
 
 @ExtendWith(MockitoExtension::class)
-class JMSReceiverTest {
+class XtagEventsListenerTest {
 
-  private lateinit var service: JMSReceiver
+  private lateinit var service: XtagEventsListener
 
   @Mock
   private lateinit var xtagEventsService: XtagEventsService
@@ -36,7 +36,7 @@ class JMSReceiverTest {
 
   @BeforeEach
   fun setup() {
-    service = JMSReceiver(
+    service = XtagEventsListener(
       OffenderEventsTransformer(),
       xtagEventsService,
       eventsEmitter,

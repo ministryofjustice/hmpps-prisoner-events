@@ -14,9 +14,6 @@ generic-service:
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: applicationinsights.dev.json
     API_BASE_URL_HMPPS_AUTH: https://sign-in-preprod.hmpps.service.justice.gov.uk/auth
-    JMS_CONNECTION_CONCURRENTCONSUMERS: 10
-    JMS_CONNECTION_MAXCONCURRENTCONSUMERS: 20
-    SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 21
 
 generic-prometheus-alerts:
   businessHoursOnly: true

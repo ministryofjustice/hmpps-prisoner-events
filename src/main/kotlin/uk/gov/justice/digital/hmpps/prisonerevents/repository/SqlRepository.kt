@@ -9,23 +9,43 @@ import java.sql.Types
 import java.time.LocalDate
 import java.time.LocalTime
 
-const val LIMIT = 500
-
 @Repository
 class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
   fun getNomsIdFromOffender(offenderId: Long): Collection<String> = jdbcTemplate.query(
-    GET_OFFENDER,
+    """
+      SELECT OFFENDER_ID_DISPLAY
+      FROM OFFENDERS 
+      WHERE OFFENDER_ID = :offenderId
+    """.trimIndent(),
     MapSqlParameterSource().addValue("offenderId", offenderId),
   ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
 
   fun getNomsIdFromBooking(bookingId: Long): Collection<String> = jdbcTemplate.query(
-    GET_BOOKING,
+    """
+      SELECT OFFENDER_ID_DISPLAY
+      FROM OFFENDER_BOOKINGS
+        INNER JOIN OFFENDERS ON OFFENDER_BOOKINGS.OFFENDER_ID = OFFENDERS.OFFENDER_ID
+      WHERE OFFENDER_BOOK_ID = :bookingId
+    """.trimIndent(),
     MapSqlParameterSource().addValue("bookingId", bookingId),
   ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
 
   fun getMovement(bookingId: Long, sequenceNumber: Int): Collection<Movement> = jdbcTemplate.query(
-    GET_MOVEMENT_BY_BOOKING_AND_SEQUENCE,
+    """
+      SELECT OFFENDERS.OFFENDER_ID_DISPLAY  AS OFFENDER_NO,
+      OEM.FROM_AGY_LOC_ID   AS FROM_AGENCY,
+      OEM.TO_AGY_LOC_ID     AS TO_AGENCY,
+      OEM.MOVEMENT_DATE,
+      OEM.MOVEMENT_TIME,
+      OEM.MOVEMENT_TYPE,
+      OEM.DIRECTION_CODE
+      FROM OFFENDER_EXTERNAL_MOVEMENTS OEM
+        INNER JOIN OFFENDER_BOOKINGS OB ON OB.OFFENDER_BOOK_ID = OEM.OFFENDER_BOOK_ID
+        INNER JOIN OFFENDERS            ON OFFENDERS.OFFENDER_ID = OB.OFFENDER_ID
+      WHERE OEM.MOVEMENT_SEQ = :sequenceNumber
+      AND OEM.OFFENDER_BOOK_ID = :bookingId
+    """.trimIndent(),
     MapSqlParameterSource()
       .addValue("bookingId", bookingId)
       .addValue("sequenceNumber", sequenceNumber),
@@ -42,7 +62,14 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
   }
 
   fun getNomsIdFromRestriction(offenderPersonRestrictId: Long): Collection<String> = jdbcTemplate.query(
-    GET_NOMS_ID_FROM_RESTRICTION,
+    """
+      SELECT OFFENDER_ID_DISPLAY
+      FROM OFFENDER_BOOKINGS
+        INNER JOIN OFFENDERS ON OFFENDER_BOOKINGS.OFFENDER_ID = OFFENDERS.OFFENDER_ID
+        JOIN OFFENDER_CONTACT_PERSONS ON OFFENDER_CONTACT_PERSONS.OFFENDER_BOOK_ID = OFFENDER_BOOKINGS.OFFENDER_BOOK_ID
+        JOIN OFFENDER_PERSON_RESTRICTS ON OFFENDER_PERSON_RESTRICTS.OFFENDER_CONTACT_PERSON_ID = OFFENDER_CONTACT_PERSONS.OFFENDER_CONTACT_PERSON_ID
+        WHERE OFFENDER_PERSON_RESTRICTS.OFFENDER_PERSON_RESTRICT_ID = :offenderPersonRestrictId
+    """.trimIndent(),
     MapSqlParameterSource().addValue("offenderPersonRestrictId", offenderPersonRestrictId),
   ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
 
@@ -64,9 +91,21 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
   ) { resultSet: ResultSet, _: Int -> resultSet.getString("MODIFY_USER_ID") }
 
-  fun getExceptionMessageIds(exceptionQueue: String, enqueuedBefore: LocalDate? = null, pageSize: Int = LIMIT): List<String> =
+  fun getExceptionMessageIds(
+    exceptionQueue: String,
+    enqueuedBefore: LocalDate? = null,
+    pageSize: Int = 500,
+  ): List<String> =
     jdbcTemplate.query(
-      GET_EXCEPTION_MESSAGES,
+      """
+        SELECT MSGID
+        FROM XTAG.XTAG_LISTENER_TAB
+        WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
+          AND EXCEPTION_QUEUE = :exceptionQueue
+          AND (:enqueuedBefore is null OR ENQ_TIME < :enqueuedBefore)
+          AND ROWNUM <= :pageSize
+        ORDER BY ENQ_TIME
+      """.trimIndent(),
       MapSqlParameterSource()
         .addValue("exceptionQueue", exceptionQueue)
         .addValue("enqueuedBefore", enqueuedBefore, Types.TIMESTAMP)
@@ -109,56 +148,6 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
 
   fun purgeExceptionQueue() {
     jdbcTemplate.update("DELETE FROM XTAG.XTAG_LISTENER_TAB", MapSqlParameterSource())
-  }
-
-  companion object {
-
-    val GET_OFFENDER = """
-      SELECT OFFENDER_ID_DISPLAY
-      FROM OFFENDERS 
-      WHERE OFFENDER_ID = :offenderId
-    """.trimIndent()
-
-    val GET_BOOKING = """
-      SELECT OFFENDER_ID_DISPLAY
-      FROM OFFENDER_BOOKINGS
-        INNER JOIN OFFENDERS ON OFFENDER_BOOKINGS.OFFENDER_ID = OFFENDERS.OFFENDER_ID
-      WHERE OFFENDER_BOOK_ID = :bookingId
-    """.trimIndent()
-
-    val GET_MOVEMENT_BY_BOOKING_AND_SEQUENCE = """
-      SELECT OFFENDERS.OFFENDER_ID_DISPLAY  AS OFFENDER_NO,
-      OEM.FROM_AGY_LOC_ID   AS FROM_AGENCY,
-      OEM.TO_AGY_LOC_ID     AS TO_AGENCY,
-      OEM.MOVEMENT_DATE,
-      OEM.MOVEMENT_TIME,
-      OEM.MOVEMENT_TYPE,
-      OEM.DIRECTION_CODE
-      FROM OFFENDER_EXTERNAL_MOVEMENTS OEM
-        INNER JOIN OFFENDER_BOOKINGS OB ON OB.OFFENDER_BOOK_ID = OEM.OFFENDER_BOOK_ID
-        INNER JOIN OFFENDERS            ON OFFENDERS.OFFENDER_ID = OB.OFFENDER_ID
-      WHERE OEM.MOVEMENT_SEQ = :sequenceNumber
-      AND OEM.OFFENDER_BOOK_ID = :bookingId
-    """.trimIndent()
-
-    val GET_NOMS_ID_FROM_RESTRICTION = """
-      SELECT OFFENDER_ID_DISPLAY
-      FROM OFFENDER_BOOKINGS
-        INNER JOIN OFFENDERS ON OFFENDER_BOOKINGS.OFFENDER_ID = OFFENDERS.OFFENDER_ID
-        JOIN OFFENDER_CONTACT_PERSONS ON OFFENDER_CONTACT_PERSONS.OFFENDER_BOOK_ID = OFFENDER_BOOKINGS.OFFENDER_BOOK_ID
-        JOIN OFFENDER_PERSON_RESTRICTS ON OFFENDER_PERSON_RESTRICTS.OFFENDER_CONTACT_PERSON_ID = OFFENDER_CONTACT_PERSONS.OFFENDER_CONTACT_PERSON_ID
-        WHERE OFFENDER_PERSON_RESTRICTS.OFFENDER_PERSON_RESTRICT_ID = :offenderPersonRestrictId
-    """.trimIndent()
-
-    val GET_EXCEPTION_MESSAGES = """
-      SELECT MSGID
-      FROM XTAG.XTAG_LISTENER_TAB
-      WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
-        AND EXCEPTION_QUEUE = :exceptionQueue
-        AND (:enqueuedBefore is null OR ENQ_TIME < :enqueuedBefore)
-        AND ROWNUM <= :pageSize
-      ORDER BY ENQ_TIME
-    """.trimIndent()
   }
 }
 

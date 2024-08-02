@@ -11,7 +11,7 @@ import org.springframework.jms.core.JmsTemplate
 import org.springframework.jms.listener.DefaultMessageListenerContainer
 import org.springframework.jms.support.destination.JmsDestinationAccessor
 import org.springframework.util.ErrorHandler
-import uk.gov.justice.digital.hmpps.prisonerevents.service.JMSReceiver
+import uk.gov.justice.digital.hmpps.prisonerevents.service.XtagEventsListener
 import javax.sql.DataSource
 
 const val TABLE_OWNER = "XTAG"
@@ -32,7 +32,7 @@ class JMSConfiguration {
   fun messageListenerContainer(
     listenerConnectionFactory: ConnectionFactory,
     dataSource: DataSource,
-    jmsReceiver: JMSReceiver,
+    xtagEventsListener: XtagEventsListener,
     @Value("\${jms.connection.concurrentConsumers:1}") concurrentConsumers: Int,
     @Value("\${jms.connection.maxConcurrentConsumers:1}") maxConcurrentConsumers: Int,
     @Value("\${jms.connection.oracle.traceLevel:0}") oracleTraceLevel: Int,
@@ -51,7 +51,7 @@ class JMSConfiguration {
       }
       this.isSessionTransacted = true
 
-      this.messageListener = jmsReceiver
+      this.messageListener = xtagEventsListener
 
       AQjmsOracleDebug.setTraceLevel(oracleTraceLevel)
     }
