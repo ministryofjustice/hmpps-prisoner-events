@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.1"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.2"
   kotlin("plugin.spring") version "2.0.0"
 }
 
@@ -17,14 +17,14 @@ dependencies {
   implementation("org.flywaydb:flyway-database-oracle")
   implementation("org.hibernate.orm:hibernate-community-dialects")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
   implementation("com.zaxxer:HikariCP:5.1.0")
-  implementation("com.oracle.database.jdbc:ojdbc11:23.4.0.24.05")
+  implementation("com.oracle.database.jdbc:ojdbc11:23.5.0.24.07")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.3.1.0")
 
-  implementation("org.apache.commons:commons-lang3:3.14.0")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.4.0")
+  implementation("org.apache.commons:commons-lang3:3.15.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.6.0")
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.2-beta-3")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.1")
@@ -36,8 +36,8 @@ dependencies {
   }
   testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.22")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.19.8")
-  testImplementation("org.testcontainers:oracle-xe:1.19.8")
+  testImplementation("org.testcontainers:localstack:1.20.1")
+  testImplementation("org.testcontainers:oracle-xe:1.20.1")
 }
 
 kotlin {
