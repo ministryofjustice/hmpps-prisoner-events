@@ -24,6 +24,25 @@ The integration tests require a running instance of Oracle-XE and a running inst
 The Oracle docker image will not run in docker desktop under an M1 processor, so an intel VM is required - Colima.
 Also for now testContainers is not working under Colima until a better 'already up' test is found.
 
+### TLDR; Quick setup without test containers 
+
+Given testContainer startup under colima is very slow you can just set the DOCKER_HOST to colima just for starting the required containers
+```
+brew install colima
+colima start --arch x86_64 --memory 4 --network-address
+export DOCKER_HOST="unix://${HOME}/.colima/docker.sock"
+docker-compose -f docker-compose-test.yml up
+```
+
+or if colima is already running
+
+```
+export DOCKER_HOST="unix://${HOME}/.colima/docker.sock"
+docker-compose -f docker-compose-test.yml up
+```
+
+### Explanation and running with testContainers
+
 Based on the instructions here: https://blog.jdriven.com/2022/07/running-oracle-xe-with-testcontainers-on-apple-silicon,
 add these lines to your .zshrc or similar:
 

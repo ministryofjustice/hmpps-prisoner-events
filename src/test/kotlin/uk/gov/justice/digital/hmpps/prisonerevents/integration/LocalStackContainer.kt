@@ -7,7 +7,7 @@ import org.testcontainers.containers.output.Slf4jLogConsumer
 import org.testcontainers.containers.wait.strategy.Wait
 import org.testcontainers.utility.DockerImageName
 import java.io.IOException
-import java.net.ServerSocket
+import java.net.Socket
 
 object LocalStackContainer {
   private val log = LoggerFactory.getLogger(this::class.java)
@@ -39,11 +39,10 @@ object LocalStackContainer {
   }
 
   private fun localstackIsRunning(): Boolean =
-    (System.getenv("DOCKER_HOST") ?: "null").contains("colima") ||
-      try {
-        val serverSocket = ServerSocket(4566)
-        serverSocket.localPort == 0
-      } catch (e: IOException) {
-        true
-      }
+    try {
+      Socket("127.0.0.1", 4566)
+      true
+    } catch (e: IOException) {
+      false
+    }
 }
