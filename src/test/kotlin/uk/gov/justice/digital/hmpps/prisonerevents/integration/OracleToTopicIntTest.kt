@@ -1,11 +1,15 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.integration
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.jms.ConnectionFactory
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.within
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.any
@@ -20,7 +24,9 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jms.core.JmsTemplate
+import org.springframework.test.util.JsonPathExpectationsHelper
 import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
@@ -37,6 +43,8 @@ import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.net.SocketException
 import java.time.Duration
 import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
 
 @TestConfiguration
@@ -59,10 +67,16 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   private lateinit var hmppsQueueService: HmppsQueueService
 
   @Autowired
+  private lateinit var objectMapper: ObjectMapper
+
+  @Autowired
   private lateinit var retryConnectionFactory: ConnectionFactory
 
   @Autowired
   private lateinit var sqlRepository: SqlRepository
+
+  @Autowired
+  private lateinit var jdbcTemplate: JdbcTemplate
 
   private val jmsTemplate by lazy {
     JmsTemplate(retryConnectionFactory).also { it.defaultDestinationName = FULL_QUEUE_NAME }
@@ -238,6 +252,81 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     }
   }
 
+  @Nested
+  inner class EventMappings {
+    @Suppress("SqlWithoutWhere")
+    @AfterEach
+    fun tearDown() {
+      with(jdbcTemplate) {
+        update("delete from OFFENDER_PERSON_RESTRICTS")
+        update("delete from OFFENDER_CONTACT_PERSONS")
+        update("delete from OFFENDER_EXTERNAL_MOVEMENTS")
+        update("delete from OFFENDER_BOOKINGS")
+        update("delete from OFFENDERS")
+      }
+    }
+
+    @Nested
+    @DisplayName("OFF_PERS_RESTRICTS-UPDATED -> PERSON_RESTRICTION-UPSERTED")
+    inner class PersonRestrictionUpserted {
+      private lateinit var prisonerEvent: PrisonerEventMessage
+      private val bookingId = 6789
+      private val personId = 8754
+      private val offenderNo = "A1234AA"
+      private val restrictionId = 87499
+      private val contactPersonId = 4399
+
+      @BeforeEach
+      fun setUp() {
+        val offenderId = 1234
+        with(jdbcTemplate) {
+          // TODO convert to some simple builder thing for readability
+          update("""insert into OFFENDERS( OFFENDER_ID, ID_SOURCE_CODE, LAST_NAME, SEX_CODE, CREATE_DATE, LAST_NAME_KEY, OFFENDER_ID_DISPLAY ) values ( $offenderId, 'source', 'SMITH', 'M', SYSDATE, 'key', '$offenderNo' )""")
+          update("""insert into OFFENDER_BOOKINGS( OFFENDER_ID, OFFENDER_BOOK_ID, BOOKING_BEGIN_DATE, IN_OUT_STATUS, YOUTH_ADULT_CODE, BOOKING_SEQ ) values ( $offenderId, $bookingId, SYSDATE, 'IN', 'CODE', 1)""")
+          update("""insert into OFFENDER_CONTACT_PERSONS( OFFENDER_BOOK_ID, PERSON_ID, CONTACT_TYPE, RELATIONSHIP_TYPE, OFFENDER_CONTACT_PERSON_ID, CREATE_USER_ID, MODIFY_USER_ID ) values ( $bookingId, $personId, 'S', 'BRO', $contactPersonId, 'USER1', 'USER2' )""")
+          update("""insert into OFFENDER_PERSON_RESTRICTS( OFFENDER_CONTACT_PERSON_ID, OFFENDER_PERSON_RESTRICT_ID, RESTRICTION_TYPE, RESTRICTION_EFFECTIVE_DATE ) values ( $contactPersonId, $restrictionId, 'BAN', TO_DATE('2022/08/15', 'YYYY/MM/DD') )""")
+        }
+
+        simulateTrigger(
+          nomisEventType = "OFF_PERS_RESTRICTS-UPDATED",
+          "p_offender_contact_person_id" to contactPersonId,
+          "p_offender_person_restrict_id" to restrictionId,
+          "p_restriction_type" to "RESTRICTED",
+          "p_restriction_effective_date" to "2023-01-03",
+          "p_restriction_expiry_date" to "2029-01-03",
+          "p_authorized_staff_id" to 1234,
+          "p_entered_staff_id" to 1138583,
+          "p_comment_text" to "some comment",
+        )
+
+        prisonerEvent = awaitMessage()
+      }
+
+      @Test
+      fun `will map to PERSON_RESTRICTION-UPSERTED`() {
+        with(prisonerEvent.message) {
+          assertJsonPath("eventType", "PERSON_RESTRICTION-UPSERTED")
+          assertJsonPath("comment", "some comment")
+          assertJsonPath("contactPersonId", "$contactPersonId")
+          assertJsonPath("effectiveDate", "2023-01-03")
+          assertJsonPath("expiryDate", "2029-01-03")
+          assertJsonPath("enteredById", "1138583")
+          assertJsonPath("eventType", "PERSON_RESTRICTION-UPSERTED")
+          assertJsonPath("nomisEventType", "OFF_PERS_RESTRICTS-UPDATED")
+          assertJsonPath("offenderIdDisplay", offenderNo)
+          assertJsonPath("offenderPersonRestrictionId", "$restrictionId")
+          assertJsonPath("restrictionType", "RESTRICTED")
+        }
+      }
+
+      @Test
+      fun `will map meta data for the event`() {
+        assertThat(prisonerEvent.eventType).isEqualTo("PERSON_RESTRICTION-UPSERTED")
+        assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+      }
+    }
+  }
+
   private fun sabotageTopic() {
     doReturn(CompletableFuture.failedFuture<PublishResponse>(SocketException("Test exception"))).whenever(snsClient)
       .publish(any<PublishRequest>())
@@ -254,6 +343,15 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         setLong("p_offender_book_id", 1234567L)
         setInt("p_movement_seq", 4)
         setString("eventType", "OFF_RECEP_OASYS")
+      }
+    }
+  }
+
+  private fun simulateTrigger(nomisEventType: String, vararg attributes: Pair<String, Any>) {
+    jmsTemplate.send { session ->
+      session.createMapMessage().apply {
+        jmsType = nomisEventType
+        attributes.forEach { (key, value) -> setString(key, value.toString()) }
       }
     }
   }
@@ -293,4 +391,31 @@ class OracleToTopicIntTest : IntegrationTestBase() {
   fun getNumberOfMessagesCurrentlyOnExceptionQueue() =
     sqlRepository.getExceptionMessageIds(QUEUE_NAME).size
       .also { log.info("Number of messages on exception queue: $it") }
+
+  fun awaitMessage(): PrisonerEventMessage {
+    awaitQueueSizeToBe(1)
+
+    val queueMessage = prisonEventQueueSqsClient.receiveMessage(
+      ReceiveMessageRequest.builder().queueUrl(prisonEventQueueUrl).build(),
+    ).get().messages().first().body()
+
+    val sqsMessage: SQSMessage = objectMapper.readValue(queueMessage, SQSMessage::class.java)
+    return PrisonerEventMessage(
+      message = sqsMessage.Message,
+      publishedAt = OffsetDateTime.parse(sqsMessage.MessageAttributes.publishedAt.Value),
+      eventType = sqsMessage.MessageAttributes.eventType.Value,
+    )
+  }
 }
+
+internal data class SQSMessage(val Message: String, val MessageId: String, val MessageAttributes: MessageAttributes)
+internal data class MessageAttributes(val publishedAt: TypeValuePair, val eventType: TypeValuePair)
+internal data class TypeValuePair(val Value: String, val Type: String)
+
+data class PrisonerEventMessage(
+  val message: String,
+  val publishedAt: OffsetDateTime,
+  val eventType: String,
+)
+
+private fun String.assertJsonPath(path: String, expectedValue: Any) = JsonPathExpectationsHelper(path).assertValue(this, expectedValue)
