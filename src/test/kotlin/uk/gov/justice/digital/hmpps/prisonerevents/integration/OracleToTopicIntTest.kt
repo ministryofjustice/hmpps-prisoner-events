@@ -7,6 +7,8 @@ import org.assertj.core.api.Assertions.within
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.AfterEach
@@ -291,6 +293,8 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         lateinit var offenderContactPerson: OffenderContactPerson
         lateinit var restriction: OffenderContactRestriction
         transaction {
+          this.addLogger(StdOutSqlLogger)
+
           val offender = Offender.new {
             this.offenderNo = this@PersonRestrictionUpserted.offenderNo
             this.idSource = "source"

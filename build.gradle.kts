@@ -25,7 +25,6 @@ dependencies {
 
   implementation("org.apache.commons:commons-lang3:3.16.0")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.6.0")
-  implementation("org.jetbrains.exposed:exposed-core:0.53.0")
   implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.53.0")
   implementation("org.jetbrains.exposed:exposed-kotlin-datetime:0.53.0")
 

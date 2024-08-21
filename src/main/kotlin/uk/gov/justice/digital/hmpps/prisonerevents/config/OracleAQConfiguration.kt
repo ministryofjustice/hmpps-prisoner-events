@@ -5,12 +5,8 @@ import com.zaxxer.hikari.HikariDataSource
 import jakarta.jms.QueueConnectionFactory
 import oracle.jakarta.jms.AQjmsFactory
 import oracle.jdbc.datasource.impl.OracleDataSource
-import org.jetbrains.exposed.spring.autoconfigure.ExposedAutoConfiguration
-import org.jetbrains.exposed.sql.DatabaseConfig
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties
-import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -40,18 +36,6 @@ class OracleAQConfiguration {
       this.password = dataSourceProperties.password
     },
   )
-
-  @Configuration
-  @ImportAutoConfiguration(
-    value = [ExposedAutoConfiguration::class],
-    exclude = [DataSourceTransactionManagerAutoConfiguration::class],
-  )
-  class ExposedConfig {
-    @Bean
-    fun databaseConfig() = DatabaseConfig {
-      useNestedTransactions = true
-    }
-  }
 
   @Configuration
   @ConfigurationProperties("spring.datasource.hikari")
