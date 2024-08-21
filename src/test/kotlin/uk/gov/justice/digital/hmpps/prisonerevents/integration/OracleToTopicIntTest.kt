@@ -7,6 +7,10 @@ import org.assertj.core.api.Assertions.within
 import org.awaitility.kotlin.await
 import org.awaitility.kotlin.matches
 import org.awaitility.kotlin.untilCallTo
+import org.jetbrains.exposed.sql.StdOutSqlLogger
+import org.jetbrains.exposed.sql.addLogger
+import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -24,7 +28,6 @@ import org.springframework.boot.test.context.TestConfiguration
 import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
-import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.test.util.JsonPathExpectationsHelper
 import software.amazon.awssdk.services.sns.SnsAsyncClient
@@ -34,6 +37,16 @@ import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.Offender
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderBooking
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderBookings
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactPerson
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactPersons
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactRestriction
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactRestrictions
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.Offenders
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.Person
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.Persons
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -74,9 +87,6 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
   @Autowired
   private lateinit var sqlRepository: SqlRepository
-
-  @Autowired
-  private lateinit var jdbcTemplate: JdbcTemplate
 
   private val jmsTemplate by lazy {
     JmsTemplate(retryConnectionFactory).also { it.defaultDestinationName = FULL_QUEUE_NAME }
@@ -257,12 +267,12 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     @Suppress("SqlWithoutWhere")
     @AfterEach
     fun tearDown() {
-      with(jdbcTemplate) {
-        update("delete from OFFENDER_PERSON_RESTRICTS")
-        update("delete from OFFENDER_CONTACT_PERSONS")
-        update("delete from OFFENDER_EXTERNAL_MOVEMENTS")
-        update("delete from OFFENDER_BOOKINGS")
-        update("delete from OFFENDERS")
+      transaction {
+        OffenderContactRestrictions.deleteAll()
+        OffenderContactPersons.deleteAll()
+        Persons.deleteAll()
+        OffenderBookings.deleteAll()
+        Offenders.deleteAll()
       }
     }
 
@@ -270,22 +280,56 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     @DisplayName("OFF_PERS_RESTRICTS-UPDATED -> PERSON_RESTRICTION-UPSERTED")
     inner class PersonRestrictionUpserted {
       private lateinit var prisonerEvent: PrisonerEventMessage
-      private val bookingId = 6789
-      private val personId = 8754
+      private var bookingId = 0L
+      private var personId = 0L
       private val offenderNo = "A1234AA"
-      private val restrictionId = 87499
-      private val contactPersonId = 4399
+      private var restrictionId = 0L
+      private var contactPersonId = 0L
 
       @BeforeEach
       fun setUp() {
-        val offenderId = 1234
-        with(jdbcTemplate) {
-          // TODO convert to some simple builder thing for readability
-          update("""insert into OFFENDERS( OFFENDER_ID, ID_SOURCE_CODE, LAST_NAME, SEX_CODE, CREATE_DATE, LAST_NAME_KEY, OFFENDER_ID_DISPLAY ) values ( $offenderId, 'source', 'SMITH', 'M', SYSDATE, 'key', '$offenderNo' )""")
-          update("""insert into OFFENDER_BOOKINGS( OFFENDER_ID, OFFENDER_BOOK_ID, BOOKING_BEGIN_DATE, IN_OUT_STATUS, YOUTH_ADULT_CODE, BOOKING_SEQ ) values ( $offenderId, $bookingId, SYSDATE, 'IN', 'CODE', 1)""")
-          update("""insert into OFFENDER_CONTACT_PERSONS( OFFENDER_BOOK_ID, PERSON_ID, CONTACT_TYPE, RELATIONSHIP_TYPE, OFFENDER_CONTACT_PERSON_ID, CREATE_USER_ID, MODIFY_USER_ID ) values ( $bookingId, $personId, 'S', 'BRO', $contactPersonId, 'USER1', 'USER2' )""")
-          update("""insert into OFFENDER_PERSON_RESTRICTS( OFFENDER_CONTACT_PERSON_ID, OFFENDER_PERSON_RESTRICT_ID, RESTRICTION_TYPE, RESTRICTION_EFFECTIVE_DATE ) values ( $contactPersonId, $restrictionId, 'BAN', TO_DATE('2022/08/15', 'YYYY/MM/DD') )""")
+        lateinit var booking: OffenderBooking
+        lateinit var person: Person
+        lateinit var offenderContactPerson: OffenderContactPerson
+        lateinit var restriction: OffenderContactRestriction
+        transaction {
+          this.addLogger(StdOutSqlLogger)
+
+          val offender = Offender.new {
+            this.offenderNo = this@PersonRestrictionUpserted.offenderNo
+            this.idSource = "source"
+            this.lastName = "SMITH"
+            this.sexCode = "M"
+            this.lastNameKey = "key"
+          }
+          booking = OffenderBooking.new {
+            this.offender = offender
+            this.rootOffender = offender
+            this.inOutStatus = "IN"
+            this.youthAdultCode = "A"
+            this.sequence = 1
+          }
+          person = Person.new {
+            this.firstName = "SARAH"
+            this.lastName = "JENKINS"
+          }
+          offenderContactPerson = OffenderContactPerson.new {
+            this.offenderBooking = booking
+            this.person = person
+            this.contactType = "S"
+            this.relationshipType = "BRO"
+          }
+          restriction = OffenderContactRestriction.new {
+            this.offenderContactPerson = offenderContactPerson
+            this.restrictionType = "BAN"
+            this.effectiveDate = kotlinx.datetime.LocalDate.parse("2022-08-15")
+          }
         }
+
+        bookingId = booking.bookingId.value
+        personId = person.personId.value
+        contactPersonId = offenderContactPerson.contactId.value
+        restrictionId = restriction.restrictionId.value
 
         simulateTrigger(
           nomisEventType = "OFF_PERS_RESTRICTS-UPDATED",
