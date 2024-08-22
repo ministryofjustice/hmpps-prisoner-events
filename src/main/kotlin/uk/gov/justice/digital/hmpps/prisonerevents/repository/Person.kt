@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.kotlin.datetime.datetime
+import org.jetbrains.exposed.sql.javatime.datetime
 
 class Person(id: EntityID<Long>) : LongEntity(id) {
   companion object : LongEntityClass<Person>(Persons)
