@@ -322,7 +322,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
           restriction = OffenderContactRestriction.new {
             this.offenderContactPerson = offenderContactPerson
             this.restrictionType = "BAN"
-            this.effectiveDate = kotlinx.datetime.LocalDate.parse("2022-08-15")
+            this.effectiveDate = LocalDate.parse("2022-08-15")
           }
         }
 
