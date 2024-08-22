@@ -187,7 +187,6 @@ class XtagEventsServiceTest {
         effectiveDate = LocalDate.now(),
         expiryDate = null,
         authorisedById = null,
-        comment = "TEST COMMENT",
         enteredById = null,
       ),
     )
