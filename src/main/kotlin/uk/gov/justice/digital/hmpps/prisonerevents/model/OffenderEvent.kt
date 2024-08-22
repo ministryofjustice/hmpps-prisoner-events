@@ -280,7 +280,6 @@ class RestrictionOffenderEvent(
   val restrictionType: String?,
   val effectiveDate: LocalDate?,
   val expiryDate: LocalDate?,
-  val comment: String?,
   val authorisedById: Long?,
   val enteredById: Long?,
 ) : OffenderEvent(
@@ -303,7 +302,6 @@ class PersonRestrictionOffenderEvent(
   val effectiveDate: LocalDate?,
   val expiryDate: LocalDate?,
   val authorisedById: Long?,
-  val comment: String?,
   val enteredById: Long?,
 ) : OffenderEvent(
   eventType = eventType,
@@ -322,7 +320,6 @@ class VisitorRestrictionOffenderEvent(
   val restrictionType: String?,
   val effectiveDate: LocalDate?,
   val expiryDate: LocalDate?,
-  val comment: String?,
   val visitorRestrictionId: Long?,
   val enteredById: Long?,
 ) : OffenderEvent(

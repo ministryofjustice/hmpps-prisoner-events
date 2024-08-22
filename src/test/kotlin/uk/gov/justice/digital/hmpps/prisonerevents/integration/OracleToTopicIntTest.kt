@@ -350,7 +350,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       fun `will map to PERSON_RESTRICTION-UPSERTED`() {
         with(prisonerEvent.message) {
           assertJsonPath("eventType", "PERSON_RESTRICTION-UPSERTED")
-          assertJsonPath("comment", "some comment")
+          assertDoesNotHaveJsonPath("comment")
           assertJsonPath("contactPersonId", "$contactPersonId")
           assertJsonPath("personId", "$personId")
           assertJsonPath("effectiveDate", "2023-01-03")
@@ -464,3 +464,4 @@ data class PrisonerEventMessage(
 )
 
 private fun String.assertJsonPath(path: String, expectedValue: Any) = JsonPathExpectationsHelper(path).assertValue(this, expectedValue)
+private fun String.assertDoesNotHaveJsonPath(path: String) = JsonPathExpectationsHelper(path).doesNotHaveJsonPath(this)

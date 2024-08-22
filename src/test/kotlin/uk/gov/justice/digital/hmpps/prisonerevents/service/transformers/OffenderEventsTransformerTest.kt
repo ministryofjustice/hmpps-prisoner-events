@@ -744,7 +744,6 @@ class OffenderEventsTransformerTest {
       assertThat(restrictionType).isEqualTo("TYPE")
       assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
-      assertThat(comment).isEqualTo("comment")
       assertThat(authorisedById).isEqualTo(12345L)
       assertThat(enteredById).isEqualTo(23456L)
     }
@@ -778,7 +777,6 @@ class OffenderEventsTransformerTest {
       assertThat(restrictionType).isEqualTo("TYPE")
       assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
-      assertThat(comment).isEqualTo("comment")
       assertThat(authorisedById).isEqualTo(12345L)
       assertThat(enteredById).isEqualTo(23456L)
     }
@@ -811,7 +809,6 @@ class OffenderEventsTransformerTest {
       assertThat(restrictionType).isEqualTo("TYPE")
       assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
-      assertThat(comment).isEqualTo("comment")
       assertThat(visitorRestrictionId).isEqualTo(123456)
       assertThat(enteredById).isEqualTo(23456)
     }

@@ -1047,7 +1047,6 @@ class OffenderEventsTransformer {
     restrictionType = xtag.content.p_restriction_type,
     effectiveDate = localDateOf(xtag.content.p_effective_date),
     expiryDate = localDateOf(xtag.content.p_expiry_date),
-    comment = xtag.content.p_comment_text,
     authorisedById = xtag.content.p_authorised_staff_id?.toLong(),
     enteredById = xtag.content.p_entered_staff_id?.toLong(),
   )
@@ -1062,7 +1061,6 @@ class OffenderEventsTransformer {
     effectiveDate = localDateOf(xtag.content.p_restriction_effective_date),
     expiryDate = localDateOf(xtag.content.p_restriction_expiry_date),
     authorisedById = xtag.content.p_authorized_staff_id?.toLong(),
-    comment = xtag.content.p_comment_text,
     enteredById = xtag.content.p_entered_staff_id?.toLong(),
   )
 
@@ -1075,7 +1073,6 @@ class OffenderEventsTransformer {
     restrictionType = xtag.content.p_visit_restriction_type,
     effectiveDate = localDateOf(xtag.content.p_effective_date),
     expiryDate = localDateOf(xtag.content.p_expiry_date),
-    comment = xtag.content.p_comment_txt,
     visitorRestrictionId = xtag.content.p_visitor_restriction_id?.toLong(),
     enteredById = xtag.content.p_entered_staff_id?.toLong(),
   )
