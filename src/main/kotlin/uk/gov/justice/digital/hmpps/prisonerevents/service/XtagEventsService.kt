@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
+import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
@@ -7,12 +8,15 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassign
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.ExposeRepository
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 
 @Service
 class XtagEventsService(
   private val sqlRepository: SqlRepository,
+  private val exposeRepository: ExposeRepository,
 ) {
+  @Transactional
   fun addAdditionalEventData(oe: OffenderEvent?): OffenderEvent? {
     when (oe?.eventType) {
       "OFFENDER_DETAILS-CHANGED", "OFFENDER_ALIAS-CHANGED", "OFFENDER-UPDATED" ->
@@ -43,6 +47,7 @@ class XtagEventsService(
       "PERSON_RESTRICTION-UPSERTED", "PERSON_RESTRICTION-DELETED" -> {
         oe as PersonRestrictionOffenderEvent
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromRestriction(oe.offenderPersonRestrictionId!!).firstOrNull()
+        oe.personId = exposeRepository.getPersonIdFromRestriction(oe.offenderPersonRestrictionId)
       }
 
       "OFFENDER_BOOKING-REASSIGNED" -> {

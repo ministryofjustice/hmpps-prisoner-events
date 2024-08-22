@@ -24,6 +24,9 @@ spring:
     database:
       replace: none
 
+  exposed:
+    show-sql: true
+
 api:
   base:
     url:
