@@ -297,6 +297,7 @@ class PersonRestrictionOffenderEvent(
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,
   val contactPersonId: Long?,
+  var personId: Long? = null,
   val offenderPersonRestrictionId: Long?,
   val restrictionType: String?,
   val effectiveDate: LocalDate?,

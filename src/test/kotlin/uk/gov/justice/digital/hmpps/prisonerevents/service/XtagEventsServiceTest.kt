@@ -11,6 +11,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.ExposeRepository
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Movement
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import java.sql.Timestamp
@@ -21,7 +22,8 @@ class XtagEventsServiceTest {
   private val movementTime = Timestamp.valueOf("2019-07-12 21:00:00.000")
 
   private val repository: SqlRepository = mock()
-  private val service: XtagEventsService = XtagEventsService(repository)
+  private val exposeRepository: ExposeRepository = mock()
+  private val service: XtagEventsService = XtagEventsService(repository, exposeRepository)
 
   @Test
   fun shouldAddNomsIdToOffenderAliasEvent() {

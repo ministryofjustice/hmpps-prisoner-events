@@ -20,5 +20,5 @@ object Persons : IdTable<Long>("PERSONS") {
   override val id: Column<EntityID<Long>> = long("PERSON_ID").autoIncrement("PERSON_ID").entityId()
   val lastName = varchar("LAST_NAME", 35)
   val firstName = varchar("FIRST_NAME", 35)
-  val dateOfBirth = datetime("BIRTH_DATE").nullable()
+  val dateOfBirth = datetime("BIRTHDATE").nullable()
 }

@@ -352,6 +352,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
           assertJsonPath("eventType", "PERSON_RESTRICTION-UPSERTED")
           assertJsonPath("comment", "some comment")
           assertJsonPath("contactPersonId", "$contactPersonId")
+          assertJsonPath("personId", "$personId")
           assertJsonPath("effectiveDate", "2023-01-03")
           assertJsonPath("expiryDate", "2029-01-03")
           assertJsonPath("enteredById", "1138583")
