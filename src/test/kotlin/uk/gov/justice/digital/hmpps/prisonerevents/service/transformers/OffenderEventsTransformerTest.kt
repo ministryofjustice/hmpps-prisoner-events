@@ -709,7 +709,6 @@ class OffenderEventsTransformerTest {
       assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
       assertThat(authorisedBy).isEqualTo("staff 1")
-      assertThat(comment).isEqualTo("comment")
       assertThat(auditModuleName).isEqualTo("non_associations")
     }
   }
