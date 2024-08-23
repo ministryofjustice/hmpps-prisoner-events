@@ -73,20 +73,6 @@ class SqlRepositoryTest : IntegrationTestBase() {
   }
 
   @Test
-  fun getNomisIdFromRestrictions() {
-    seedOffenders()
-    seedBookings()
-    seedOffenderContactPersons()
-    seedOffenderPersonRestricts()
-
-    val data = repository.getNomsIdFromRestriction(10000L)
-    assertThat(data.first()).isEqualTo("A1234AA")
-    assertThat(data).hasSize(1)
-
-    assertThat(repository.getNomsIdFromRestriction(999L)).isEmpty()
-  }
-
-  @Test
   fun getCreatedByUserOffenderContact() {
     seedOffenders()
     seedBookings()
@@ -189,22 +175,6 @@ class SqlRepositoryTest : IntegrationTestBase() {
           'USER1',
           'USER2'
           )""",
-    )
-  }
-
-  private fun seedOffenderPersonRestricts() {
-    jdbcTemplate.update(
-      """insert into OFFENDER_PERSON_RESTRICTS(
-          OFFENDER_CONTACT_PERSON_ID,
-          OFFENDER_PERSON_RESTRICT_ID,
-          RESTRICTION_TYPE,
-          RESTRICTION_EFFECTIVE_DATE
-        ) values (
-          1000,
-          10000,
-          'BAN',
-          TO_DATE('2022/08/15', 'YYYY/MM/DD')
-        )""",
     )
   }
 }

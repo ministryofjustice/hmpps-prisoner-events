@@ -46,8 +46,8 @@ class XtagEventsService(
 
       "PERSON_RESTRICTION-UPSERTED", "PERSON_RESTRICTION-DELETED" -> {
         oe as PersonRestrictionOffenderEvent
-        oe.offenderIdDisplay = sqlRepository.getNomsIdFromRestriction(oe.offenderPersonRestrictionId!!).firstOrNull()
-        oe.personId = exposeRepository.getPersonIdFromRestriction(oe.offenderPersonRestrictionId)
+        oe.offenderIdDisplay = exposeRepository.getNomsIdFromContact(oe.contactPersonId!!)
+        oe.personId = exposeRepository.getPersonIdFromContact(oe.contactPersonId)
       }
 
       "OFFENDER_BOOKING-REASSIGNED" -> {

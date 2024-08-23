@@ -45,6 +45,8 @@ import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactPer
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactPersons
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactRestriction
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactRestrictions
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderExternalMovement
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderExternalMovements
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Offenders
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Person
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Persons
@@ -57,6 +59,7 @@ import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.net.SocketException
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
 import java.util.concurrent.CompletableFuture
@@ -269,6 +272,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     @AfterEach
     fun tearDown() {
       transaction {
+        OffenderExternalMovements.deleteAll()
         OffenderContactRestrictions.deleteAll()
         OffenderContactPersons.deleteAll()
         Persons.deleteAll()
@@ -320,14 +324,13 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       fun `will map to PERSON_RESTRICTION-UPSERTED`() {
         with(prisonerEvent.message) {
           assertJsonPath("eventType", "PERSON_RESTRICTION-UPSERTED")
+          assertJsonPath("nomisEventType", "OFF_PERS_RESTRICTS-UPDATED")
           assertDoesNotHaveJsonPath("comment")
           assertJsonPath("contactPersonId", "${offenderContactPerson.contactId.value}")
           assertJsonPath("personId", "${person.personId.value}")
           assertJsonPath("effectiveDate", "2023-01-03")
           assertJsonPath("expiryDate", "2029-01-03")
           assertJsonPath("enteredById", "1138583")
-          assertJsonPath("eventType", "PERSON_RESTRICTION-UPSERTED")
-          assertJsonPath("nomisEventType", "OFF_PERS_RESTRICTS-UPDATED")
           assertJsonPath("offenderIdDisplay", offenderNo)
           assertJsonPath("offenderPersonRestrictionId", "${restriction.restrictionId.value}")
           assertJsonPath("restrictionType", "RESTRICTED")
@@ -337,6 +340,124 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       @Test
       fun `will map meta data for the event`() {
         assertThat(prisonerEvent.eventType).isEqualTo("PERSON_RESTRICTION-UPSERTED")
+        assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+      }
+    }
+
+    @Nested
+    @DisplayName("OFF_PERS_RESTRICTS-UPDATED -> PERSON_RESTRICTION-DELETED")
+    inner class PersonRestrictionDeleted {
+      private lateinit var prisonerEvent: PrisonerEventMessage
+      private val offenderNo = "A1234AA"
+      private lateinit var person: Person
+      private lateinit var offenderContactPerson: OffenderContactPerson
+
+      @BeforeEach
+      fun setUp() {
+        transaction {
+          this.addLogger(StdOutSqlLogger)
+          person = Person.build {}
+          Offender.build {
+            offenderNo = this@PersonRestrictionDeleted.offenderNo
+          }.also {
+            OffenderBooking.build(offender = it).also {
+              offenderContactPerson = OffenderContactPerson.build(offenderBooking = it, person = person)
+            }
+          }
+        }
+
+        simulateTrigger(
+          nomisEventType = "OFF_PERS_RESTRICTS-UPDATED",
+          "p_offender_contact_person_id" to offenderContactPerson.contactId.value,
+          "p_offender_person_restrict_id" to 9999,
+          "p_restriction_type" to "RESTRICTED",
+          "p_delete_flag" to "Y",
+          "p_restriction_effective_date" to "2023-01-03",
+          "p_restriction_expiry_date" to "2029-01-03",
+          "p_authorized_staff_id" to 1234,
+          "p_entered_staff_id" to 1138583,
+          "p_comment_text" to "some comment",
+        )
+
+        prisonerEvent = awaitMessage()
+      }
+
+      @Test
+      fun `will map to PERSON_RESTRICTION-DELETED`() {
+        with(prisonerEvent.message) {
+          assertJsonPath("eventType", "PERSON_RESTRICTION-DELETED")
+          assertJsonPath("nomisEventType", "OFF_PERS_RESTRICTS-UPDATED")
+          assertDoesNotHaveJsonPath("comment")
+          assertJsonPath("contactPersonId", "${offenderContactPerson.contactId.value}")
+          assertJsonPath("personId", "${person.personId.value}")
+          assertJsonPath("effectiveDate", "2023-01-03")
+          assertJsonPath("expiryDate", "2029-01-03")
+          assertJsonPath("enteredById", "1138583")
+          assertJsonPath("offenderIdDisplay", offenderNo)
+          assertJsonPath("offenderPersonRestrictionId", "9999")
+          assertJsonPath("restrictionType", "RESTRICTED")
+        }
+      }
+
+      @Test
+      fun `will map meta data for the event`() {
+        assertThat(prisonerEvent.eventType).isEqualTo("PERSON_RESTRICTION-DELETED")
+        assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+      }
+    }
+
+    @Nested
+    @DisplayName("M1_RESULT -> EXTERNAL_MOVEMENT_RECORD-INSERTED")
+    inner class ExternalMovementInserted {
+      private lateinit var prisonerEvent: PrisonerEventMessage
+      private val offenderNo = "A1234AA"
+      private lateinit var booking: OffenderBooking
+      private lateinit var movement: OffenderExternalMovement
+
+      @BeforeEach
+      fun setUp() {
+        transaction {
+          this.addLogger(StdOutSqlLogger)
+          Offender.build {
+            offenderNo = this@ExternalMovementInserted.offenderNo
+          }.also {
+            booking = OffenderBooking.build(offender = it).also { booking ->
+              movement = OffenderExternalMovement.build(offenderBooking = booking, sequence = 11) {
+                direction = "IN"
+                type = "TAP"
+                date = LocalDate.parse("2024-08-23")
+                time = LocalDateTime.parse("2024-08-23T15:05:00")
+              }
+            }
+          }
+        }
+        simulateTrigger(
+          nomisEventType = "M1_RESULT",
+          "p_record_deleted" to "N",
+          "p_movement_seq" to 11,
+          "p_offender_book_id" to booking.id.value,
+        )
+
+        prisonerEvent = awaitMessage()
+      }
+
+      @Test
+      fun `will map to PEXTERNAL_MOVEMENT_RECORD-INSERTED`() {
+        with(prisonerEvent.message) {
+          assertJsonPath("eventType", "EXTERNAL_MOVEMENT_RECORD-INSERTED")
+          assertJsonPath("nomisEventType", "M1_RESULT")
+          assertJsonPath("movementDateTime", "2024-08-23T15:05:00")
+          assertJsonPath("movementType", "TAP")
+          assertJsonPath("offenderIdDisplay", offenderNo)
+          assertJsonPath("bookingId", "${booking.bookingId.value}")
+          assertJsonPath("movementSeq", "11")
+          assertJsonPath("directionCode", "IN")
+        }
+      }
+
+      @Test
+      fun `will map meta data for the event`() {
+        assertThat(prisonerEvent.eventType).isEqualTo("EXTERNAL_MOVEMENT_RECORD-INSERTED")
         assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
       }
     }
