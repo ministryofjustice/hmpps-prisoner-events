@@ -35,6 +35,7 @@ import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
+import uk.gov.justice.digital.hmpps.prisonerevents.builders.build
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Offender
@@ -280,61 +281,30 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     @DisplayName("OFF_PERS_RESTRICTS-UPDATED -> PERSON_RESTRICTION-UPSERTED")
     inner class PersonRestrictionUpserted {
       private lateinit var prisonerEvent: PrisonerEventMessage
-      private var bookingId = 0L
-      private var personId = 0L
       private val offenderNo = "A1234AA"
-      private var restrictionId = 0L
-      private var contactPersonId = 0L
+      private lateinit var person: Person
+      private lateinit var offenderContactPerson: OffenderContactPerson
+      private lateinit var restriction: OffenderContactRestriction
 
       @BeforeEach
       fun setUp() {
-        lateinit var booking: OffenderBooking
-        lateinit var person: Person
-        lateinit var offenderContactPerson: OffenderContactPerson
-        lateinit var restriction: OffenderContactRestriction
         transaction {
           this.addLogger(StdOutSqlLogger)
-
-          val offender = Offender.new {
-            this.offenderNo = this@PersonRestrictionUpserted.offenderNo
-            this.idSource = "source"
-            this.lastName = "SMITH"
-            this.sexCode = "M"
-            this.lastNameKey = "key"
+          person = Person.build {}
+          Offender.build {
+            offenderNo = this@PersonRestrictionUpserted.offenderNo
+          }.also {
+            OffenderBooking.build(offender = it).also {
+              offenderContactPerson = OffenderContactPerson.build(offenderBooking = it, person = person)
+            }
           }
-          booking = OffenderBooking.new {
-            this.offender = offender
-            this.rootOffender = offender
-            this.inOutStatus = "IN"
-            this.youthAdultCode = "A"
-            this.sequence = 1
-          }
-          person = Person.new {
-            this.firstName = "SARAH"
-            this.lastName = "JENKINS"
-          }
-          offenderContactPerson = OffenderContactPerson.new {
-            this.offenderBooking = booking
-            this.person = person
-            this.contactType = "S"
-            this.relationshipType = "BRO"
-          }
-          restriction = OffenderContactRestriction.new {
-            this.offenderContactPerson = offenderContactPerson
-            this.restrictionType = "BAN"
-            this.effectiveDate = LocalDate.parse("2022-08-15")
-          }
+          restriction = OffenderContactRestriction.build(offenderContactPerson = offenderContactPerson)
         }
-
-        bookingId = booking.bookingId.value
-        personId = person.personId.value
-        contactPersonId = offenderContactPerson.contactId.value
-        restrictionId = restriction.restrictionId.value
 
         simulateTrigger(
           nomisEventType = "OFF_PERS_RESTRICTS-UPDATED",
-          "p_offender_contact_person_id" to contactPersonId,
-          "p_offender_person_restrict_id" to restrictionId,
+          "p_offender_contact_person_id" to offenderContactPerson.contactId.value,
+          "p_offender_person_restrict_id" to restriction.restrictionId.value,
           "p_restriction_type" to "RESTRICTED",
           "p_restriction_effective_date" to "2023-01-03",
           "p_restriction_expiry_date" to "2029-01-03",
@@ -351,15 +321,15 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         with(prisonerEvent.message) {
           assertJsonPath("eventType", "PERSON_RESTRICTION-UPSERTED")
           assertDoesNotHaveJsonPath("comment")
-          assertJsonPath("contactPersonId", "$contactPersonId")
-          assertJsonPath("personId", "$personId")
+          assertJsonPath("contactPersonId", "${offenderContactPerson.contactId.value}")
+          assertJsonPath("personId", "${person.personId.value}")
           assertJsonPath("effectiveDate", "2023-01-03")
           assertJsonPath("expiryDate", "2029-01-03")
           assertJsonPath("enteredById", "1138583")
           assertJsonPath("eventType", "PERSON_RESTRICTION-UPSERTED")
           assertJsonPath("nomisEventType", "OFF_PERS_RESTRICTS-UPDATED")
           assertJsonPath("offenderIdDisplay", offenderNo)
-          assertJsonPath("offenderPersonRestrictionId", "$restrictionId")
+          assertJsonPath("offenderPersonRestrictionId", "${restriction.restrictionId.value}")
           assertJsonPath("restrictionType", "RESTRICTED")
         }
       }
