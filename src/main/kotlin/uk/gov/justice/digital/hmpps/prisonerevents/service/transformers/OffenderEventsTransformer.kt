@@ -1033,7 +1033,6 @@ class OffenderEventsTransformer {
     effectiveDate = localDateOf(xtag.content.p_ns_effective_date),
     expiryDate = localDateOf(xtag.content.p_ns_expiry_date),
     authorisedBy = xtag.content.p_authorized_staff,
-    comment = xtag.content.p_comment_text,
     auditModuleName = xtag.content.p_audit_module_name,
   )
 
