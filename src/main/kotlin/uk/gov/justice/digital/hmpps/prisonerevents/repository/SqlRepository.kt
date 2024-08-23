@@ -61,18 +61,6 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     )
   }
 
-  fun getNomsIdFromRestriction(offenderPersonRestrictId: Long): Collection<String> = jdbcTemplate.query(
-    """
-      SELECT OFFENDER_ID_DISPLAY
-      FROM OFFENDER_BOOKINGS
-        INNER JOIN OFFENDERS ON OFFENDER_BOOKINGS.OFFENDER_ID = OFFENDERS.OFFENDER_ID
-        JOIN OFFENDER_CONTACT_PERSONS ON OFFENDER_CONTACT_PERSONS.OFFENDER_BOOK_ID = OFFENDER_BOOKINGS.OFFENDER_BOOK_ID
-        JOIN OFFENDER_PERSON_RESTRICTS ON OFFENDER_PERSON_RESTRICTS.OFFENDER_CONTACT_PERSON_ID = OFFENDER_CONTACT_PERSONS.OFFENDER_CONTACT_PERSON_ID
-        WHERE OFFENDER_PERSON_RESTRICTS.OFFENDER_PERSON_RESTRICT_ID = :offenderPersonRestrictId
-    """.trimIndent(),
-    MapSqlParameterSource().addValue("offenderPersonRestrictId", offenderPersonRestrictId),
-  ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
-
   fun getCreatedByUserOffenderContact(offenderContactPersonId: Long): String? = jdbcTemplate.queryForObject(
     """
         SELECT CREATE_USER_ID

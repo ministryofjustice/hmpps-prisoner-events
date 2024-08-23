@@ -10,12 +10,10 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffende
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
-import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.ExposeRepository
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Movement
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import java.sql.Timestamp
-import java.time.LocalDate
 import java.time.LocalDateTime
 
 class XtagEventsServiceTest {
@@ -170,27 +168,6 @@ class XtagEventsServiceTest {
     )
 
     assertThat(offenderEvent?.bookingId).isEqualTo(1234L)
-  }
-
-  @Test
-  fun shouldDecoratePersonRistrictionUpdatedWithOffenderDisplayNo() {
-    whenever(repository.getNomsIdFromRestriction(1234L)).thenReturn(listOf("A2345GB"))
-
-    val offenderEvent = service.addAdditionalEventData(
-      PersonRestrictionOffenderEvent(
-        offenderPersonRestrictionId = 1234L,
-        eventType = "PERSON_RESTRICTION-UPSERTED",
-        eventDatetime = LocalDateTime.now(),
-        nomisEventType = "OFF_PERSON",
-        contactPersonId = 1L,
-        restrictionType = "TEST",
-        effectiveDate = LocalDate.now(),
-        expiryDate = null,
-        authorisedById = null,
-        enteredById = null,
-      ),
-    )
-    assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
   }
 
   @Test
