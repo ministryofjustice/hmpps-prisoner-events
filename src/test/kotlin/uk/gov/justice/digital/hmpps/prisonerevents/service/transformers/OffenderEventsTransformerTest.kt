@@ -22,6 +22,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffende
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
@@ -887,7 +888,7 @@ class OffenderEventsTransformerTest {
   @Test
   fun `booking number P1_RESULT mapped correctly`() {
     val now = LocalDateTime.now()
-    withCallTransformer<GenericOffenderEvent>(
+    withCallTransformer<OffenderBookingNumberChangeOrMergeEvent>(
       Xtag(
         eventType = "P1_RESULT",
         nomisTimestamp = now,
@@ -914,7 +915,7 @@ class OffenderEventsTransformerTest {
   @Test
   fun `booking number mapped correctly`() {
     val now = LocalDateTime.now()
-    withCallTransformer<GenericOffenderEvent>(
+    withCallTransformer<OffenderBookingNumberChangeOrMergeEvent>(
       Xtag(
         eventType = "BOOK_UPD_OASYS",
         nomisTimestamp = now,
@@ -922,7 +923,6 @@ class OffenderEventsTransformerTest {
           mapOf(
             "p_offender_book_id" to "434",
             "p_offender_id" to "987",
-            "p_new_prison_num" to "Y123CD",
             "p_old_prison_num" to "Y123AB",
           ),
         ),
@@ -931,7 +931,7 @@ class OffenderEventsTransformerTest {
       assertThat(eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
       assertThat(bookingId).isEqualTo(434L)
       assertThat(offenderId).isEqualTo(987)
-      assertThat(bookingNumber).isEqualTo("Y123CD")
+      assertThat(bookingNumber).isNull()
       assertThat(previousBookingNumber).isEqualTo("Y123AB")
       assertThat(offenderIdDisplay).isNull()
       assertThat(nomisEventType).isEqualTo("BOOK_UPD_OASYS")
