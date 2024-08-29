@@ -12,6 +12,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.ExposeRepository
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
+import java.time.LocalDateTime
 
 @Service
 class XtagEventsService(
@@ -90,6 +91,7 @@ class XtagEventsService(
         }
       }
     }
+    println("It is currently ${LocalDateTime.now()}")
     return oe
   }
 }
