@@ -2,14 +2,17 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service
 
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import uk.gov.justice.digital.hmpps.prisonerevents.model.BookingNumberChangedType
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.ExposeRepository
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
+import java.time.LocalDateTime
 
 @Service
 class XtagEventsService(
@@ -70,7 +73,25 @@ class XtagEventsService(
         oe as OffenderContactEvent
         oe.username = sqlRepository.getModifiedByUserOffenderContact(oe.contactId)
       }
+
+      "BOOKING_NUMBER-CHANGED" -> {
+        oe as OffenderBookingNumberChangeOrMergeEvent
+        if (oe.nomisEventType == "P1_RESULT") {
+          oe.type = BookingNumberChangedType.BOOK_NUMBER_CHANGE
+        } else {
+          // BOOK_UPD_OASYS is fired both for a merge and a booking number change
+          // so look for a very recent merge
+          exposeRepository.findRelatedMerge(oe.bookingId!!, oe.eventDatetime!!)?.also {
+            oe.type = BookingNumberChangedType.MERGE
+            oe.offenderIdDisplay = it.offenderNo2
+            oe.previousOffenderIdDisplay = it.offenderNo1
+          } ?: run {
+            oe.type = BookingNumberChangedType.BOOK_NUMBER_CHANGE_DUPLICATE
+          }
+        }
+      }
     }
+    println("It is currently ${LocalDateTime.now()}")
     return oe
   }
 }

@@ -636,12 +636,12 @@ class OffenderBookingNumberChangeOrMergeEvent(
   nomisEventType: String,
   eventDatetime: LocalDateTime,
   offenderIdDisplay: String? = null,
-  previousOffenderIdDisplay: String? = null,
+  var previousOffenderIdDisplay: String? = null,
   bookingId: Long,
   offenderId: Long?,
   val bookingNumber: String? = null,
-  val previousBookingNumber: String? = null,
-  val type: BookingNumberChangedType = BookingNumberChangedType.BOOK_NUMBER_CHANGE,
+  var previousBookingNumber: String? = null,
+  var type: BookingNumberChangedType = BookingNumberChangedType.BOOK_NUMBER_CHANGE,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
@@ -654,7 +654,7 @@ class OffenderBookingNumberChangeOrMergeEvent(
 enum class BookingNumberChangedType {
   MERGE,
   BOOK_NUMBER_CHANGE,
-  DUPLICATE,
+  BOOK_NUMBER_CHANGE_DUPLICATE,
 }
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

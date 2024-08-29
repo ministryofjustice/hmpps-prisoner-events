@@ -495,12 +495,13 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         }
 
         @Test
-        fun `will map to BOOKING_NUMBER-CHANGED`() {
+        fun `will map to BOOKING_NUMBER-CHANGED with type of BOOK_NUMBER_CHANGE`() {
           with(prisonerEvent.message) {
             assertJsonPath("eventType", "BOOKING_NUMBER-CHANGED")
             assertJsonPath("nomisEventType", "P1_RESULT")
             assertJsonPath("bookingId", "$bookingId")
             assertJsonPath("offenderId", "$offenderId")
+            assertJsonPath("type", "BOOK_NUMBER_CHANGE")
           }
         }
 
@@ -531,12 +532,13 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         }
 
         @Test
-        fun `will map to BOOKING_NUMBER-CHANGED`() {
+        fun `will map to BOOKING_NUMBER-CHANGED with type of BOOK_NUMBER_CHANGE_DUPLICATE`() {
           with(prisonerEvent.message) {
             assertJsonPath("eventType", "BOOKING_NUMBER-CHANGED")
             assertJsonPath("nomisEventType", "BOOK_UPD_OASYS")
             assertJsonPath("bookingId", "$bookingId")
             assertJsonPath("offenderId", "$offenderId")
+            assertJsonPath("type", "BOOK_NUMBER_CHANGE_DUPLICATE")
           }
         }
 
@@ -578,12 +580,64 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         }
 
         @Test
-        fun `will map to BOOKING_NUMBER-CHANGED`() {
+        fun `will map to BOOKING_NUMBER-CHANGED with type of MERGE`() {
           with(prisonerEvent.message) {
             assertJsonPath("eventType", "BOOKING_NUMBER-CHANGED")
             assertJsonPath("nomisEventType", "BOOK_UPD_OASYS")
             assertJsonPath("bookingId", "$bookingId")
             assertJsonPath("offenderId", "$offenderId")
+            assertJsonPath("type", "MERGE")
+            assertJsonPath("offenderIdDisplay", "A1234KT")
+            assertJsonPath("previousOffenderIdDisplay", "A4321TK")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
+      }
+
+      @Nested
+      @DisplayName("BOOK_UPD_OASYS -> BOOKING_NUMBER-CHANGED (book number change after previous merge)")
+      inner class BookUpdOasysBookNumberChangeAfterMerge {
+        private lateinit var prisonerEvent: PrisonerEventMessage
+        private val bookingId = 1234L
+        private val offenderId = 12345L
+
+        @BeforeEach
+        fun setUp() {
+          transaction {
+            MergeTransaction.build(
+              // with an old merge
+              requestDate = LocalDateTime.now().minusHours(2),
+              offenderId1 = 54321,
+              offenderNo1 = "A4321TK",
+              bookingId1 = 4321,
+              offenderId2 = offenderId,
+              bookingId2 = bookingId,
+              offenderNo2 = "A1234KT",
+            )
+          }
+          simulateTrigger(
+            nomisEventType = "BOOK_UPD_OASYS",
+            "p_old_prison_num" to "96971F",
+            "p_offender_id" to offenderId,
+            "p_offender_book_id" to bookingId,
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to BOOKING_NUMBER-CHANGED with type of BOOK_NUMBER_CHANGE_DUPLICATE`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "BOOKING_NUMBER-CHANGED")
+            assertJsonPath("nomisEventType", "BOOK_UPD_OASYS")
+            assertJsonPath("bookingId", "$bookingId")
+            assertJsonPath("offenderId", "$offenderId")
+            assertJsonPath("type", "BOOK_NUMBER_CHANGE_DUPLICATE")
           }
         }
 
