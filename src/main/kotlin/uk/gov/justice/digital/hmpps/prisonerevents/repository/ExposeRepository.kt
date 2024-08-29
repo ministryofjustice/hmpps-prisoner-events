@@ -25,7 +25,7 @@ class ExposeRepository {
 
   fun findRelatedMerge(bookingId: Long, eventDatetime: LocalDateTime): MergeTransaction? =
     MergeTransaction.find {
-      (MergeTransactions.bookingId2 eq bookingId) and (MergeTransactions.requestDate greater eventDatetime.minusHours(1))
+      (MergeTransactions.bookingId2 eq bookingId) and (MergeTransactions.requestDate greater eventDatetime.minusHours(2))
     }
       .orderBy(MergeTransactions.createDatetime to SortOrder.DESC)
       .firstOrNull()
