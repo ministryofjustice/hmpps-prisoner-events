@@ -78,12 +78,12 @@ class XtagEventsService(
         if (oe.nomisEventType == "P1_RESULT") {
           oe.type = BookingNumberChangedType.BOOK_NUMBER_CHANGE
         } else {
-          // BOOK_UPD_OASYS is for both for a merge and a booking number change
+          // BOOK_UPD_OASYS is fired both for a merge and a booking number change
+          // so look for a very recent merge
           exposeRepository.findRelatedMerge(oe.bookingId!!, oe.eventDatetime!!)?.also {
             oe.type = BookingNumberChangedType.MERGE
             oe.offenderIdDisplay = it.offenderNo2
             oe.previousOffenderIdDisplay = it.offenderNo1
-            oe.type = BookingNumberChangedType.MERGE
           } ?: run {
             oe.type = BookingNumberChangedType.BOOK_NUMBER_CHANGE_DUPLICATE
           }
