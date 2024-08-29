@@ -38,6 +38,8 @@ import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
 import uk.gov.justice.digital.hmpps.prisonerevents.builders.build
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.MergeTransaction
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.MergeTransactions
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Offender
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderBooking
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderBookings
@@ -459,6 +461,137 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       fun `will map meta data for the event`() {
         assertThat(prisonerEvent.eventType).isEqualTo("EXTERNAL_MOVEMENT_RECORD-INSERTED")
         assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+      }
+    }
+
+    @Nested
+    @DisplayName("BOOKING_NUMBER-CHANGED")
+    inner class BookingNumberChanged {
+      @BeforeEach
+      fun setUp() {
+        transaction {
+          MergeTransactions.deleteAll()
+        }
+      }
+
+      @Nested
+      @DisplayName("P1_RESULT -> BOOKING_NUMBER-CHANGED")
+      inner class P1ResultBookingNumberChanged {
+        private lateinit var prisonerEvent: PrisonerEventMessage
+        private val bookingId = 1234
+        private val offenderId = 12345
+
+        @BeforeEach
+        fun setUp() {
+          simulateTrigger(
+            nomisEventType = "P1_RESULT",
+            "p_old_prison_num" to "96971F",
+            "p_new_prison_num" to "63102D",
+            "p_offender_id" to offenderId,
+            "p_offender_book_id" to bookingId,
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to BOOKING_NUMBER-CHANGED`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "BOOKING_NUMBER-CHANGED")
+            assertJsonPath("nomisEventType", "P1_RESULT")
+            assertJsonPath("bookingId", "$bookingId")
+            assertJsonPath("offenderId", "$offenderId")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
+      }
+
+      @Nested
+      @DisplayName("BOOK_UPD_OASYS -> BOOKING_NUMBER-CHANGED (book number change)")
+      inner class BookUpdOasysBookingNumberChanged {
+        private lateinit var prisonerEvent: PrisonerEventMessage
+        private val bookingId = 1234
+        private val offenderId = 12345
+
+        @BeforeEach
+        fun setUp() {
+          simulateTrigger(
+            nomisEventType = "BOOK_UPD_OASYS",
+            "p_old_prison_num" to "96971F",
+            "p_offender_id" to offenderId,
+            "p_offender_book_id" to bookingId,
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to BOOKING_NUMBER-CHANGED`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "BOOKING_NUMBER-CHANGED")
+            assertJsonPath("nomisEventType", "BOOK_UPD_OASYS")
+            assertJsonPath("bookingId", "$bookingId")
+            assertJsonPath("offenderId", "$offenderId")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
+      }
+
+      @Nested
+      @DisplayName("BOOK_UPD_OASYS -> BOOKING_NUMBER-CHANGED (merge)")
+      inner class BookUpdOasysMerge {
+        private lateinit var prisonerEvent: PrisonerEventMessage
+        private val bookingId = 1234L
+        private val offenderId = 12345L
+
+        @BeforeEach
+        fun setUp() {
+          transaction {
+            MergeTransaction.build(
+              requestDate = LocalDateTime.now(),
+              offenderId1 = 54321,
+              offenderNo1 = "A4321TK",
+              bookingId1 = 4321,
+              offenderId2 = offenderId,
+              bookingId2 = bookingId,
+              offenderNo2 = "A1234KT",
+            )
+          }
+          simulateTrigger(
+            nomisEventType = "BOOK_UPD_OASYS",
+            "p_old_prison_num" to "96971F",
+            "p_offender_id" to offenderId,
+            "p_offender_book_id" to bookingId,
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to BOOKING_NUMBER-CHANGED`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "BOOKING_NUMBER-CHANGED")
+            assertJsonPath("nomisEventType", "BOOK_UPD_OASYS")
+            assertJsonPath("bookingId", "$bookingId")
+            assertJsonPath("offenderId", "$offenderId")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
       }
     }
   }
