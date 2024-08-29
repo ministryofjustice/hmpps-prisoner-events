@@ -1,8 +1,11 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.repository
 
 import org.jetbrains.exposed.sql.JoinType
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class ExposeRepository {
@@ -19,4 +22,11 @@ class ExposeRepository {
       .where(OffenderContactPersons.id eq contactId)
       .singleOrNull()
       ?.get(Offenders.offenderNo)
+
+  fun findRelatedMerge(bookingId: Long, eventDatetime: LocalDateTime): MergeTransaction? =
+    MergeTransaction.find {
+      (MergeTransactions.bookingId2 eq bookingId) and (MergeTransactions.requestDate greater eventDatetime.minusHours(1))
+    }
+      .orderBy(MergeTransactions.createDatetime to SortOrder.DESC)
+      .firstOrNull()
 }
