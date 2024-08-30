@@ -65,7 +65,7 @@ class OffenderEventsTransformer {
     val localTime = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, bst))
 
     if (localTimeTest != localTime) {
-      log.error("Localtime using new calculation is $localTimeTest compared to old method that is $localTime")
+      log.error("Localtime ($seconds) using new calculation is $localTimeTest compared to old method that is $localTime")
     }
     return offenderEventOf(
       Xtag(
