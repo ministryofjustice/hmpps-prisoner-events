@@ -560,7 +560,8 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         fun setUp() {
           transaction {
             MergeTransaction.build(
-              requestDate = LocalDateTime.now(),
+              requestDate = LocalDateTime.now().minusMinutes(11),
+              modifyDatetime = LocalDateTime.now().minusMinutes(9),
               offenderId1 = 54321,
               offenderNo1 = "A4321TK",
               bookingId1 = 4321,
@@ -611,7 +612,8 @@ class OracleToTopicIntTest : IntegrationTestBase() {
           transaction {
             MergeTransaction.build(
               // with an old merge
-              requestDate = LocalDateTime.now().minusHours(2),
+              requestDate = LocalDateTime.now().minusMinutes(12),
+              modifyDatetime = LocalDateTime.now().minusMinutes(11),
               offenderId1 = 54321,
               offenderNo1 = "A4321TK",
               bookingId1 = 4321,

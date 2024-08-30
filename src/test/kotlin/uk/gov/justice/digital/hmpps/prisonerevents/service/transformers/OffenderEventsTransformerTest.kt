@@ -52,7 +52,7 @@ import java.time.LocalTime
 import java.util.UUID
 
 class OffenderEventsTransformerTest {
-  private val offenderEventsTransformer = OffenderEventsTransformer()
+  private val offenderEventsTransformer = OffenderEventsTransformer(aqHasDaylightSavings = false)
   private val fixedEventTime = LocalDateTime.now()
 
   @Suppress("UNCHECKED_CAST")
