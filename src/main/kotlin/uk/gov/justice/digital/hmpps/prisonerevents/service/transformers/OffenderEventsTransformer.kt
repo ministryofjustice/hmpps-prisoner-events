@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEven
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.Xtag
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.XtagContent
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -60,10 +61,16 @@ class OffenderEventsTransformer {
 
     val seconds = xtagEvent.jmsTimestamp / 1000
     val nanos = (xtagEvent.jmsTimestamp % 1000 * 1000000).toInt()
+    val localTimeTest = Instant.ofEpochSecond(seconds, nanos.toLong()).atZone(ZoneId.of("Europe/London")).toLocalDateTime()
+    val localTime = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, bst))
+
+    if (localTimeTest != localTime) {
+      log.error("Localtime using new calculation is $localTimeTest compared to old method that is $localTime")
+    }
     return offenderEventOf(
       Xtag(
         eventType = xtagEvent.jmsType,
-        nomisTimestamp = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, bst)),
+        nomisTimestamp = localTime,
         content = XtagContent(map),
       ),
     )
