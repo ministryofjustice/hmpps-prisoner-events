@@ -37,7 +37,7 @@ class XtagEventsListenerTest {
   @BeforeEach
   fun setup() {
     service = XtagEventsListener(
-      OffenderEventsTransformer(),
+      OffenderEventsTransformer(aqHasDaylightSavings = false),
       xtagEventsService,
       eventsEmitter,
     )

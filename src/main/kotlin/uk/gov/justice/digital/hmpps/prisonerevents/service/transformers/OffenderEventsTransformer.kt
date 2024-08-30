@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service.transformers
 
 import oracle.jakarta.jms.AQjmsMapMessage
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
@@ -51,7 +52,9 @@ import java.time.format.DateTimeParseException
 private const val EMPTY_AUDIT_MODULE = "UNKNOWN"
 
 @Component
-class OffenderEventsTransformer {
+class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aqHasDaylightSavings: Boolean) {
+  // it is assumed NOMIS is stuck at GMT+1 timezone with no daylight saving adjustments for AQ JMS time
+  // when true this switches to using system timezone instead - needed for tests when running Oracle in Docker
 
   fun offenderEventOf(xtagEvent: AQjmsMapMessage): OffenderEvent? {
     val map = mutableMapOf<String, String>()
@@ -61,16 +64,24 @@ class OffenderEventsTransformer {
 
     val seconds = xtagEvent.jmsTimestamp / 1000
     val nanos = (xtagEvent.jmsTimestamp % 1000 * 1000000).toInt()
+    val localTimeSystem = Instant.ofEpochSecond(seconds, nanos.toLong()).atZone(ZoneId.systemDefault()).toLocalDateTime()
     val localTimeTest = Instant.ofEpochSecond(seconds, nanos.toLong()).atZone(ZoneId.of("Europe/London")).toLocalDateTime()
-    val localTime = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, bst))
+    val localTimeWithNoDaylightSaving = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, bst))
 
-    if (localTimeTest != localTime) {
-      log.error("Localtime ($seconds) using new calculation is $localTimeTest compared to old method that is $localTime")
+    log.debug(
+      "System calculated time is {}; London calculated is {}; GMT+1 calculated is {}",
+      localTimeSystem,
+      localTimeTest,
+      localTimeWithNoDaylightSaving,
+    )
+
+    if (localTimeTest != localTimeWithNoDaylightSaving) {
+      log.error("Localtime ($seconds) using new calculation is $localTimeTest compared to old method that is $localTimeWithNoDaylightSaving")
     }
     return offenderEventOf(
       Xtag(
         eventType = xtagEvent.jmsType,
-        nomisTimestamp = localTime,
+        nomisTimestamp = if (aqHasDaylightSavings) localTimeSystem else localTimeWithNoDaylightSaving,
         content = XtagContent(map),
       ),
     )

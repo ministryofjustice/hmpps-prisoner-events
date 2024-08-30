@@ -99,3 +99,5 @@ hmpps.sqs:
     prisoneventtopic:
       asyncClient: true
       propagateTracing: true
+
+aq.timezone.daylightsavings: false
