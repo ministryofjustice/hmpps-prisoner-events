@@ -29,4 +29,6 @@ class ExposeRepository {
     }
       .orderBy(MergeTransactions.createDatetime to SortOrder.DESC)
       .firstOrNull()
+
+  fun getOffenderById(offenderId: Long): Offender? = Offender.findById(offenderId)
 }

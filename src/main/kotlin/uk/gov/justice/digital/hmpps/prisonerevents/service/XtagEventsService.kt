@@ -81,9 +81,12 @@ class XtagEventsService(
           // BOOK_UPD_OASYS is fired both for a merge and a booking number change
           // so look for a very recent merge
           exposeRepository.findRelatedMerge(oe.bookingId!!, oe.eventDatetime!!)?.also {
+            val retainedOffender = exposeRepository.getOffenderById(it.offenderId2!!) ?: throw IllegalStateException("No OFFENDERS record found for ${it.offenderId2}")
+            val retainedOffenderNo = retainedOffender.offenderNo
+            val removedOffenderNo = if (retainedOffender.offenderNo == it.offenderNo2) it.offenderNo1 else it.offenderNo2
             oe.type = BookingNumberChangedType.MERGE
-            oe.offenderIdDisplay = it.offenderNo2
-            oe.previousOffenderIdDisplay = it.offenderNo1
+            oe.offenderIdDisplay = retainedOffenderNo
+            oe.previousOffenderIdDisplay = removedOffenderNo
           } ?: run {
             oe.type = BookingNumberChangedType.BOOK_NUMBER_CHANGE_DUPLICATE
           }

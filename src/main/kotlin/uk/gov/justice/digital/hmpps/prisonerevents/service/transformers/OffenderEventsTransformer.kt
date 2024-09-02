@@ -68,14 +68,8 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     val localTimeTest = Instant.ofEpochSecond(seconds, nanos.toLong()).atZone(ZoneId.of("Europe/London")).toLocalDateTime()
     val localTimeWithNoDaylightSaving = xtagFudgedTimestampOf(LocalDateTime.ofEpochSecond(seconds, nanos, bst))
 
-    log.debug(
-      "System calculated time is {}; London calculated is {}; GMT+1 calculated is {}",
-      localTimeSystem,
-      localTimeTest,
-      localTimeWithNoDaylightSaving,
-    )
-
     if (localTimeTest != localTimeWithNoDaylightSaving) {
+      // check if this logging after October 28th 2024 - if it isn't we can replace the xtagFudgedTimestampOf with localTimeTest
       log.error("Localtime ($seconds) using new calculation is $localTimeTest compared to old method that is $localTimeWithNoDaylightSaving")
     }
     return offenderEventOf(

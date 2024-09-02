@@ -27,6 +27,8 @@ Also for now testContainers is not working under Colima until a better 'already 
 ### TLDR; Quick setup without test containers 
 
 Given testContainer startup under colima is very slow you can just set the DOCKER_HOST to colima just for starting the required containers
+
+Hint: If colima does not start, try shutdown Docker Desktop and trying again (Docker Desktop can be started after colima if required)
 ```
 brew install colima
 colima start --arch x86_64 --memory 4 --network-address

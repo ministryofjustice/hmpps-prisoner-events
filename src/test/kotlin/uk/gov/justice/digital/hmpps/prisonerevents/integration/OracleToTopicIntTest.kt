@@ -471,6 +471,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       fun setUp() {
         transaction {
           MergeTransactions.deleteAll()
+          Offenders.deleteAll()
         }
       }
 
@@ -550,15 +551,18 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       }
 
       @Nested
-      @DisplayName("BOOK_UPD_OASYS -> BOOKING_NUMBER-CHANGED (merge)")
-      inner class BookUpdOasysMerge {
+      @DisplayName("BOOK_UPD_OASYS -> BOOKING_NUMBER-CHANGED (merge) - OFFENDER_ID_DISPLAY_2 retained")
+      inner class BookUpdOasysMergeOffender2Retained {
         private lateinit var prisonerEvent: PrisonerEventMessage
         private val bookingId = 1234L
-        private val offenderId = 12345L
+        private var offenderId = 0L
 
         @BeforeEach
         fun setUp() {
           transaction {
+            val offender = Offender.build(offenderNo = "A1234KT") {}
+            commit()
+            offenderId = offender.offenderId.value
             MergeTransaction.build(
               requestDate = LocalDateTime.now().minusMinutes(11),
               modifyDatetime = LocalDateTime.now().minusMinutes(9),
@@ -590,6 +594,60 @@ class OracleToTopicIntTest : IntegrationTestBase() {
             assertJsonPath("type", "MERGE")
             assertJsonPath("offenderIdDisplay", "A1234KT")
             assertJsonPath("previousOffenderIdDisplay", "A4321TK")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
+      }
+
+      @Nested
+      @DisplayName("BOOK_UPD_OASYS -> BOOKING_NUMBER-CHANGED (merge) - OFFENDER_ID_DISPLAY_1 retained")
+      inner class BookUpdOasysMergeOffender1Retained {
+        private lateinit var prisonerEvent: PrisonerEventMessage
+        private val bookingId = 1234L
+        private var offenderId = 0L
+
+        @BeforeEach
+        fun setUp() {
+          transaction {
+            val offender = Offender.build(offenderNo = "A4321TK") {}
+            commit()
+            offenderId = offender.offenderId.value
+            MergeTransaction.build(
+              requestDate = LocalDateTime.now().minusMinutes(11),
+              modifyDatetime = LocalDateTime.now().minusMinutes(9),
+              offenderId1 = 54321,
+              offenderNo1 = "A4321TK",
+              bookingId1 = 4321,
+              offenderId2 = offenderId,
+              bookingId2 = bookingId,
+              offenderNo2 = "A1234KT",
+            )
+          }
+          simulateTrigger(
+            nomisEventType = "BOOK_UPD_OASYS",
+            "p_old_prison_num" to "96971F",
+            "p_offender_id" to offenderId,
+            "p_offender_book_id" to bookingId,
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to BOOKING_NUMBER-CHANGED with type of MERGE`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "BOOKING_NUMBER-CHANGED")
+            assertJsonPath("nomisEventType", "BOOK_UPD_OASYS")
+            assertJsonPath("bookingId", "$bookingId")
+            assertJsonPath("offenderId", "$offenderId")
+            assertJsonPath("type", "MERGE")
+            assertJsonPath("offenderIdDisplay", "A4321TK")
+            assertJsonPath("previousOffenderIdDisplay", "A1234KT")
           }
         }
 
