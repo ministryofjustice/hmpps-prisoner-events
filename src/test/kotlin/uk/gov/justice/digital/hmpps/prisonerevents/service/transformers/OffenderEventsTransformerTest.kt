@@ -645,13 +645,24 @@ class OffenderEventsTransformerTest {
       Xtag(
         eventType = "OFF_PROFILE_DETS-CHANGED",
         nomisTimestamp = fixedEventTime,
-        content = XtagContent(mapOf("p_offender_id_display" to "A123BC", "p_offender_book_id" to "12345")),
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_offender_book_id" to "12345",
+            "p_profile_code" to "MOS",
+            "p_profile_seq" to "1",
+            "p_profile_type" to "RELF",
+            "p_caseload_type" to "INST",
+            "p_list_seq" to "16",
+          ),
+        ),
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_PHYSICAL_DETAILS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(profileType).isEqualTo("RELF")
     }
   }
 

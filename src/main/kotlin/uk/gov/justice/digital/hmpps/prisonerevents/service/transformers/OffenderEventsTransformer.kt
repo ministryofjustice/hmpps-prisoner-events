@@ -974,6 +974,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
+    profileType = xtag.content.p_profile_type,
   )
 
   private fun iepUpdatedEventOf(xtag: Xtag) = GenericOffenderEvent(
