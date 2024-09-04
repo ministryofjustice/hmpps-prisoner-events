@@ -731,6 +731,9 @@ class GenericOffenderEvent(
 
   // sentence and key date adjustments
   val adjustmentId: Long? = null,
+
+  // offender profile details
+  val profileType: String? = null,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
