@@ -4,10 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.convertValue
 import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
+import org.springframework.retry.policy.NeverRetryPolicy
 import org.springframework.stereotype.Service
-import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
-import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
 import software.amazon.awssdk.services.sns.model.ValidationException
 import uk.gov.justice.digital.hmpps.prisonerevents.config.trackEvent
@@ -15,7 +14,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
-import uk.gov.justice.hmpps.sqs.HmppsTopic
+import uk.gov.justice.hmpps.sqs.publish
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Optional
@@ -28,21 +27,18 @@ class PrisonEventsEmitter(
   private val objectMapper: ObjectMapper,
   private val telemetryClient: TelemetryClient,
 ) {
-  private val prisonEventTopic: HmppsTopic? by lazy {
-    hmppsQueueService.findByTopicId("prisoneventtopic")
+  private val prisonEventTopic by lazy {
+    hmppsQueueService.findByTopicId("prisoneventtopic")!!
   }
-  private val prisonEventTopicSnsClient: SnsAsyncClient by lazy { prisonEventTopic!!.snsClient }
-  private val topicArn: String by lazy { prisonEventTopic!!.arn }
 
   fun sendEvent(payload: OffenderEvent) {
     val publishResult: PublishResponse = try {
-      prisonEventTopicSnsClient.publish(
-        PublishRequest.builder()
-          .topicArn(topicArn)
-          .message(objectMapper.writeValueAsString(payload))
-          .messageAttributes(metaData(payload))
-          .build(),
-      ).get()
+      prisonEventTopic.publish(
+        eventType = payload.eventType!!,
+        event = objectMapper.writeValueAsString(payload),
+        attributes = metaData(payload),
+        retryPolicy = NeverRetryPolicy(),
+      )
     } catch (e: ExecutionException) {
       if (e.cause is ValidationException) {
         log.error("Invalid payload $payload or other parameter", e.cause)
