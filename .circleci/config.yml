@@ -1,13 +1,10 @@
 version: 2.1
-
 orbs:
   hmpps: ministryofjustice/hmpps@10
-
 parameters:
   alerts-slack-channel:
     type: string
     default: syscon-alerts-security
-
 jobs:
   validate:
     docker:
@@ -20,12 +17,10 @@ jobs:
       - image: gvenzl/oracle-xe:18-slim
         environment:
           - ORACLE_PASSWORD=test
-
     environment:
       _JAVA_OPTIONS: -Xmx256m -XX:ParallelGCThreads=2 -XX:ConcGCThreads=2 -Djava.util.concurrent.ForkJoinPool.common.parallelism=2 -Dorg.gradle.daemon=false -Dkotlin.compiler.execution.strategy=in-process -Dorg.gradle.workers.max=1
     working_directory: ~/app
     resource_class: large
-
     steps:
       - checkout
       - restore_cache:
@@ -58,7 +53,6 @@ jobs:
           path: build/test-results
       - store_artifacts:
           path: build/reports/tests
-
 workflows:
   version: 2
   build-test-and-deploy:
@@ -123,45 +117,3 @@ workflows:
             - hmpps-prisoner-events-prod
           requires:
             - request-prod-approval
-
-  security:
-    triggers:
-      - schedule:
-          cron: "11 7 * * 1-5"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - hmpps/gradle_owasp_dependency_check:
-          cache_key: "v2_0"
-          jdk_tag: "21.0"
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - hmpps-common-vars
-      - hmpps/trivy_latest_scan:
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - hmpps-common-vars
-# Disable as failing, raised in #veracode. Need way to exclude previous failures
-#      - hmpps/veracode_pipeline_scan:
-#          jdk_tag: "21.0"
-#          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-#          context:
-#            - veracode-credentials
-#            - hmpps-common-vars
-  security-weekly:
-    triggers:
-      - schedule:
-          cron: "0 5 * * 1"
-          filters:
-            branches:
-              only:
-                - main
-    jobs:
-      - hmpps/veracode_policy_scan:
-          jdk_tag: "21.0"
-          slack_channel: << pipeline.parameters.alerts-slack-channel >>
-          context:
-            - veracode-credentials
-            - hmpps-common-vars
