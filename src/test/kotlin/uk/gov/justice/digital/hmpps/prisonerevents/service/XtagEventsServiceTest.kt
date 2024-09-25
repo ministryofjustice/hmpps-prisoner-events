@@ -34,6 +34,11 @@ class XtagEventsServiceTest {
   }
 
   @Test
+  fun `should add offender ID display to OFFENDER_ADDRESS-DELETED event`() {
+    assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId("OFFENDER_ADDRESS-DELETED")
+  }
+
+  @Test
   fun shouldDecorateWithExternalMovementData() {
     whenever(repository.getMovement(1L, 2)).thenReturn(
       listOf(
