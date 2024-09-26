@@ -35,7 +35,13 @@ class XtagEventsServiceTest {
 
   @Test
   fun `should add offender ID display to OFFENDER_ADDRESS-DELETED event`() {
-    assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId("OFFENDER_ADDRESS-DELETED")
+    whenever(repository.getNomsIdFromOffender(1L)).thenReturn(listOf("A2345GB"))
+
+    val offenderEvent = service.addAdditionalEventData(
+      GenericOffenderEvent(ownerClass = "OFF", ownerId = 1L, eventType = "OFFENDER_ADDRESS-DELETED"),
+    )
+
+    assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
   }
 
   @Test
