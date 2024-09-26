@@ -21,8 +21,11 @@ class XtagEventsService(
   @Transactional
   fun addAdditionalEventData(oe: OffenderEvent?): OffenderEvent? {
     when (oe?.eventType) {
-      "OFFENDER_DETAILS-CHANGED", "OFFENDER_ALIAS-CHANGED", "OFFENDER-UPDATED", "OFFENDER_ADDRESS-DELETED" ->
+      "OFFENDER_DETAILS-CHANGED", "OFFENDER_ALIAS-CHANGED", "OFFENDER-UPDATED" ->
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.offenderId!!).firstOrNull()
+
+      "OFFENDER_ADDRESS-DELETED" ->
+        oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender((oe as GenericOffenderEvent).ownerId!!).firstOrNull()
 
       "BED_ASSIGNMENT_HISTORY-INSERTED", "OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION",
       "CONFIRMED_RELEASE_DATE-CHANGED", "SENTENCE_DATES-CHANGED",
