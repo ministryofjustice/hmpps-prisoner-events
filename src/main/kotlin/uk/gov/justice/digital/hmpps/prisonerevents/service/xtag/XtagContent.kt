@@ -69,6 +69,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_alert_type by m
   val p_movement_type by m
   val p_identifier_type by m
+  val p_identifier_no by m
   val p_bed_assign_seq by m
   val p_living_unit_id by m
   val p_record_deleted by m

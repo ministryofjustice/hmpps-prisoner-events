@@ -651,6 +651,23 @@ class OffenderBookingNumberChangeOrMergeEvent(
   offenderId = offenderId,
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CaseIdentifierEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String? = null,
+  val auditModuleName: String? = null,
+  val caseId: Long,
+  val identifierType: String,
+  val identifierNo: String,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+)
+
 enum class BookingNumberChangedType {
   MERGE,
   BOOK_NUMBER_CHANGE,

@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPInterviewOffenderEv
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPPlanOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CaseIdentifierEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
@@ -244,6 +245,10 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "OFF_SENT_TERM-UPDATED", "OFF_SENT_TERM-INSERTED", "OFF_SENT_TERM-DELETED" -> offenderSentenceTermEventOf(xtag)
 
         "IWP_DOCUMENTS-INSERTED", "IWP_DOCUMENTS-UPDATED", "IWP_DOCUMENTS-DELETED" -> iwpDocumentEventOf(xtag)
+
+        "OFFENDER_CASE_IDENTIFIERS-UPDATED", "OFFENDER_CASE_IDENTIFIERS-INSERTED", "OFFENDER_CASE_IDENTIFIERS-DELETED" -> caseIdentifierEventOf(
+          xtag,
+        )
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1146,6 +1151,17 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
     caseId = xtag.content.p_case_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun caseIdentifierEventOf(xtag: Xtag) = CaseIdentifierEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    identifierType = xtag.content.p_identifier_type!!,
+    identifierNo = xtag.content.p_identifier_no!!,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    caseId = xtag.content.p_case_id!!.toLong(),
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
   )

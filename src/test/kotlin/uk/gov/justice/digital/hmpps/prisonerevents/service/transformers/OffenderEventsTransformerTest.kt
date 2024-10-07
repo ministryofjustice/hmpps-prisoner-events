@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPInterviewOffenderEv
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPPlanOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CaseIdentifierEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
@@ -3625,6 +3626,50 @@ class OffenderEventsTransformerTest {
       assertThat(auditModuleName).isEqualTo("OIDVIRES")
       assertThat(bookingId).isEqualTo(1215922)
       assertThat(offenderIdDisplay).isEqualTo("G4560UH")
+    }
+  }
+
+  @Test
+  fun `case identifier update event mapped correctly`() {
+    caseIdentifierEventMappedCorrectly("OFFENDER_CASE_IDENTIFIERS-UPDATED")
+  }
+
+  @Test
+  fun `case identifier insert event mapped correctly`() {
+    caseIdentifierEventMappedCorrectly("OFFENDER_CASE_IDENTIFIERS-INSERTED")
+  }
+
+  @Test
+  fun `case identifier deleted event mapped correctly`() {
+    caseIdentifierEventMappedCorrectly("OFFENDER_CASE_IDENTIFIERS-DELETED")
+  }
+
+  private fun caseIdentifierEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<CaseIdentifierEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_identifier_no" to "GF123",
+            "p_case_id" to "23456",
+            "p_identifier_type" to "CASE/INFO#",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(identifierNo).isEqualTo("GF123")
+      assertThat(identifierType).isEqualTo("CASE/INFO#")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(caseId).isEqualTo(23456)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
