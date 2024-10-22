@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.7"
   kotlin("plugin.spring") version "2.0.20"
 }
 
@@ -11,22 +11,22 @@ dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.0.7")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:6.1.13")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:4.4.4")
+  implementation("org.springframework:spring-jms:6.1.14")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.0.1")
 
   implementation("org.flywaydb:flyway-database-oracle")
   implementation("org.hibernate.orm:hibernate-community-dialects")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
-  implementation("com.zaxxer:HikariCP:5.1.0")
+  runtimeOnly("com.zaxxer:HikariCP")
   implementation("com.oracle.database.jdbc:ojdbc11:23.5.0.24.07")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.3.1.0")
 
   implementation("org.apache.commons:commons-lang3:3.17.0")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.6.0")
-  implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.54.0")
-  implementation("org.jetbrains.exposed:exposed-java-time:0.54.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.9.0")
+  implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.55.0")
+  implementation("org.jetbrains.exposed:exposed-java-time:0.55.0")
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.7")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
@@ -36,10 +36,10 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.22") {
     exclude(group = "io.swagger.core.v3")
   }
-  testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.23")
+  testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.25")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.20.1")
-  testImplementation("org.testcontainers:oracle-xe:1.20.1")
+  testImplementation("org.testcontainers:localstack:1.20.2")
+  testImplementation("org.testcontainers:oracle-xe:1.20.2")
 }
 
 kotlin {
