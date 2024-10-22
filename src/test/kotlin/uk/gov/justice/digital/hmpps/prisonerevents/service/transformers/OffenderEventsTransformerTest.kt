@@ -777,6 +777,7 @@ class OffenderEventsTransformerTest {
             "p_authorized_staff_id" to "12345",
             "p_comment_text" to "comment",
             "p_entered_staff_id" to "23456",
+            "p_audit_module_name" to "OIUOVRES",
           ),
         ),
       ),
@@ -791,6 +792,7 @@ class OffenderEventsTransformerTest {
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
       assertThat(authorisedById).isEqualTo(12345L)
       assertThat(enteredById).isEqualTo(23456L)
+      assertThat(auditModuleName).isEqualTo("OIUOVRES")
     }
   }
 

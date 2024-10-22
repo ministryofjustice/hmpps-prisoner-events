@@ -302,6 +302,7 @@ class PersonRestrictionOffenderEvent(
   val expiryDate: LocalDate?,
   val authorisedById: Long?,
   val enteredById: Long?,
+  val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
