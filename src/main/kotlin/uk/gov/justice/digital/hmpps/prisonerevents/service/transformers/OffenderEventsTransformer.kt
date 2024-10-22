@@ -87,7 +87,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
       log.warn("Bad xtag: {}", xtag)
       return null
     }
-    log.debug("Processing {}...", xtag)
+    log.info("Processing {}...", xtag)
     return try {
       when (xtag.eventType) {
         "P8_RESULT" -> riskScoreEventOf(xtag)
