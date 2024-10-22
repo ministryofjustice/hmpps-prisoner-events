@@ -322,6 +322,7 @@ class VisitorRestrictionOffenderEvent(
   val expiryDate: LocalDate?,
   val visitorRestrictionId: Long?,
   val enteredById: Long?,
+  val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
