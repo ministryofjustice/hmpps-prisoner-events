@@ -19,7 +19,7 @@ dependencies {
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
-  implementation("com.zaxxer:HikariCP:6.0.0")
+  runtimeOnly("com.zaxxer:HikariCP")
   implementation("com.oracle.database.jdbc:ojdbc11:23.5.0.24.07")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.3.1.0")
 
