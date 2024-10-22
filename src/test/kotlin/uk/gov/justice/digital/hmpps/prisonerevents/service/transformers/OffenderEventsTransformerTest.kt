@@ -812,6 +812,7 @@ class OffenderEventsTransformerTest {
             "p_comment_txt" to "comment",
             "p_visitor_restriction_id" to "123456",
             "p_entered_staff_id" to "23456",
+            "p_audit_module_name" to "OMUVREST",
           ),
         ),
       ),
@@ -825,6 +826,7 @@ class OffenderEventsTransformerTest {
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
       assertThat(visitorRestrictionId).isEqualTo(123456)
       assertThat(enteredById).isEqualTo(23456)
+      assertThat(auditModuleName).isEqualTo("OMUVREST")
     }
   }
 
