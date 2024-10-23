@@ -670,6 +670,19 @@ class CaseIdentifierEvent(
   nomisEventType = nomisEventType,
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class PersonEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val auditModuleName: String,
+  val personId: Long,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
 enum class BookingNumberChangedType {
   MERGE,
   BOOK_NUMBER_CHANGE,
@@ -696,8 +709,6 @@ class GenericOffenderEvent(
   val recordDeleted: Boolean? = null,
   val rootOffenderId: Long? = null,
   val aliasOffenderId: Long? = null,
-  val bookingNumber: String? = null,
-  val previousBookingNumber: String? = null,
   val sanctionSeq: Long? = null,
   val movementSeq: Long? = null,
   val imprisonmentStatusSeq: Long? = null,
