@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeE
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
@@ -252,6 +253,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         )
 
         "PERSON-INSERTED", "PERSON-UPDATED", "PERSON-DELETED" -> personEventOf(xtag)
+        "ADDRESSES_PERSON-INSERTED", "ADDRESSES_PERSON-UPDATED", "ADDRESSES_PERSON-DELETED" -> personAddressEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1287,6 +1289,15 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
     personId = xtag.content.p_person_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun personAddressEventOf(xtag: Xtag) = PersonAddressEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    personId = xtag.content.p_person_id!!.toLong(),
+    addressId = xtag.content.p_address_id!!.toLong(),
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )
