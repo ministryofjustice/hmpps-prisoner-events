@@ -658,7 +658,6 @@ class CaseIdentifierEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,
-  offenderIdDisplay: String? = null,
   val auditModuleName: String? = null,
   val caseId: Long,
   val identifierType: String,
@@ -666,7 +665,6 @@ class CaseIdentifierEvent(
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
-  offenderIdDisplay = offenderIdDisplay,
   nomisEventType = nomisEventType,
 )
 
