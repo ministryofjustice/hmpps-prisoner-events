@@ -38,6 +38,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEmploymentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonIdentifierEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
@@ -4723,6 +4724,82 @@ class OffenderEventsTransformerTest {
         assertThat(personId).isEqualTo(4730074L)
         assertThat(employmentSequence).isEqualTo(0L)
         assertThat(nomisEventType).isEqualTo("PERSON_EMPLOYMENTS-DELETED")
+        assertThat(auditModuleName).isEqualTo("OCDPERSO")
+      }
+    }
+  }
+
+  @Nested
+  inner class PersonIdentifierEvents {
+
+    @Test
+    fun `PERSON_IDENTIFIERS-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonIdentifierEvent>(
+        Xtag(
+          eventType = "PERSON_IDENTIFIERS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_id_seq" to "0",
+              "p_audit_module_name" to "OCDPERSO",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PERSON_IDENTIFIERS-INSERTED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(identifierSequence).isEqualTo(0L)
+        assertThat(nomisEventType).isEqualTo("PERSON_IDENTIFIERS-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OCDPERSO")
+      }
+    }
+
+    @Test
+    fun `PERSON_IDENTIFIERS-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonIdentifierEvent>(
+        Xtag(
+          eventType = "PERSON_IDENTIFIERS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_id_seq" to "0",
+              "p_audit_module_name" to "OCDPERSO",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PERSON_IDENTIFIERS-UPDATED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(identifierSequence).isEqualTo(0L)
+        assertThat(nomisEventType).isEqualTo("PERSON_IDENTIFIERS-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OCDPERSO")
+      }
+    }
+
+    @Test
+    fun `PERSON_IDENTIFIERS-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonIdentifierEvent>(
+        Xtag(
+          eventType = "PERSON_IDENTIFIERS-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_id_seq" to "0",
+              "p_audit_module_name" to "OCDPERSO",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PERSON_IDENTIFIERS-DELETED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(identifierSequence).isEqualTo(0L)
+        assertThat(nomisEventType).isEqualTo("PERSON_IDENTIFIERS-DELETED")
         assertThat(auditModuleName).isEqualTo("OCDPERSO")
       }
     }
