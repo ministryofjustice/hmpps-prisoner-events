@@ -37,6 +37,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEve
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
@@ -4570,6 +4571,85 @@ class OffenderEventsTransformerTest {
         assertThat(nomisEventType).isEqualTo("PHONES_PERSON-DELETED")
         assertThat(auditModuleName).isEqualTo("OCDGNUMB")
         assertThat(isAddress).isFalse
+      }
+    }
+  }
+
+  @Nested
+  inner class PersonInternetAddressEvents {
+
+    @Test
+    fun `INTERNET_ADDRESSES_PERSON-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonInternetAddressEvent>(
+        Xtag(
+          eventType = "INTERNET_ADDRESSES_PERSON-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_internet_address_id" to "5623860",
+              "p_audit_module_name" to "OCDGNUMB",
+              "p_owner_class" to "PER",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_PERSON-INSERTED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_PERSON-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OCDGNUMB")
+      }
+    }
+
+    @Test
+    fun `INTERNET_ADDRESSES_PERSON-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonInternetAddressEvent>(
+        Xtag(
+          eventType = "INTERNET_ADDRESSES_PERSON-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_internet_address_id" to "5623860",
+              "p_audit_module_name" to "OCDGNUMB",
+              "p_owner_class" to "PER",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_PERSON-UPDATED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_PERSON-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OCDGNUMB")
+      }
+    }
+
+    @Test
+    fun `INTERNET_ADDRESSES_PERSON-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonInternetAddressEvent>(
+        Xtag(
+          eventType = "INTERNET_ADDRESSES_PERSON-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_internet_address_id" to "5623860",
+              "p_audit_module_name" to "OCDGNUMB",
+              "p_owner_class" to "PER",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_PERSON-DELETED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_PERSON-DELETED")
+        assertThat(auditModuleName).isEqualTo("OCDGNUMB")
       }
     }
   }
