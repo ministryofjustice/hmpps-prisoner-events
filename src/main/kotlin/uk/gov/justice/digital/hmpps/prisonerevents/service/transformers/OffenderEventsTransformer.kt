@@ -35,6 +35,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEve
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OrderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
@@ -254,6 +255,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "PERSON-INSERTED", "PERSON-UPDATED", "PERSON-DELETED" -> personEventOf(xtag)
         "ADDRESSES_PERSON-INSERTED", "ADDRESSES_PERSON-UPDATED", "ADDRESSES_PERSON-DELETED" -> personAddressEventOf(xtag)
+        "PHONES_PERSON-INSERTED", "PHONES_PERSON-UPDATED", "PHONES_PERSON-DELETED" -> personPhoneEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1300,6 +1302,17 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     addressId = xtag.content.p_address_id!!.toLong(),
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
+  )
+
+  private fun personPhoneEventOf(xtag: Xtag) = PersonPhoneEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    personId = xtag.content.p_person_id!!.toLong(),
+    phoneId = xtag.content.p_phone_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+    // TODO - trigger is incorrectly not including address phones so to protect against a future breaking change add this
+    isAddress = xtag.content.p_owner_class == "ADDR",
   )
 
   companion object {
