@@ -1036,7 +1036,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     agencyLocationId = xtag.content.p_agy_loc_id,
     nomisEventType = xtag.eventType,
     visitId = xtag.content.p_offender_visit_id?.toLong(),
-    auditModuleName = xtag.content.p_audit_module_name,
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
   )
 
   private fun caseNotesEventOf(xtag: Xtag) = GenericOffenderEvent(
