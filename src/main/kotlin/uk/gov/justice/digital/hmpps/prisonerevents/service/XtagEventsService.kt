@@ -59,6 +59,8 @@ class XtagEventsService(
         oe as OffenderBookingReassignedEvent
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.offenderId!!).firstOrNull()
         oe.previousOffenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.previousOffenderId).firstOrNull()
+        oe.bookingStartDate = exposeRepository.getBookingStartDateForOffenderBooking(oe.bookingId!!)
+        oe.lastAdmissionDate = exposeRepository.getLastAdmissionDateForOffenderBooking(oe.bookingId)
       }
 
       "OFFENDER_ADDRESS-INSERTED", "OFFENDER_ADDRESS-UPDATED" -> {

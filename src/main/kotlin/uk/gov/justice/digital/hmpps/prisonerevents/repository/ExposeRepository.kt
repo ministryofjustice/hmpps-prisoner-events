@@ -5,6 +5,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.springframework.stereotype.Repository
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 @Repository
@@ -29,6 +30,25 @@ class ExposeRepository {
     }
       .orderBy(MergeTransactions.createDatetime to SortOrder.DESC)
       .firstOrNull()
+
+  fun getBookingStartDateForOffenderBooking(bookingId: Long): LocalDateTime? =
+    OffenderBookings
+      .select(OffenderBookings.beginDate)
+      .where(OffenderBookings.id eq bookingId)
+      .singleOrNull()
+      ?.get(OffenderBookings.beginDate)
+
+  fun getLastAdmissionDateForOffenderBooking(bookingId: Long): LocalDate? =
+    OffenderBookings
+      .join(OffenderExternalMovements, JoinType.INNER, additionalConstraint = {
+        (OffenderExternalMovements.offenderBookingId eq OffenderBookings.id)
+        (OffenderExternalMovements.type eq "ADM")
+      })
+      .select(OffenderExternalMovements.date)
+      .where(OffenderBookings.id eq bookingId)
+      .orderBy(OffenderExternalMovements.sequence, SortOrder.DESC)
+      .firstOrNull()
+      ?.get(OffenderExternalMovements.date)
 
   fun getOffenderById(offenderId: Long): Offender? = Offender.findById(offenderId)
 }

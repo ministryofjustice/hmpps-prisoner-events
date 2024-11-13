@@ -40,7 +40,7 @@ or if colima is already running
 
 ```
 export DOCKER_HOST="unix://${HOME}/.colima/docker.sock"
-docker-compose -f docker-compose-test.yml up
+docker compose -f docker-compose-test.yml up
 ```
 
 ### Explanation and running with testContainers
@@ -62,7 +62,7 @@ colima start --arch x86_64 --memory 4 --network-address
 
 Next run 
 
-`docker-compose -f docker-compose-test.yml up`
+`docker compose -f docker-compose-test.yml up`
 
 Now, integration tests will run with these existing docker containers .
 
@@ -75,3 +75,15 @@ Testcontainers will not start new containers on Mac as the port technique to det
 Ensure you include this property setting which prevents errors accessing non-existent javax classes:
 
 `-Doracle.jakarta.jms.useEmulatedXA=false`
+
+## Colima Issues and upgrades on Macs
+Occasionally an upgrade to Colima (brew upgrade colima) will cause failure on Macs, to solve the issue revert to a previous working version.
+Whilst quite old, V0.5.6 works on M1 Macs.
+If running stop Colima, and uninstall the current version:
+`colima stop`
+`brew uninstall colima`
+
+Install an old Colima (not currently possible via brew - but may be in future)
+`sudo curl -L -o /usr/local/bin/colima https://github.com/abiosoft/colima/releases/download/v0.5.6/colima-Darwin-arm64 && sudo chmod +x /usr/local/bin/colima`
+
+If missing lima or qemu when attempting to start the older version of Colima (error messages will state missing dependences) they can be easily installed via brew
