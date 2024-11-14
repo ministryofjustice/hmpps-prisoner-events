@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.repository.ExposeRepository
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Movement
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
 import java.sql.Timestamp
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 class XtagEventsServiceTest {
@@ -183,9 +184,12 @@ class XtagEventsServiceTest {
 
   @Test
   fun `should add offender id and previous offender id to booking updated event`() {
+    val bookingBeginDate = LocalDateTime.parse("2024-10-25T21:57:40")
+    val admMovementDate = LocalDate.parse("2024-09-26")
     whenever(repository.getNomsIdFromOffender(1234L)).thenReturn(listOf("A1234GB"))
     whenever(repository.getNomsIdFromOffender(2345L)).thenReturn(listOf("A2345GC"))
-
+    whenever(exposeRepository.getBookingStartDateForOffenderBooking(12)).thenReturn(bookingBeginDate)
+    whenever(exposeRepository.getLastAdmissionDateForOffenderBooking(12)).thenReturn(admMovementDate)
     val offenderEvent = service.addAdditionalEventData(
       OffenderBookingReassignedEvent(
         eventType = "OFFENDER_BOOKING-REASSIGNED",
@@ -198,6 +202,8 @@ class XtagEventsServiceTest {
     )
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234GB")
     assertThat((offenderEvent as OffenderBookingReassignedEvent).previousOffenderIdDisplay).isEqualTo("A2345GC")
+    assertThat((offenderEvent).bookingStartDate).isEqualTo(bookingBeginDate)
+    assertThat((offenderEvent).lastAdmissionDate).isEqualTo(admMovementDate)
   }
 
   @Test

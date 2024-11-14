@@ -465,6 +465,104 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     }
 
     @Nested
+    @DisplayName("OFFENDER_BOOKING-REASSIGNED -> OFFENDER_BOOKING-REASSIGNED")
+    inner class OffenderBookingReassigned {
+      private lateinit var prisonerEvent: PrisonerEventMessage
+      private val oldOffenderNo = "A1234AA"
+      private val oldOffenderId = 12345L
+      private val bookingStartDate = LocalDateTime.parse("2024-08-23T12:20:30")
+      private lateinit var oldOffender: Offender
+      private val newOffenderId = 6789L
+      private val newOffenderNo = "A5678BB"
+      private lateinit var newOffender: Offender
+      private lateinit var bookingMoved: OffenderBooking
+      private lateinit var movement: OffenderExternalMovement
+
+      @BeforeEach
+      fun setUp() {
+        transaction {
+          this.addLogger(StdOutSqlLogger)
+
+          oldOffender =
+            Offender.build {
+              offenderNo = this@OffenderBookingReassigned.oldOffenderNo
+            }.also {
+              OffenderBooking.build(offender = it).also { booking ->
+                OffenderExternalMovement.build(offenderBooking = booking, sequence = 1) {
+                  direction = "IN"
+                  type = "ADM"
+                  date = LocalDate.parse("2024-08-23")
+                  time = LocalDateTime.parse("2024-08-23T10:10:00")
+                }
+                OffenderExternalMovement.build(offenderBooking = booking, sequence = 2) {
+                  direction = "OUT"
+                  type = "REL"
+                  date = LocalDate.parse("2024-10-24")
+                  time = LocalDateTime.parse("2024-10-23T15:05:00")
+                }
+              }
+              bookingMoved = OffenderBooking.build(offender = it, beginDate = bookingStartDate).also { booking ->
+
+                movement = OffenderExternalMovement.build(offenderBooking = booking, sequence = 3) {
+                  direction = "IN"
+                  type = "ADM"
+                  date = LocalDate.parse("2024-12-25")
+                  time = LocalDateTime.parse("2024-08-25T10:20:00")
+                }
+              }
+            }
+
+          newOffender =
+            Offender.build {
+              offenderNo = this@OffenderBookingReassigned.newOffenderNo
+            }.also {
+              OffenderBooking.build(offender = it).also { booking ->
+                OffenderExternalMovement.build(offenderBooking = booking, sequence = 1) {
+                  direction = "IN"
+                  type = "ADM"
+                  date = LocalDate.parse("2024-09-23")
+                  time = LocalDateTime.parse("2024-09-23T10:10:00")
+                }
+                OffenderExternalMovement.build(offenderBooking = booking, sequence = 2) {
+                  direction = "OUT"
+                  type = "REL"
+                  date = LocalDate.parse("2024-11-24")
+                  time = LocalDateTime.parse("2024-11-23T15:05:00")
+                }
+              }
+            }
+        }
+
+        simulateTrigger(
+          nomisEventType = "OFF_BKB_UPD",
+          "p_old_offender_id" to oldOffenderId,
+          "p_offender_id" to newOffenderId,
+          "p_offender_book_id" to bookingMoved.id.value,
+        )
+        prisonerEvent = awaitMessage()
+      }
+
+      @Test
+      fun `will map to OFFENDER_BOOKING-REASSIGNED with additional parameters`() {
+        with(prisonerEvent.message) {
+          assertJsonPath("nomisEventType", "OFF_BKB_UPD")
+          assertJsonPath("eventType", "OFFENDER_BOOKING-REASSIGNED")
+          assertJsonPath("previousOffenderId", oldOffenderId)
+          assertJsonPath("offenderId", newOffenderId)
+          assertJsonPath("bookingId", "${bookingMoved.bookingId.value}")
+          assertJsonPath("bookingStartDate", "${bookingMoved.beginDate}")
+          assertJsonPath("lastAdmissionDate", "${movement.date}")
+        }
+      }
+
+      @Test
+      fun `will map meta data for the event`() {
+        assertThat(prisonerEvent.eventType).isEqualTo("OFFENDER_BOOKING-REASSIGNED")
+        assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+      }
+    }
+
+    @Nested
     @DisplayName("BOOKING_NUMBER-CHANGED")
     inner class BookingNumberChanged {
       @BeforeEach
