@@ -79,7 +79,7 @@ Ensure you include this property setting which prevents errors accessing non-exi
 ## Colima Issues and upgrades on Macs
 Occasionally an upgrade to Colima (brew upgrade colima) will cause failure on Macs, to solve the issue revert to a previous working version.
 Whilst quite old, V0.5.6 works on M1 Macs.
-If running stop Colima, and uninstall the current version:
+If Colima is running, stop it and uninstall the current version:
 `colima stop`
 `brew uninstall colima`
 

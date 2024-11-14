@@ -41,8 +41,8 @@ class ExposeRepository {
   fun getLastAdmissionDateForOffenderBooking(bookingId: Long): LocalDate? =
     OffenderBookings
       .join(OffenderExternalMovements, JoinType.INNER, additionalConstraint = {
-        (OffenderExternalMovements.offenderBookingId eq OffenderBookings.id)
-        (OffenderExternalMovements.type eq "ADM")
+        (OffenderExternalMovements.offenderBookingId eq OffenderBookings.id) and
+          (OffenderExternalMovements.type eq "ADM")
       })
       .select(OffenderExternalMovements.date)
       .where(OffenderBookings.id eq bookingId)

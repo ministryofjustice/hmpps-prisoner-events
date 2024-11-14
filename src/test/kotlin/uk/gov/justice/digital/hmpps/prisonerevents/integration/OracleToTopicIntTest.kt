@@ -471,10 +471,8 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       private val oldOffenderNo = "A1234AA"
       private val oldOffenderId = 12345L
       private val bookingStartDate = LocalDateTime.parse("2024-08-23T12:20:30")
-      private lateinit var oldOffender: Offender
       private val newOffenderId = 6789L
       private val newOffenderNo = "A5678BB"
-      private lateinit var newOffender: Offender
       private lateinit var bookingMoved: OffenderBooking
       private lateinit var movement: OffenderExternalMovement
 
@@ -482,55 +480,51 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       fun setUp() {
         transaction {
           this.addLogger(StdOutSqlLogger)
-
-          oldOffender =
-            Offender.build {
-              offenderNo = this@OffenderBookingReassigned.oldOffenderNo
-            }.also {
-              OffenderBooking.build(offender = it).also { booking ->
-                OffenderExternalMovement.build(offenderBooking = booking, sequence = 1) {
-                  direction = "IN"
-                  type = "ADM"
-                  date = LocalDate.parse("2024-08-23")
-                  time = LocalDateTime.parse("2024-08-23T10:10:00")
-                }
-                OffenderExternalMovement.build(offenderBooking = booking, sequence = 2) {
-                  direction = "OUT"
-                  type = "REL"
-                  date = LocalDate.parse("2024-10-24")
-                  time = LocalDateTime.parse("2024-10-23T15:05:00")
-                }
+          Offender.build {
+            offenderNo = this@OffenderBookingReassigned.oldOffenderNo
+          }.also {
+            OffenderBooking.build(offender = it).also { booking ->
+              OffenderExternalMovement.build(offenderBooking = booking, sequence = 1) {
+                direction = "IN"
+                type = "ADM"
+                date = LocalDate.parse("2024-08-23")
+                time = LocalDateTime.parse("2024-08-23T10:10:00")
               }
-              bookingMoved = OffenderBooking.build(offender = it, beginDate = bookingStartDate).also { booking ->
-
-                movement = OffenderExternalMovement.build(offenderBooking = booking, sequence = 3) {
-                  direction = "IN"
-                  type = "ADM"
-                  date = LocalDate.parse("2024-12-25")
-                  time = LocalDateTime.parse("2024-08-25T10:20:00")
-                }
+              OffenderExternalMovement.build(offenderBooking = booking, sequence = 2) {
+                direction = "OUT"
+                type = "REL"
+                date = LocalDate.parse("2024-10-24")
+                time = LocalDateTime.parse("2024-10-23T15:05:00")
               }
             }
-
-          newOffender =
-            Offender.build {
-              offenderNo = this@OffenderBookingReassigned.newOffenderNo
-            }.also {
-              OffenderBooking.build(offender = it).also { booking ->
-                OffenderExternalMovement.build(offenderBooking = booking, sequence = 1) {
-                  direction = "IN"
-                  type = "ADM"
-                  date = LocalDate.parse("2024-09-23")
-                  time = LocalDateTime.parse("2024-09-23T10:10:00")
-                }
-                OffenderExternalMovement.build(offenderBooking = booking, sequence = 2) {
-                  direction = "OUT"
-                  type = "REL"
-                  date = LocalDate.parse("2024-11-24")
-                  time = LocalDateTime.parse("2024-11-23T15:05:00")
-                }
+            bookingMoved = OffenderBooking.build(offender = it, beginDate = bookingStartDate).also { booking ->
+              movement = OffenderExternalMovement.build(offenderBooking = booking, sequence = 3) {
+                direction = "IN"
+                type = "ADM"
+                date = LocalDate.parse("2024-12-25")
+                time = LocalDateTime.parse("2024-08-25T10:20:00")
               }
             }
+          }
+
+          Offender.build {
+            offenderNo = this@OffenderBookingReassigned.newOffenderNo
+          }.also {
+            OffenderBooking.build(offender = it).also { booking ->
+              OffenderExternalMovement.build(offenderBooking = booking, sequence = 1) {
+                direction = "IN"
+                type = "ADM"
+                date = LocalDate.parse("2024-09-23")
+                time = LocalDateTime.parse("2024-09-23T10:10:00")
+              }
+              OffenderExternalMovement.build(offenderBooking = booking, sequence = 2) {
+                direction = "OUT"
+                type = "REL"
+                date = LocalDate.parse("2024-11-24")
+                time = LocalDateTime.parse("2024-11-23T15:05:00")
+              }
+            }
+          }
         }
 
         simulateTrigger(
@@ -561,6 +555,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
       }
     }
+    // Add more tests here and ensure different scenarios are covered
 
     @Nested
     @DisplayName("BOOKING_NUMBER-CHANGED")
