@@ -566,7 +566,7 @@ class OffenderBookingReassignedEvent(
   offenderId: Long,
   val previousOffenderId: Long,
   var previousOffenderIdDisplay: String? = null,
-  var bookingStartDate: LocalDateTime? = null,
+  var bookingStartDateTime: LocalDateTime? = null,
   var lastAdmissionDate: LocalDate? = null,
 ) : OffenderEvent(
   eventType = eventType,
