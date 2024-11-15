@@ -202,7 +202,7 @@ class XtagEventsServiceTest {
     )
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234GB")
     assertThat((offenderEvent as OffenderBookingReassignedEvent).previousOffenderIdDisplay).isEqualTo("A2345GC")
-    assertThat((offenderEvent).bookingStartDate).isEqualTo(bookingBeginDate)
+    assertThat((offenderEvent).bookingStartDateTime).isEqualTo(bookingBeginDate)
     assertThat((offenderEvent).lastAdmissionDate).isEqualTo(admMovementDate)
   }
 

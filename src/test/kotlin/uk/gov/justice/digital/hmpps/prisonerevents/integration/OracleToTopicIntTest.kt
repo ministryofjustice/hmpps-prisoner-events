@@ -465,12 +465,12 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     }
 
     @Nested
-    @DisplayName("OFFENDER_BOOKING-REASSIGNED -> OFFENDER_BOOKING-REASSIGNED")
+    @DisplayName("OFF_BKB_UPD -> OFFENDER_BOOKING-REASSIGNED")
     inner class OffenderBookingReassigned {
       private lateinit var prisonerEvent: PrisonerEventMessage
       private val oldOffenderNo = "A1234AA"
       private val oldOffenderId = 12345L
-      private val bookingStartDate = LocalDateTime.parse("2024-08-23T12:20:30")
+      private val bookingStartDateTime = LocalDateTime.parse("2024-08-23T12:20:30")
       private val newOffenderId = 6789L
       private val newOffenderNo = "A5678BB"
       private lateinit var bookingMoved: OffenderBooking
@@ -497,7 +497,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
                 time = LocalDateTime.parse("2024-10-23T15:05:00")
               }
             }
-            bookingMoved = OffenderBooking.build(offender = it, beginDate = bookingStartDate).also { booking ->
+            bookingMoved = OffenderBooking.build(offender = it, beginDate = bookingStartDateTime).also { booking ->
               movement = OffenderExternalMovement.build(offenderBooking = booking, sequence = 3) {
                 direction = "IN"
                 type = "ADM"
@@ -544,7 +544,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
           assertJsonPath("previousOffenderId", oldOffenderId)
           assertJsonPath("offenderId", newOffenderId)
           assertJsonPath("bookingId", "${bookingMoved.bookingId.value}")
-          assertJsonPath("bookingStartDate", "${bookingMoved.beginDate}")
+          assertJsonPath("bookingStartDateTime", "${bookingMoved.beginDate}")
           assertJsonPath("lastAdmissionDate", "${movement.date}")
         }
       }
