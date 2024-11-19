@@ -87,3 +87,5 @@ Install an old Colima (not currently possible via brew - but may be in future)
 `sudo curl -L -o /usr/local/bin/colima https://github.com/abiosoft/colima/releases/download/v0.5.6/colima-Darwin-arm64 && sudo chmod +x /usr/local/bin/colima`
 
 If missing lima or qemu when attempting to start the older version of Colima (error messages will state missing dependences) they can be easily installed via brew
+
+If Colima still fails to start (eg ...colima/default/daemon/daemon.pid: no such file or directory\) reinstall qemu.
