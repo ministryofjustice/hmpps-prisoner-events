@@ -555,7 +555,6 @@ class OracleToTopicIntTest : IntegrationTestBase() {
         assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
       }
     }
-    // Add more tests here and ensure different scenarios are covered
 
     @Nested
     @DisplayName("BOOKING_NUMBER-CHANGED")
