@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CaseIdentifierEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
@@ -266,6 +267,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "PERSON_IDENTIFIERS-INSERTED", "PERSON_IDENTIFIERS-UPDATED", "PERSON_IDENTIFIERS-DELETED" -> personIdentifierEventOf(xtag)
         "PHONES_CORPORATE-INSERTED", "PHONES_CORPORATE-UPDATED", "PHONES_CORPORATE-DELETED" -> corporatePhoneEventOf(xtag)
         "ADDRESSES_CORPORATE-INSERTED", "ADDRESSES_CORPORATE-UPDATED", "ADDRESSES_CORPORATE-DELETED" -> corporateAddressEventOf(xtag)
+        "INTERNET_ADDRESSES_CORPORATE-INSERTED", "INTERNET_ADDRESSES_CORPORATE-UPDATED", "INTERNET_ADDRESSES_CORPORATE-DELETED" -> corporateInternetAddressEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1367,6 +1369,15 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     corporateId = xtag.content.p_corporate_id!!.toLong(),
     addressId = xtag.content.p_address_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun corporateInternetAddressEventOf(xtag: Xtag) = CorporateInternetAddressEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    corporateId = xtag.content.p_corporate_id!!.toLong(),
+    internetAddressId = xtag.content.p_internet_address_id!!.toLong(),
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )

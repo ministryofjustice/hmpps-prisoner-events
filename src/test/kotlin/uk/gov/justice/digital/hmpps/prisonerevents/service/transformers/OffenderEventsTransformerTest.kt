@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CaseIdentifierEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
@@ -5134,6 +5135,85 @@ class OffenderEventsTransformerTest {
         assertThat(addressId).isEqualTo(5623860L)
         assertThat(nomisEventType).isEqualTo("ADDRESSES_CORPORATE-DELETED")
         assertThat(auditModuleName).isEqualTo("DataGrip")
+      }
+    }
+  }
+
+  @Nested
+  inner class CorporateInternetAddressEvents {
+
+    @Test
+    fun `INTERNET_ADDRESSES_CORPORATE-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateInternetAddressEvent>(
+        Xtag(
+          eventType = "INTERNET_ADDRESSES_CORPORATE-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_internet_address_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "PER",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-INSERTED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+      }
+    }
+
+    @Test
+    fun `INTERNET_ADDRESSES_CORPORATE-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateInternetAddressEvent>(
+        Xtag(
+          eventType = "INTERNET_ADDRESSES_CORPORATE-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_internet_address_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "PER",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-UPDATED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+      }
+    }
+
+    @Test
+    fun `INTERNET_ADDRESSES_CORPORATE-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateInternetAddressEvent>(
+        Xtag(
+          eventType = "INTERNET_ADDRESSES_CORPORATE-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_internet_address_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "PER",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-DELETED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-DELETED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
       }
     }
   }

@@ -785,6 +785,20 @@ class CorporateAddressEvent(
   nomisEventType = nomisEventType,
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CorporateInternetAddressEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val auditModuleName: String,
+  val corporateId: Long,
+  val internetAddressId: Long,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
 enum class BookingNumberChangedType {
   MERGE,
   BOOK_NUMBER_CHANGE,
