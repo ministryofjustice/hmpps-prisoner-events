@@ -15,6 +15,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CaseIdentifierEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
@@ -268,6 +269,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "PHONES_CORPORATE-INSERTED", "PHONES_CORPORATE-UPDATED", "PHONES_CORPORATE-DELETED" -> corporatePhoneEventOf(xtag)
         "ADDRESSES_CORPORATE-INSERTED", "ADDRESSES_CORPORATE-UPDATED", "ADDRESSES_CORPORATE-DELETED" -> corporateAddressEventOf(xtag)
         "INTERNET_ADDRESSES_CORPORATE-INSERTED", "INTERNET_ADDRESSES_CORPORATE-UPDATED", "INTERNET_ADDRESSES_CORPORATE-DELETED" -> corporateInternetAddressEventOf(xtag)
+        "CORPORATE-INSERTED", "CORPORATE-UPDATED", "CORPORATE-DELETED" -> corporateEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1349,6 +1351,14 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     personId = xtag.content.p_person_id!!.toLong(),
     identifierSequence = xtag.content.p_id_seq!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun corporateEventOf(xtag: Xtag) = CorporateEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    corporateId = xtag.content.p_corporate_id!!.toLong(),
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )

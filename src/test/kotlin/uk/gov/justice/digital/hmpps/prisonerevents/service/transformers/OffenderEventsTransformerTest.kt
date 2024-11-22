@@ -17,6 +17,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CaseIdentifierEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
@@ -4890,6 +4891,76 @@ class OffenderEventsTransformerTest {
         assertThat(identifierSequence).isEqualTo(0L)
         assertThat(nomisEventType).isEqualTo("PERSON_IDENTIFIERS-DELETED")
         assertThat(auditModuleName).isEqualTo("OCDPERSO")
+      }
+    }
+  }
+
+  @Nested
+  inner class CorporateEvents {
+
+    @Test
+    fun `CORPORATE-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateEvent>(
+        Xtag(
+          eventType = "CORPORATE-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_audit_module_name" to "OUMAGENC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("CORPORATE-INSERTED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(nomisEventType).isEqualTo("CORPORATE-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+      }
+    }
+
+    @Test
+    fun `CORPORATE-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateEvent>(
+        Xtag(
+          eventType = "CORPORATE-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_audit_module_name" to "OUMAGENC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("CORPORATE-UPDATED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(nomisEventType).isEqualTo("CORPORATE-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+      }
+    }
+
+    @Test
+    fun `CORPORATE-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateEvent>(
+        Xtag(
+          eventType = "CORPORATE-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_audit_module_name" to "OUMAGENC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("CORPORATE-DELETED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(nomisEventType).isEqualTo("CORPORATE-DELETED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
       }
     }
   }

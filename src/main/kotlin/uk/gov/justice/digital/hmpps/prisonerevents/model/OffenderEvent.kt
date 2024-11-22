@@ -756,6 +756,19 @@ class PersonIdentifierEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class CorporateEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val auditModuleName: String,
+  val corporateId: Long,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class CorporatePhoneEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
