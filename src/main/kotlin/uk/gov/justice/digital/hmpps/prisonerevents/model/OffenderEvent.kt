@@ -705,6 +705,7 @@ class PersonPhoneEvent(
   val auditModuleName: String,
   val personId: Long,
   val phoneId: Long,
+  val addressId: Long? = null,
   val isAddress: Boolean,
 ) : OffenderEvent(
   eventType = eventType,

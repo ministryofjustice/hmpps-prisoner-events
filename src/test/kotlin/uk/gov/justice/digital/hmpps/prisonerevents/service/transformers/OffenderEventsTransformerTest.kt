@@ -4498,7 +4498,7 @@ class OffenderEventsTransformerTest {
   inner class PersonPhoneEvents {
 
     @Test
-    fun `PHONES_PERSON-INSERTED is mapped`() {
+    fun `PHONES_PERSON-INSERTED (global) is mapped`() {
       val now = LocalDateTime.now()
       withCallTransformer<PersonPhoneEvent>(
         Xtag(
@@ -4524,7 +4524,7 @@ class OffenderEventsTransformerTest {
     }
 
     @Test
-    fun `PHONES_PERSON-UPDATED is mapped`() {
+    fun `PHONES_PERSON-UPDATED (global)  is mapped`() {
       val now = LocalDateTime.now()
       withCallTransformer<PersonPhoneEvent>(
         Xtag(
@@ -4550,7 +4550,7 @@ class OffenderEventsTransformerTest {
     }
 
     @Test
-    fun `PHONES_PERSON-DELETED is mapped`() {
+    fun `PHONES_PERSON-DELETED (global)  is mapped`() {
       val now = LocalDateTime.now()
       withCallTransformer<PersonPhoneEvent>(
         Xtag(
@@ -4572,6 +4572,90 @@ class OffenderEventsTransformerTest {
         assertThat(nomisEventType).isEqualTo("PHONES_PERSON-DELETED")
         assertThat(auditModuleName).isEqualTo("OCDGNUMB")
         assertThat(isAddress).isFalse
+      }
+    }
+
+    @Test
+    fun `PHONES_PERSON-INSERTED (address) is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonPhoneEvent>(
+        Xtag(
+          eventType = "PHONES_PERSON-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OCDCCONT",
+              "p_owner_class" to "ADDR",
+              "p_address_id" to "7654",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_PERSON-INSERTED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(addressId).isEqualTo(7654L)
+        assertThat(nomisEventType).isEqualTo("PHONES_PERSON-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OCDCCONT")
+        assertThat(isAddress).isTrue()
+      }
+    }
+
+    @Test
+    fun `PHONES_PERSON-UPDATED (address)  is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonPhoneEvent>(
+        Xtag(
+          eventType = "PHONES_PERSON-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OCDCCONT",
+              "p_owner_class" to "ADDR",
+              "p_address_id" to "7654",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_PERSON-UPDATED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(addressId).isEqualTo(7654L)
+        assertThat(nomisEventType).isEqualTo("PHONES_PERSON-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OCDCCONT")
+        assertThat(isAddress).isTrue()
+      }
+    }
+
+    @Test
+    fun `PHONES_PERSON-DELETED (address)  is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonPhoneEvent>(
+        Xtag(
+          eventType = "PHONES_PERSON-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_person_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OCDCCONT",
+              "p_owner_class" to "ADDR",
+              "p_address_id" to "7654",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_PERSON-DELETED")
+        assertThat(personId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(addressId).isEqualTo(7654L)
+        assertThat(nomisEventType).isEqualTo("PHONES_PERSON-DELETED")
+        assertThat(auditModuleName).isEqualTo("OCDCCONT")
+        assertThat(isAddress).isTrue()
       }
     }
   }
