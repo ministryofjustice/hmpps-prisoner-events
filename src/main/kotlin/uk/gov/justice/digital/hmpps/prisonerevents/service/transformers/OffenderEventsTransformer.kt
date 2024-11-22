@@ -1316,8 +1316,8 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     phoneId = xtag.content.p_phone_id!!.toLong(),
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
-    // TODO - trigger is incorrectly not including address phones so to protect against a future breaking change add this
     isAddress = xtag.content.p_owner_class == "ADDR",
+    addressId = xtag.content.p_address_id?.toLong(),
   )
 
   private fun personInternetAddressEventOf(xtag: Xtag) = PersonInternetAddressEvent(
