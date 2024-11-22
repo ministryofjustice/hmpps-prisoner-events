@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPPlanOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReportOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPReviewOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CaseIdentifierEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
@@ -4887,6 +4888,172 @@ class OffenderEventsTransformerTest {
         assertThat(identifierSequence).isEqualTo(0L)
         assertThat(nomisEventType).isEqualTo("PERSON_IDENTIFIERS-DELETED")
         assertThat(auditModuleName).isEqualTo("OCDPERSO")
+      }
+    }
+  }
+
+  @Nested
+  inner class CorporatePhoneEvents {
+
+    @Test
+    fun `PHONES_CORPORATE-INSERTED (global) is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporatePhoneEvent>(
+        Xtag(
+          eventType = "PHONES_CORPORATE-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "CORP",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_CORPORATE-INSERTED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("PHONES_CORPORATE-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+        assertThat(isAddress).isFalse
+      }
+    }
+
+    @Test
+    fun `PHONES_CORPORATE-UPDATED (global)  is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporatePhoneEvent>(
+        Xtag(
+          eventType = "PHONES_CORPORATE-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "CORP",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_CORPORATE-UPDATED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("PHONES_CORPORATE-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+        assertThat(isAddress).isFalse
+      }
+    }
+
+    @Test
+    fun `PHONES_CORPORATE-DELETED (global)  is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporatePhoneEvent>(
+        Xtag(
+          eventType = "PHONES_CORPORATE-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "CORP",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_CORPORATE-DELETED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("PHONES_CORPORATE-DELETED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+        assertThat(isAddress).isFalse
+      }
+    }
+
+    @Test
+    fun `PHONES_CORPORATE-INSERTED (address) is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporatePhoneEvent>(
+        Xtag(
+          eventType = "PHONES_CORPORATE-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "ADDR",
+              "p_address_id" to "7654",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_CORPORATE-INSERTED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(addressId).isEqualTo(7654L)
+        assertThat(nomisEventType).isEqualTo("PHONES_CORPORATE-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+        assertThat(isAddress).isTrue()
+      }
+    }
+
+    @Test
+    fun `PHONES_CORPORATE-UPDATED (address)  is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporatePhoneEvent>(
+        Xtag(
+          eventType = "PHONES_CORPORATE-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "ADDR",
+              "p_address_id" to "7654",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_CORPORATE-UPDATED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(addressId).isEqualTo(7654L)
+        assertThat(nomisEventType).isEqualTo("PHONES_CORPORATE-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+        assertThat(isAddress).isTrue()
+      }
+    }
+
+    @Test
+    fun `PHONES_CORPORATE-DELETED (address)  is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporatePhoneEvent>(
+        Xtag(
+          eventType = "PHONES_CORPORATE-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_phone_id" to "5623860",
+              "p_audit_module_name" to "OUMAGENC",
+              "p_owner_class" to "ADDR",
+              "p_address_id" to "7654",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PHONES_CORPORATE-DELETED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(phoneId).isEqualTo(5623860L)
+        assertThat(addressId).isEqualTo(7654L)
+        assertThat(nomisEventType).isEqualTo("PHONES_CORPORATE-DELETED")
+        assertThat(auditModuleName).isEqualTo("OUMAGENC")
+        assertThat(isAddress).isTrue()
       }
     }
   }
