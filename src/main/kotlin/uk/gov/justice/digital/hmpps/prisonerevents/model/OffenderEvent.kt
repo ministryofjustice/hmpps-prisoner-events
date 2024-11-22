@@ -755,6 +755,22 @@ class PersonIdentifierEvent(
   nomisEventType = nomisEventType,
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CorporatePhoneEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val auditModuleName: String,
+  val corporateId: Long,
+  val phoneId: Long,
+  val addressId: Long? = null,
+  val isAddress: Boolean,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
 enum class BookingNumberChangedType {
   MERGE,
   BOOK_NUMBER_CHANGE,

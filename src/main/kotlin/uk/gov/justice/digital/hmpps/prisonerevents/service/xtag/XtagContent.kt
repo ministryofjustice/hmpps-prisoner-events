@@ -16,8 +16,6 @@ class XtagContent(private val map: Map<String, String>) {
   val p_mail_addr_flag by m
   val p_delete_flag by m
   val p_old_prison_num by m
-  val p_old_prision_num by m
-  val p_old_prison_number by m
   val p_new_prison_num by m
   val p_identifier_value by m
   val p_alert_seq by m
@@ -116,8 +114,6 @@ class XtagContent(private val map: Map<String, String>) {
   val p_ns_effective_date by m
   val p_ns_expiry_date by m
   val p_authorized_staff by m
-  val p_comment_text by m
-  val p_comment_txt by m
 
   val p_offender_restriction_id by m
   val p_restriction_type by m
@@ -157,6 +153,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_id_seq by m
 
   val p_profile_type by m
+  val p_corporate_id by m
 
   override fun toString(): String = map.toString()
 }
