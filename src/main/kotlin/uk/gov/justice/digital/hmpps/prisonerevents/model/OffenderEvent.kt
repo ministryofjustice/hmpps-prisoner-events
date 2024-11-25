@@ -812,6 +812,22 @@ class CorporateInternetAddressEvent(
   nomisEventType = nomisEventType,
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderIdentifyingMarksEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  bookingId: Long?,
+  val idMarkSeq: Int?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
 enum class BookingNumberChangedType {
   MERGE,
   BOOK_NUMBER_CHANGE,
