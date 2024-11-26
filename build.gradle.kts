@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.0.9"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "6.1.0"
   kotlin("plugin.spring") version "2.0.21"
 }
 
@@ -8,16 +8,16 @@ configurations {
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.0.8")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.1.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework:spring-jms:6.2.0")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.1.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.2.0")
 
   implementation("org.flywaydb:flyway-database-oracle")
   implementation("org.hibernate.orm:hibernate-community-dialects")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
 
   runtimeOnly("com.zaxxer:HikariCP")
   implementation("com.oracle.database.jdbc:ojdbc11:23.6.0.24.10")
@@ -28,7 +28,7 @@ dependencies {
   implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.56.0")
   implementation("org.jetbrains.exposed:exposed-java-time:0.56.0")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.0.8")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.1.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.2.2")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
@@ -38,8 +38,8 @@ dependencies {
   }
   testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.26")
   testImplementation("org.springframework.security:spring-security-test")
-  testImplementation("org.testcontainers:localstack:1.20.3")
-  testImplementation("org.testcontainers:oracle-xe:1.20.3")
+  testImplementation("org.testcontainers:localstack:1.20.4")
+  testImplementation("org.testcontainers:oracle-xe:1.20.4")
 }
 
 kotlin {
