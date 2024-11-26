@@ -34,6 +34,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMarksEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
@@ -679,17 +680,50 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender physical marks changes mapped correctly`() {
-    withCallTransformer<GenericOffenderEvent>(
+    withCallTransformer<OffenderIdentifyingMarksEvent>(
       Xtag(
         eventType = "OFF_IDENT_MARKS-CHANGED",
         nomisTimestamp = fixedEventTime,
-        content = XtagContent(mapOf("p_offender_id_display" to "A123BC", "p_offender_book_id" to "12345")),
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_offender_book_id" to "12345",
+            "p_id_mark_seq" to "3",
+          ),
+        ),
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_IDENTIFYING_MARKS-CHANGED")
       assertThat(offenderIdDisplay).isEqualTo("A123BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(nomisEventType).isEqualTo("OFF_IDENT_MARKS-CHANGED")
+      assertThat(idMarkSeq).isEqualTo(3)
+    }
+  }
+
+  @Test
+  fun `offender physical marks deleted mapped correctly`() {
+    withCallTransformer<OffenderIdentifyingMarksEvent>(
+      Xtag(
+        eventType = "OFF_IDENT_MARKS-CHANGED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_offender_book_id" to "12345",
+            "p_id_mark_seq" to "3",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_IDENTIFYING_MARKS-DELETED")
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(nomisEventType).isEqualTo("OFF_IDENT_MARKS-CHANGED")
+      assertThat(idMarkSeq).isEqualTo(3)
     }
   }
 

@@ -32,6 +32,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMarksEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
@@ -981,11 +982,13 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     offenderIdDisplay = xtag.content.p_offender_id_display,
   )
 
-  private fun offenderIdentifyingMarksUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "OFFENDER_IDENTIFYING_MARKS-CHANGED",
+  private fun offenderIdentifyingMarksUpdatedOf(xtag: Xtag) = OffenderIdentifyingMarksEvent(
+    eventType = "OFFENDER_IDENTIFYING_MARKS-${if (xtag.content.p_delete_flag == "Y") "DELETED" else "CHANGED"}",
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
+    nomisEventType = xtag.eventType,
+    idMarkSeq = xtag.content.p_id_mark_seq?.toInt(),
   )
 
   private fun offenderPhysicalAttributesUpdatedOf(xtag: Xtag) = GenericOffenderEvent(
