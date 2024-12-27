@@ -2874,7 +2874,7 @@ class OffenderEventsTransformerTest {
             "p_offender_book_id" to "12345",
             "p_offender_charge_id" to "23456",
             "p_audit_module_name" to "DPS_AUDIT",
-            "p_has_offence_code_changed" to "Y"
+            "p_has_offence_code_changed" to "Y",
           ),
         ),
       ),
