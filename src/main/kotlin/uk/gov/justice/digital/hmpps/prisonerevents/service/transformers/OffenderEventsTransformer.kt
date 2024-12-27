@@ -222,7 +222,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
           xtag,
         )
 
-        "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED" -> courtEventChargeEventOf(
+        "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED", "COURT_EVENT_CHARGES-UPDATED" -> courtEventChargeEventOf(
           xtag,
         )
 
@@ -1147,6 +1147,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     offenderIdDisplay = xtag.content.p_offender_id_display,
     chargeId = xtag.content.p_offender_charge_id?.toLong(),
     nomisEventType = xtag.eventType,
+    offenceCodeChange = "Y".equals(xtag.content.p_has_offence_code_changed),
     auditModuleName = xtag.content.p_audit_module_name,
   )
 

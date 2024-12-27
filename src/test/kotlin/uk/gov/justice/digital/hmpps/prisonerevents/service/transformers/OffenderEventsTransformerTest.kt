@@ -2822,7 +2822,7 @@ class OffenderEventsTransformerTest {
 
   @Test
   fun `offender charges update event mapped correctly`() {
-    offenderChargeEventMappedCorrectly("OFFENDER_CHARGES-UPDATED")
+    offenderChargeEventUpdatedMappedCorrectly()
   }
 
   @Test
@@ -2857,6 +2857,35 @@ class OffenderEventsTransformerTest {
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(chargeId).isEqualTo(23456)
+      assertThat(offenceCodeChange).isFalse()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  private fun offenderChargeEventUpdatedMappedCorrectly() {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderChargeEvent>(
+      Xtag(
+        eventType = "OFFENDER_CHARGES-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_charge_id" to "23456",
+            "p_audit_module_name" to "DPS_AUDIT",
+            "p_has_offence_code_changed" to "Y"
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CHARGES-UPDATED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("OFFENDER_CHARGES-UPDATED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(chargeId).isEqualTo(23456)
+      assertThat(offenceCodeChange).isTrue()
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
@@ -2910,6 +2939,11 @@ class OffenderEventsTransformerTest {
   @Test
   fun `court event charge deleted event mapped correctly`() {
     courtEventChargeEventMappedCorrectly("COURT_EVENT_CHARGES-DELETED")
+  }
+
+  @Test
+  fun `court event charge updated event mapped correctly`() {
+    courtEventChargeEventMappedCorrectly("COURT_EVENT_CHARGES-UPDATED")
   }
 
   private fun courtEventChargeEventMappedCorrectly(eventName: String) {
