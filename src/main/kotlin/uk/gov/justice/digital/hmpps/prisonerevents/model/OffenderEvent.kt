@@ -408,6 +408,7 @@ class OffenderChargeEvent(
   offenderIdDisplay: String? = null,
   val auditModuleName: String? = null,
   val chargeId: Long?,
+  val offenceCodeChange: Boolean? = false,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
