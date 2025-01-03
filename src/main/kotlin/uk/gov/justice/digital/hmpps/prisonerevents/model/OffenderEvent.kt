@@ -836,6 +836,23 @@ enum class BookingNumberChangedType {
 }
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderMarksImageEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String? = null,
+  bookingId: Long?,
+  val auditModuleName: String,
+  val offenderImageId: Long,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
