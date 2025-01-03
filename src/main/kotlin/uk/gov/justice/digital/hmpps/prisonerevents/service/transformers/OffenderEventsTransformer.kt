@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMarksEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderMarksImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
@@ -271,6 +272,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "ADDRESSES_CORPORATE-INSERTED", "ADDRESSES_CORPORATE-UPDATED", "ADDRESSES_CORPORATE-DELETED" -> corporateAddressEventOf(xtag)
         "INTERNET_ADDRESSES_CORPORATE-INSERTED", "INTERNET_ADDRESSES_CORPORATE-UPDATED", "INTERNET_ADDRESSES_CORPORATE-DELETED" -> corporateInternetAddressEventOf(xtag)
         "CORPORATE-INSERTED", "CORPORATE-UPDATED", "CORPORATE-DELETED" -> corporateEventOf(xtag)
+        "OFFENDER_IMAGES-UPDATED", "OFFENDER_IMAGES-DELETED" -> offenderImageEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1395,6 +1397,39 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )
+
+  private fun offenderImageEventOf(xtag: Xtag) =
+    when (xtag.content.p_image_object_type) {
+      "OFF_IDM" -> offenderMarksImageEventOf(xtag)
+      else -> null
+    }
+
+  /*
+   * When an offender marks image is uploaded to NOMIS the following happens:
+   * - an OFFENDER_IMAGES row is created with a null image and the XTAG event has `p_full_size_image_changed=N`
+   * - the image is then added to the row and the next XTAG event has `p_full_size_image_changed=Y`
+   * Therefore we wait for the 2nd XTAG before publishing the image created event to make sure the image is available.
+   *
+   * Once the image is added to the record it can't be changed. Additional images are added as additional rows.
+   * However there can only ever be 1 "default" image which is indicated by `ACTIVE_FLAG=Y`. Therefore if the "default"
+   * status of an image has changed, we publish the image updated event.
+   */
+  private fun offenderMarksImageEventOf(xtag: Xtag) =
+    when {
+      xtag.eventType == "OFFENDER_IMAGES-DELETED" -> "OFFENDER_MARKS_IMAGE-DELETED"
+      xtag.content.p_full_size_image_changed == "Y" -> "OFFENDER_MARKS_IMAGE-CREATED"
+      xtag.content.p_active_flag_changed == "Y" -> "OFFENDER_MARKS_IMAGE-UPDATED"
+      else -> null
+    }?.let { newEventType ->
+      OffenderMarksImageEvent(
+        eventType = newEventType,
+        eventDatetime = xtag.nomisTimestamp,
+        nomisEventType = xtag.eventType,
+        bookingId = xtag.content.p_offender_book_id!!.toLong(),
+        offenderImageId = xtag.content.p_offender_image_id!!.toLong(),
+        auditModuleName = xtag.content.p_audit_module_name!!,
+      )
+    }
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
