@@ -19,10 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.jms.core.JmsTemplate
 import org.springframework.jms.core.ProducerCallback
 import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
@@ -43,14 +43,14 @@ import javax.sql.DataSource
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class OraclePoolingIntTest : IntegrationTestBase() {
 
-  @SpyBean
+  @MockitoSpyBean
   private lateinit var hmppsQueueService: HmppsQueueService
 
-  @SpyBean
+  @MockitoSpyBean
   @Qualifier("listenerDataSource")
   private lateinit var listenerDataSource: DataSource
 
-  @SpyBean
+  @MockitoSpyBean
   private lateinit var jdbcDataSource: DataSource
 
   @Autowired

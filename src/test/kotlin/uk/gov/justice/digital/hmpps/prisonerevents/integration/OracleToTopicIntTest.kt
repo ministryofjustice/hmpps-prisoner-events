@@ -25,10 +25,10 @@ import org.mockito.kotlin.whenever
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.boot.test.mock.mockito.SpyBean
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Import
 import org.springframework.jms.core.JmsTemplate
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean
 import org.springframework.test.util.JsonPathExpectationsHelper
 import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
@@ -78,7 +78,7 @@ class SnsConfig(private val hmppsTopicFactory: HmppsTopicFactory) {
 @Import(SnsConfig::class)
 class OracleToTopicIntTest : IntegrationTestBase() {
 
-  @SpyBean
+  @MockitoSpyBean
   @Qualifier("prisoneventtopic-sns-client")
   protected lateinit var snsClient: SnsAsyncClient
 
