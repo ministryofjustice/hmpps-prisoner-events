@@ -2978,6 +2978,7 @@ class OffenderEventsTransformerTest {
   @Test
   fun `court appearance update event mapped correctly`() {
     courtAppearanceEventMappedCorrectly(eventName = "COURT_EVENT-UPDATED", translatedEventName = "COURT_EVENTS-UPDATED")
+    courtAppearanceEventMappedCorrectlyForNullCase(eventName = "COURT_EVENT-UPDATED", translatedEventName = "COURT_EVENTS-UPDATED")
   }
 
   @Test
@@ -3004,6 +3005,7 @@ class OffenderEventsTransformerTest {
             "p_offender_id_display" to "A234BC",
             "p_offender_book_id" to "12345",
             "p_event_id" to "65432",
+            "p_case_id" to "55555",
             "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
@@ -3015,6 +3017,34 @@ class OffenderEventsTransformerTest {
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(bookingId).isEqualTo(12345)
       assertThat(eventId).isEqualTo(65432)
+      assertThat(caseId).isEqualTo(55555)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  private fun courtAppearanceEventMappedCorrectlyForNullCase(eventName: String, translatedEventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtAppearanceEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_event_id" to "65432",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(translatedEventName)
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(eventId).isEqualTo(65432)
+      assertThat(caseId).isNull()
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
