@@ -43,6 +43,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEmploymentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonIdentifierEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
@@ -273,7 +274,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "INTERNET_ADDRESSES_CORPORATE-INSERTED", "INTERNET_ADDRESSES_CORPORATE-UPDATED", "INTERNET_ADDRESSES_CORPORATE-DELETED" -> corporateInternetAddressEventOf(xtag)
         "CORPORATE-INSERTED", "CORPORATE-UPDATED", "CORPORATE-DELETED" -> corporateEventOf(xtag)
         "OFFENDER_IMAGES-UPDATED", "OFFENDER_IMAGES-DELETED" -> offenderImageEventOf(xtag)
-
+        "TAG_IMAGES-UPDATED", "TAG_IMAGES-DELETED" -> personOrStaffImageEventOf(xtag)
         else -> OffenderEvent(
           eventType = xtag.eventType,
           eventDatetime = xtag.nomisTimestamp,
@@ -1405,6 +1406,11 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
       else -> null
     }
 
+  private fun personOrStaffImageEventOf(xtag: Xtag) = when (xtag.content.p_image_object_type) {
+    "PERSON" -> personImageEventOf(xtag)
+    else -> null
+  }
+
   /*
    * When an offender marks image is uploaded to NOMIS the following happens:
    * - an OFFENDER_IMAGES row is created with a null image and the XTAG event has `p_full_size_image_changed=N`
@@ -1431,6 +1437,22 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         auditModuleName = xtag.content.p_audit_module_name!!,
       )
     }
+
+  private fun personImageEventOf(xtag: Xtag) = when {
+    xtag.eventType == "TAG_IMAGES-DELETED" -> "PERSON_IMAGE-DELETED"
+    xtag.content.p_full_size_image_changed == "Y" -> "PERSON_IMAGE-CREATED"
+    xtag.content.p_active_flag_changed == "Y" -> "PERSON_IMAGE-UPDATED"
+    else -> null
+  }?.let { newEventType ->
+    PersonImageEvent(
+      eventType = newEventType,
+      eventDatetime = xtag.nomisTimestamp,
+      nomisEventType = xtag.eventType,
+      personId = xtag.content.p_image_object_id!!.toLong(),
+      personImageId = xtag.content.p_tag_image_id!!.toLong(),
+      auditModuleName = xtag.content.p_audit_module_name!!,
+    )
+  }
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
