@@ -45,6 +45,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEmploymentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonIdentifierEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
@@ -5521,6 +5522,148 @@ class OffenderEventsTransformerTest {
               "p_offender_book_id" to "1108078",
               "p_nomis_timestamp" to "20250103091727.250845000",
               "p_offender_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ).also {
+        assertThat(it).isNull()
+      }
+    }
+  }
+
+  @Nested
+  inner class PersonImageEvents {
+
+    @Test
+    fun `TAG_IMAGES-UPDATED for person with full size image added publishes created event`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonImageEvent>(
+        Xtag(
+          eventType = "TAG_IMAGES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "Y",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "PERSON",
+              "p_active_flag_changed" to "N",
+              // personId
+              "p_image_object_id" to "1108078",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_tag_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PERSON_IMAGE-CREATED")
+        assertThat(personId).isEqualTo(1108078)
+        assertThat(personImageId).isEqualTo(1996215)
+        assertThat(auditModuleName).isEqualTo("OCUIMAGE")
+      }
+    }
+
+    @Test
+    fun `TAG_IMAGES-UPDATED for person with active flag changed publishes updated event`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonImageEvent>(
+        Xtag(
+          eventType = "TAG_IMAGES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "N",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "PERSON",
+              "p_active_flag_changed" to "Y",
+              // personId
+              "p_image_object_id" to "1108078",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_tag_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PERSON_IMAGE-UPDATED")
+        assertThat(personId).isEqualTo(1108078)
+        assertThat(personImageId).isEqualTo(1996215)
+        assertThat(auditModuleName).isEqualTo("OCUIMAGE")
+      }
+    }
+
+    @Test
+    fun `TAG_IMAGES-DELETED for person publishes deleted event`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<PersonImageEvent>(
+        Xtag(
+          eventType = "TAG_IMAGES-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "Y",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "PERSON",
+              "p_active_flag_changed" to "Y",
+              // personId
+              "p_image_object_id" to "1108078",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_tag_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("PERSON_IMAGE-DELETED")
+        assertThat(personId).isEqualTo(1108078)
+        assertThat(personImageId).isEqualTo(1996215)
+        assertThat(auditModuleName).isEqualTo("OCUIMAGE")
+      }
+    }
+
+    @Test
+    fun `TAG_IMAGES-UPDATED for person record created before image added is ignored`() {
+      val now = LocalDateTime.now()
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "TAG_IMAGES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "N",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "PERSON",
+              "p_active_flag_changed" to "N",
+              // personId
+              "p_image_object_id" to "1108078",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_tag_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ).also {
+        assertThat(it).isNull()
+      }
+    }
+
+    @Test
+    fun `TAG_IMAGES-UPDATED for staff image is ignored`() {
+      val now = LocalDateTime.now()
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "TAG_IMAGES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "Y",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "STAFF",
+              "p_active_flag_changed" to "N",
+              "p_image_object_id" to "99999",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_tag_image_id" to "1996215",
             ),
           ),
         ),

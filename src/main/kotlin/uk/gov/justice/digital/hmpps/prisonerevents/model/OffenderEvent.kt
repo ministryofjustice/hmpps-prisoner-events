@@ -854,6 +854,20 @@ class OffenderMarksImageEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class PersonImageEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val personImageId: Long,
+  val personId: Long,
+  val auditModuleName: String,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
