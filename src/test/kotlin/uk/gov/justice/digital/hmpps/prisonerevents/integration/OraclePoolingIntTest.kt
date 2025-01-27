@@ -128,7 +128,6 @@ class OraclePoolingIntTest : IntegrationTestBase() {
       .pollInterval(poll) untilCallTo { getNumberOfMessagesCurrentlyOnPrisonEventQueue() } matches { it == count }
   }
 
-  fun getNumberOfMessagesCurrentlyOnPrisonEventQueue(): Int =
-    prisonEventQueueSqsClient.countAllMessagesOnQueue(prisonEventQueueUrl).get()
-      .also { log.info("Number of messages on prison queue: $it") }
+  fun getNumberOfMessagesCurrentlyOnPrisonEventQueue(): Int = prisonEventQueueSqsClient.countAllMessagesOnQueue(prisonEventQueueUrl).get()
+    .also { log.info("Number of messages on prison queue: $it") }
 }

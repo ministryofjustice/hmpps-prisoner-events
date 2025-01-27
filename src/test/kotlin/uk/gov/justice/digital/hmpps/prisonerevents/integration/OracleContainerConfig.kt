@@ -23,13 +23,12 @@ object OracleContainerConfig {
     }
   }
 
-  private fun oracleIsRunning(): Boolean =
-    try {
-      Socket("127.0.0.1", 1521)
-      true
-    } catch (e: IOException) {
-      false
-    }
+  private fun oracleIsRunning(): Boolean = try {
+    Socket("127.0.0.1", 1521)
+    true
+  } catch (e: IOException) {
+    false
+  }
 
   private val log = LoggerFactory.getLogger(this::class.java)
 }
