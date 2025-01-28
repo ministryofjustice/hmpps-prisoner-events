@@ -88,12 +88,11 @@ class PrisonEventsEmitter(
     )
   }
 
-  private fun buildOptionalCode(payload: OffenderEvent): String? =
-    when (payload) {
-      is AlertOffenderEvent -> payload.alertCode
-      is ExternalMovementOffenderEvent -> "${payload.movementType}-${payload.directionCode}"
-      else -> null
-    }
+  private fun buildOptionalCode(payload: OffenderEvent): String? = when (payload) {
+    is AlertOffenderEvent -> payload.alertCode
+    is ExternalMovementOffenderEvent -> "${payload.movementType}-${payload.directionCode}"
+    else -> null
+  }
 
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)

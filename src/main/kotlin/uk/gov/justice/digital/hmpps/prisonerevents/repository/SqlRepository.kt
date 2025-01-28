@@ -83,9 +83,8 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     exceptionQueue: String,
     enqueuedBefore: LocalDate? = null,
     pageSize: Int = 500,
-  ): List<String> =
-    jdbcTemplate.query(
-      """
+  ): List<String> = jdbcTemplate.query(
+    """
         SELECT MSGID
         FROM XTAG.XTAG_LISTENER_TAB
         WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
@@ -93,46 +92,44 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
           AND (:enqueuedBefore is null OR ENQ_TIME < :enqueuedBefore)
           AND ROWNUM <= :pageSize
         ORDER BY ENQ_TIME
-      """.trimIndent(),
-      MapSqlParameterSource()
-        .addValue("exceptionQueue", exceptionQueue)
-        .addValue("enqueuedBefore", enqueuedBefore, Types.TIMESTAMP)
-        .addValue("pageSize", pageSize),
-    ) { resultSet: ResultSet, _: Int ->
-      resultSet.getBytes("MSGID").let {
-        StringBuilder()
-          .apply {
-            for (b in it) {
-              append(String.format("%02X", b))
-            }
+    """.trimIndent(),
+    MapSqlParameterSource()
+      .addValue("exceptionQueue", exceptionQueue)
+      .addValue("enqueuedBefore", enqueuedBefore, Types.TIMESTAMP)
+      .addValue("pageSize", pageSize),
+  ) { resultSet: ResultSet, _: Int ->
+    resultSet.getBytes("MSGID").let {
+      StringBuilder()
+        .apply {
+          for (b in it) {
+            append(String.format("%02X", b))
           }
-          .run { "ID:$this" }
-      }
+        }
+        .run { "ID:$this" }
     }
+  }
 
-  fun getExceptionMessageCount(exceptionQueue: String): Int? =
-    jdbcTemplate.queryForObject(
-      """
+  fun getExceptionMessageCount(exceptionQueue: String): Int? = jdbcTemplate.queryForObject(
+    """
         SELECT COUNT(MSGID)
         FROM XTAG.XTAG_LISTENER_TAB
         WHERE Q_NAME = '$EXCEPTION_QUEUE_NAME'
           AND EXCEPTION_QUEUE = :exceptionQueue
-      """.trimIndent(),
-      MapSqlParameterSource().addValue("exceptionQueue", exceptionQueue),
-      Int::class.java,
-    )
+    """.trimIndent(),
+    MapSqlParameterSource().addValue("exceptionQueue", exceptionQueue),
+    Int::class.java,
+  )
 
-  fun getMessageCount(queueName: String): Int? =
-    jdbcTemplate.queryForObject(
-      """
+  fun getMessageCount(queueName: String): Int? = jdbcTemplate.queryForObject(
+    """
       SELECT COUNT(*)
       FROM XTAG.XTAG_LISTENER_TAB
       WHERE Q_NAME = :queueName 
       AND STATE = 0
     """,
-      MapSqlParameterSource().addValue("queueName", queueName),
-      Int::class.java,
-    )
+    MapSqlParameterSource().addValue("queueName", queueName),
+    Int::class.java,
+  )
 
   fun purgeExceptionQueue() {
     jdbcTemplate.update("DELETE FROM XTAG.XTAG_LISTENER_TAB", MapSqlParameterSource())

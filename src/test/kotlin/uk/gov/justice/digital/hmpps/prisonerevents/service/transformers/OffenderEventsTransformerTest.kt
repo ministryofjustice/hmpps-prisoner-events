@@ -70,8 +70,7 @@ class OffenderEventsTransformerTest {
   private val fixedEventTime = LocalDateTime.now()
 
   @Suppress("UNCHECKED_CAST")
-  private fun <T : OffenderEvent> withCallTransformer(xtag: Xtag, block: T.() -> Unit): Unit =
-    (offenderEventsTransformer.offenderEventOf(xtag)!! as T).block()
+  private fun <T : OffenderEvent> withCallTransformer(xtag: Xtag, block: T.() -> Unit): Unit = (offenderEventsTransformer.offenderEventOf(xtag)!! as T).block()
 
   @Test
   fun offenderEventOfAQ() {

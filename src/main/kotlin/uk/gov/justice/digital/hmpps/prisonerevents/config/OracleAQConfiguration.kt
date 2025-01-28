@@ -42,10 +42,8 @@ class OracleAQConfiguration {
   class HikariPoolConfiguration : HikariConfig()
 
   @Bean
-  fun listenerConnectionFactory(@Qualifier("listenerDataSource") dataSource: DataSource): QueueConnectionFactory =
-    AQjmsFactory.getQueueConnectionFactory(dataSource) // Should not cache this connection factory according to Spring documentation
+  fun listenerConnectionFactory(@Qualifier("listenerDataSource") dataSource: DataSource): QueueConnectionFactory = AQjmsFactory.getQueueConnectionFactory(dataSource) // Should not cache this connection factory according to Spring documentation
 
   @Bean
-  fun retryConnectionFactory(@Qualifier("listenerDataSource") dataSource: DataSource): QueueConnectionFactory =
-    CachingConnectionFactory(AQjmsFactory.getQueueConnectionFactory(dataSource)) // Should cache this connection factory
+  fun retryConnectionFactory(@Qualifier("listenerDataSource") dataSource: DataSource): QueueConnectionFactory = CachingConnectionFactory(AQjmsFactory.getQueueConnectionFactory(dataSource)) // Should cache this connection factory
 }

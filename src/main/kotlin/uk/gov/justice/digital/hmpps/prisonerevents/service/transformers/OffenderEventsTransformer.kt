@@ -411,26 +411,25 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
   )
 
-  private fun addressUpdatedOrDeleted(xtag: Xtag) =
-    if (xtag.content.p_owner_class == "PER") {
-      if (xtag.content.p_address_deleted == "N") {
-        personAddressUpdatedEventOf(xtag)
-      } else {
-        personAddressDeletedEventOf(
-          xtag,
-        )
-      }
-    } else if (xtag.content.p_owner_class == "OFF") {
-      if (xtag.content.p_address_deleted == "N") {
-        offenderAddressUpdatedEventOf(xtag)
-      } else {
-        offenderAddressDeletedEventOf(
-          xtag,
-        )
-      }
+  private fun addressUpdatedOrDeleted(xtag: Xtag) = if (xtag.content.p_owner_class == "PER") {
+    if (xtag.content.p_address_deleted == "N") {
+      personAddressUpdatedEventOf(xtag)
     } else {
-      if (xtag.content.p_address_deleted == "N") addressUpdatedEventOf(xtag) else addressDeletedEventOf(xtag)
+      personAddressDeletedEventOf(
+        xtag,
+      )
     }
+  } else if (xtag.content.p_owner_class == "OFF") {
+    if (xtag.content.p_address_deleted == "N") {
+      offenderAddressUpdatedEventOf(xtag)
+    } else {
+      offenderAddressDeletedEventOf(
+        xtag,
+      )
+    }
+  } else {
+    if (xtag.content.p_address_deleted == "N") addressUpdatedEventOf(xtag) else addressDeletedEventOf(xtag)
+  }
 
   private fun hdcFineInserted(xtag: Xtag) = GenericOffenderEvent(
     eventType = "HDC_FINE-INSERTED",
@@ -1400,11 +1399,10 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
   )
 
-  private fun offenderImageEventOf(xtag: Xtag) =
-    when (xtag.content.p_image_object_type) {
-      "OFF_IDM" -> offenderMarksImageEventOf(xtag)
-      else -> null
-    }
+  private fun offenderImageEventOf(xtag: Xtag) = when (xtag.content.p_image_object_type) {
+    "OFF_IDM" -> offenderMarksImageEventOf(xtag)
+    else -> null
+  }
 
   private fun personOrStaffImageEventOf(xtag: Xtag) = when (xtag.content.p_image_object_type) {
     "PERSON" -> personImageEventOf(xtag)
@@ -1421,22 +1419,21 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
    * However there can only ever be 1 "default" image which is indicated by `ACTIVE_FLAG=Y`. Therefore if the "default"
    * status of an image has changed, we publish the image updated event.
    */
-  private fun offenderMarksImageEventOf(xtag: Xtag) =
-    when {
-      xtag.eventType == "OFFENDER_IMAGES-DELETED" -> "OFFENDER_MARKS_IMAGE-DELETED"
-      xtag.content.p_full_size_image_changed == "Y" -> "OFFENDER_MARKS_IMAGE-CREATED"
-      xtag.content.p_active_flag_changed == "Y" -> "OFFENDER_MARKS_IMAGE-UPDATED"
-      else -> null
-    }?.let { newEventType ->
-      OffenderMarksImageEvent(
-        eventType = newEventType,
-        eventDatetime = xtag.nomisTimestamp,
-        nomisEventType = xtag.eventType,
-        bookingId = xtag.content.p_offender_book_id!!.toLong(),
-        offenderImageId = xtag.content.p_offender_image_id!!.toLong(),
-        auditModuleName = xtag.content.p_audit_module_name!!,
-      )
-    }
+  private fun offenderMarksImageEventOf(xtag: Xtag) = when {
+    xtag.eventType == "OFFENDER_IMAGES-DELETED" -> "OFFENDER_MARKS_IMAGE-DELETED"
+    xtag.content.p_full_size_image_changed == "Y" -> "OFFENDER_MARKS_IMAGE-CREATED"
+    xtag.content.p_active_flag_changed == "Y" -> "OFFENDER_MARKS_IMAGE-UPDATED"
+    else -> null
+  }?.let { newEventType ->
+    OffenderMarksImageEvent(
+      eventType = newEventType,
+      eventDatetime = xtag.nomisTimestamp,
+      nomisEventType = xtag.eventType,
+      bookingId = xtag.content.p_offender_book_id!!.toLong(),
+      offenderImageId = xtag.content.p_offender_image_id!!.toLong(),
+      auditModuleName = xtag.content.p_audit_module_name!!,
+    )
+  }
 
   private fun personImageEventOf(xtag: Xtag) = when {
     xtag.eventType == "TAG_IMAGES-DELETED" -> "PERSON_IMAGE-DELETED"
@@ -1486,46 +1483,42 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     private val caseInsensitiveFormatter =
       DateTimeFormatterBuilder().parseCaseInsensitive().appendPattern(DATE_PATTERN).toFormatter()
 
-    fun localDateOf(date: String?): LocalDate? =
-      try {
-        date?.let {
-          LocalDate.parse(it, caseInsensitiveFormatter)
-        }
-      } catch (dtpe: DateTimeParseException) {
-        log.error("Unable to parse $date into a LocalDateTime using pattern $DATE_PATTERN", dtpe)
-        null
+    fun localDateOf(date: String?): LocalDate? = try {
+      date?.let {
+        LocalDate.parse(it, caseInsensitiveFormatter)
       }
+    } catch (dtpe: DateTimeParseException) {
+      log.error("Unable to parse $date into a LocalDateTime using pattern $DATE_PATTERN", dtpe)
+      null
+    }
 
     private const val TIME_PATTERN = "[yyyy-MM-dd ]HH:mm:ss"
 
-    fun localTimeOf(dateTime: String?): LocalTime? =
-      try {
-        dateTime?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern(TIME_PATTERN)) }
-      } catch (dtpe: DateTimeParseException) {
-        log.error("Unable to parse $dateTime into a LocalTime using pattern $TIME_PATTERN", dtpe)
-        null
-      }
+    fun localTimeOf(dateTime: String?): LocalTime? = try {
+      dateTime?.let { LocalTime.parse(it, DateTimeFormatter.ofPattern(TIME_PATTERN)) }
+    } catch (dtpe: DateTimeParseException) {
+      log.error("Unable to parse $dateTime into a LocalTime using pattern $TIME_PATTERN", dtpe)
+      null
+    }
 
-    fun localDateTimeOf(date: String?, time: String?): LocalDateTime? =
-      localDateOf(date)?.let {
-        val t = localTimeOf(time)
-        if (t == null) {
-          it.atStartOfDay()
-        } else {
-          t.atDate(it)
-        }
+    fun localDateTimeOf(date: String?, time: String?): LocalDateTime? = localDateOf(date)?.let {
+      val t = localTimeOf(time)
+      if (t == null) {
+        it.atStartOfDay()
+      } else {
+        t.atDate(it)
       }
+    }
 
     private const val TIMESTAMP_PATTERN = "yyyyMMddHHmmss.SSSSSSSSS"
 
-    fun localDateTimeOf(dateTime: String?): LocalDateTime? =
-      try {
-        dateTime?.let {
-          LocalDateTime.parse(it, DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN))
-        }
-      } catch (dtpe: DateTimeParseException) {
-        log.error("Unable to parse $dateTime into a LocalDateTime using pattern $TIMESTAMP_PATTERN", dtpe)
-        null
+    fun localDateTimeOf(dateTime: String?): LocalDateTime? = try {
+      dateTime?.let {
+        LocalDateTime.parse(it, DateTimeFormatter.ofPattern(TIMESTAMP_PATTERN))
       }
+    } catch (dtpe: DateTimeParseException) {
+      log.error("Unable to parse $dateTime into a LocalDateTime using pattern $TIMESTAMP_PATTERN", dtpe)
+      null
+    }
   }
 }

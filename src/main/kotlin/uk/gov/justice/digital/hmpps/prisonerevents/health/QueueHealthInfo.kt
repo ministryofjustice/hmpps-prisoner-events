@@ -51,16 +51,14 @@ class QueueHealthInfo(private val aqService: AQService, private val request: Htt
     return healthBuilder.build()
   }
 
-  private fun dlqStatus(dlqResults: List<Result<HealthDetail>>): String =
-    if (dlqResults.any { it.isFailure }) "DOWN" else "UP"
+  private fun dlqStatus(dlqResults: List<Result<HealthDetail>>): String = if (dlqResults.any { it.isFailure }) "DOWN" else "UP"
 
-  private fun Builder.addHealthResult(result: Result<HealthDetail>) =
-    result
-      .onSuccess { healthDetail -> withDetail(healthDetail.key(), healthDetail.value()) }
-      .onFailure { throwable ->
-        withException(throwable)
-          .also { log.error("Queue health for queueId $EXCEPTION_QUEUE_NAME failed due to exception", throwable) }
-      }
+  private fun Builder.addHealthResult(result: Result<HealthDetail>) = result
+    .onSuccess { healthDetail -> withDetail(healthDetail.key(), healthDetail.value()) }
+    .onFailure { throwable ->
+      withException(throwable)
+        .also { log.error("Queue health for queueId $EXCEPTION_QUEUE_NAME failed due to exception", throwable) }
+    }
 
   private fun check(check: () -> HealthDetail): Result<HealthDetail> = runCatching {
     success(check())

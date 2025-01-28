@@ -38,11 +38,10 @@ object LocalStackContainer {
     }
   }
 
-  private fun localstackIsRunning(): Boolean =
-    try {
-      Socket("127.0.0.1", 4566)
-      true
-    } catch (e: IOException) {
-      false
-    }
+  private fun localstackIsRunning(): Boolean = try {
+    Socket("127.0.0.1", 4566)
+    true
+  } catch (e: IOException) {
+    false
+  }
 }

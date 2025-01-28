@@ -71,8 +71,7 @@ class SnsConfig(private val hmppsTopicFactory: HmppsTopicFactory) {
   @Bean("prisoneventtopic-sns-client")
   fun topicSnsClient(
     hmppsSqsProperties: HmppsSqsProperties,
-  ): SnsAsyncClient =
-    hmppsTopicFactory.createSnsAsyncClient(topicId = "prisoneventtopic", topicConfig = HmppsSqsProperties.TopicConfig(arn = hmppsSqsProperties.topics["prisoneventtopic"]!!.arn), hmppsSqsProperties = hmppsSqsProperties)
+  ): SnsAsyncClient = hmppsTopicFactory.createSnsAsyncClient(topicId = "prisoneventtopic", topicConfig = HmppsSqsProperties.TopicConfig(arn = hmppsSqsProperties.topics["prisoneventtopic"]!!.arn), hmppsSqsProperties = hmppsSqsProperties)
 }
 
 @Import(SnsConfig::class)
@@ -859,13 +858,11 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       .pollInterval(poll) untilCallTo { getNumberOfMessagesCurrentlyOnExceptionQueue() } matches { it == count }
   }
 
-  fun getNumberOfMessagesCurrentlyOnPrisonEventQueue(): Int =
-    prisonEventQueueSqsClient.countAllMessagesOnQueue(prisonEventQueueUrl).get()
-      .also { log.info("Number of messages on prison queue: $it") }
+  fun getNumberOfMessagesCurrentlyOnPrisonEventQueue(): Int = prisonEventQueueSqsClient.countAllMessagesOnQueue(prisonEventQueueUrl).get()
+    .also { log.info("Number of messages on prison queue: $it") }
 
-  fun getNumberOfMessagesCurrentlyOnExceptionQueue() =
-    sqlRepository.getExceptionMessageIds(QUEUE_NAME).size
-      .also { log.info("Number of messages on exception queue: $it") }
+  fun getNumberOfMessagesCurrentlyOnExceptionQueue() = sqlRepository.getExceptionMessageIds(QUEUE_NAME).size
+    .also { log.info("Number of messages on exception queue: $it") }
 
   fun awaitMessage(): PrisonerEventMessage {
     awaitQueueSizeToBe(1)
