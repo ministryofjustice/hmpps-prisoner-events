@@ -814,6 +814,20 @@ class CorporateInternetAddressEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class CorporateTypeEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val auditModuleName: String,
+  val corporateId: Long,
+  val corporateType: String,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class OffenderIdentifyingMarksEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,

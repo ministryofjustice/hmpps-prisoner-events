@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateTypeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
@@ -275,6 +276,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "CORPORATE-INSERTED", "CORPORATE-UPDATED", "CORPORATE-DELETED" -> corporateEventOf(xtag)
         "OFFENDER_IMAGES-UPDATED", "OFFENDER_IMAGES-DELETED" -> offenderImageEventOf(xtag)
         "TAG_IMAGES-UPDATED", "TAG_IMAGES-DELETED" -> personOrStaffImageEventOf(xtag)
+        "CORPORATE_TYPES-INSERTED", "CORPORATE_TYPES-UPDATED", "CORPORATE_TYPES-DELETED" -> corporateTypeEventOf(xtag)
         else -> OffenderEvent(
           eventType = xtag.eventType,
           eventDatetime = xtag.nomisTimestamp,
@@ -1395,6 +1397,15 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     corporateId = xtag.content.p_corporate_id!!.toLong(),
     internetAddressId = xtag.content.p_internet_address_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun corporateTypeEventOf(xtag: Xtag) = CorporateTypeEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    corporateId = xtag.content.p_corporate_id!!.toLong(),
+    corporateType = xtag.content.p_corporate_type!!,
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )
