@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateTypeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
@@ -5384,6 +5385,82 @@ class OffenderEventsTransformerTest {
         assertThat(internetAddressId).isEqualTo(5623860L)
         assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-DELETED")
         assertThat(auditModuleName).isEqualTo("OUMAGENC")
+      }
+    }
+  }
+
+  @Nested
+  inner class CorporateTypeEvents {
+
+    @Test
+    fun `CORPORATE_TYPES-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateTypeEvent>(
+        Xtag(
+          eventType = "CORPORATE_TYPES-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_corporate_type" to "BSKILLS",
+              "p_audit_module_name" to "OCUCORPT",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("CORPORATE_TYPES-INSERTED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(corporateType).isEqualTo("BSKILLS")
+        assertThat(nomisEventType).isEqualTo("CORPORATE_TYPES-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OCUCORPT")
+      }
+    }
+
+    @Test
+    fun `CORPORATE_TYPES-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateTypeEvent>(
+        Xtag(
+          eventType = "CORPORATE_TYPES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_corporate_type" to "BSKILLS",
+              "p_audit_module_name" to "OCUCORPT",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("CORPORATE_TYPES-UPDATED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(corporateType).isEqualTo("BSKILLS")
+        assertThat(nomisEventType).isEqualTo("CORPORATE_TYPES-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OCUCORPT")
+      }
+    }
+
+    @Test
+    fun `CORPORATE_TYPES-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<CorporateTypeEvent>(
+        Xtag(
+          eventType = "CORPORATE_TYPES-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_corporate_id" to "4730074",
+              "p_corporate_type" to "BSKILLS",
+              "p_audit_module_name" to "OCUCORPT",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("CORPORATE_TYPES-DELETED")
+        assertThat(corporateId).isEqualTo(4730074L)
+        assertThat(corporateType).isEqualTo("BSKILLS")
+        assertThat(nomisEventType).isEqualTo("CORPORATE_TYPES-DELETED")
+        assertThat(auditModuleName).isEqualTo("OCUCORPT")
       }
     }
   }
