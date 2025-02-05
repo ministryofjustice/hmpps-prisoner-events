@@ -843,6 +843,31 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
+  fun `restriction person changes with missing audit moduke mapped correctly`() {
+    withCallTransformer<PersonRestrictionOffenderEvent>(
+      Xtag(
+        eventType = "OFF_PERS_RESTRICTS-UPDATED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_contact_person_id" to "1234567",
+            "p_offender_person_restrict_id" to "2345678",
+            "p_restriction_type" to "TYPE",
+            "p_restriction_effective_date" to "12-AUG-2022",
+            "p_restriction_expiry_date" to "2023-03-31",
+            "p_authorized_staff_id" to "12345",
+            "p_comment_text" to "comment",
+            "p_entered_staff_id" to "23456",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("PERSON_RESTRICTION-UPSERTED")
+      assertThat(auditModuleName).isEqualTo("UNKNOWN")
+    }
+  }
+
+  @Test
   fun `restriction visitor mapped correctly`() {
     withCallTransformer<VisitorRestrictionOffenderEvent>(
       Xtag(
@@ -873,6 +898,31 @@ class OffenderEventsTransformerTest {
       assertThat(visitorRestrictionId).isEqualTo(123456)
       assertThat(enteredById).isEqualTo(23456)
       assertThat(auditModuleName).isEqualTo("OMUVREST")
+    }
+  }
+
+  @Test
+  fun `restriction visitor with missing module is mapped correctly`() {
+    withCallTransformer<VisitorRestrictionOffenderEvent>(
+      Xtag(
+        eventType = "VISITOR_RESTRICTS-UPDATED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_person_id" to "12345",
+            "p_visit_restriction_type" to "TYPE",
+            "p_effective_date" to "12-AUG-2022",
+            "p_expiry_date" to "2023-03-31",
+            "p_comment_txt" to "comment",
+            "p_visitor_restriction_id" to "123456",
+            "p_entered_staff_id" to "23456",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("VISITOR_RESTRICTION-UPSERTED")
+      assertThat(auditModuleName).isEqualTo("UNKNOWN")
     }
   }
 
@@ -3023,6 +3073,7 @@ class OffenderEventsTransformerTest {
     }
   }
 
+  @Suppress("SameParameterValue")
   private fun courtAppearanceEventMappedCorrectlyForNullCase(eventName: String, translatedEventName: String) {
     val now = LocalDateTime.now()
     withCallTransformer<CourtAppearanceEvent>(
