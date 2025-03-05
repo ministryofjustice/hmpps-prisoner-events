@@ -1210,9 +1210,12 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
   private fun offenderSentenceEventOf(xtag: Xtag) = OffenderSentenceEvent(
     eventType = xtag.eventType!!.replace(oldValue = "OFF_SENT", newValue = "OFFENDER_SENTENCES"),
     eventDatetime = xtag.nomisTimestamp,
+    caseId = xtag.content.p_case_id?.toLong(),
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
     sentenceSeq = xtag.content.p_sentence_seq?.toLong(),
+    sentenceLevel = xtag.content.p_sentence_level,
+    sentenceCategory = xtag.content.p_sentence_category,
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
   )

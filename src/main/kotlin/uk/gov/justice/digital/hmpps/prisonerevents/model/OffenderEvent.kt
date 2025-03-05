@@ -495,6 +495,9 @@ class OffenderSentenceEvent(
   offenderIdDisplay: String? = null,
   val auditModuleName: String? = null,
   val sentenceSeq: Long? = null,
+  val caseId: Long? = null,
+  val sentenceLevel: String? = null,
+  val sentenceCategory: String? = null,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,

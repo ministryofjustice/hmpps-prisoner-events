@@ -3153,6 +3153,36 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
+  fun `offender sentence inserted event mapped correctly without nullables`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderSentenceEvent>(
+      Xtag(
+        eventType = "OFF_SENT-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_sentence_seq" to "2",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_SENTENCES-INSERTED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("OFF_SENT-INSERTED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(caseId).isNull()
+      assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(sentenceLevel).isNull()
+      assertThat(sentenceCategory).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
   fun `offender sentence deleted event mapped correctly`() {
     offenderSentenceEventMappedCorrectly("OFF_SENT-DELETED", "OFFENDER_SENTENCES-DELETED")
   }
@@ -3168,6 +3198,9 @@ class OffenderEventsTransformerTest {
             "p_offender_id_display" to "A234BC",
             "p_offender_book_id" to "12345",
             "p_sentence_seq" to "2",
+            "p_case_id" to "123",
+            "p_sentence_level" to "IND",
+            "p_sentence_category" to "2020",
             "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
@@ -3178,7 +3211,10 @@ class OffenderEventsTransformerTest {
       assertThat(nomisEventType).isEqualTo(xtagEventName)
       assertThat(offenderIdDisplay).isEqualTo("A234BC")
       assertThat(bookingId).isEqualTo(12345)
+      assertThat(caseId).isEqualTo(123)
       assertThat(sentenceSeq).isEqualTo(2)
+      assertThat(sentenceLevel).isEqualTo("IND")
+      assertThat(sentenceCategory).isEqualTo("2020")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
