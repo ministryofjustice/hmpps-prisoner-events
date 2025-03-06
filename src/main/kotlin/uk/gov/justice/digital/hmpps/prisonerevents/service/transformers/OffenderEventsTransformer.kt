@@ -1400,6 +1400,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     corporateId = xtag.content.p_corporate_id!!.toLong(),
     internetAddressId = xtag.content.p_internet_address_id!!.toLong(),
+    internetAddressClass = xtag.content.p_internet_address_class ?: "UNKNOWN",
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )
