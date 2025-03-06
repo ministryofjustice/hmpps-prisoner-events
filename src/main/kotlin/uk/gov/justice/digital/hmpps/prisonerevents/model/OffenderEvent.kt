@@ -810,6 +810,7 @@ class CorporateInternetAddressEvent(
   val auditModuleName: String,
   val corporateId: Long,
   val internetAddressId: Long,
+  val internetAddressClass: String,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,

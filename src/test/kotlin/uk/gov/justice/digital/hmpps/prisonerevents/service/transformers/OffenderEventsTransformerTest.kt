@@ -5411,6 +5411,7 @@ class OffenderEventsTransformerTest {
             mapOf(
               "p_corporate_id" to "4730074",
               "p_internet_address_id" to "5623860",
+              "p_internet_address_class" to "EMAIL",
               "p_audit_module_name" to "OUMAGENC",
               "p_owner_class" to "PER",
             ),
@@ -5420,6 +5421,7 @@ class OffenderEventsTransformerTest {
         assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-INSERTED")
         assertThat(corporateId).isEqualTo(4730074L)
         assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(internetAddressClass).isEqualTo("EMAIL")
         assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-INSERTED")
         assertThat(auditModuleName).isEqualTo("OUMAGENC")
       }
@@ -5436,6 +5438,7 @@ class OffenderEventsTransformerTest {
             mapOf(
               "p_corporate_id" to "4730074",
               "p_internet_address_id" to "5623860",
+              "p_internet_address_class" to "EMAIL",
               "p_audit_module_name" to "OUMAGENC",
               "p_owner_class" to "PER",
             ),
@@ -5445,6 +5448,7 @@ class OffenderEventsTransformerTest {
         assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-UPDATED")
         assertThat(corporateId).isEqualTo(4730074L)
         assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(internetAddressClass).isEqualTo("EMAIL")
         assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-UPDATED")
         assertThat(auditModuleName).isEqualTo("OUMAGENC")
       }
@@ -5461,6 +5465,7 @@ class OffenderEventsTransformerTest {
             mapOf(
               "p_corporate_id" to "4730074",
               "p_internet_address_id" to "5623860",
+              "p_internet_address_class" to "WEB",
               "p_audit_module_name" to "OUMAGENC",
               "p_owner_class" to "PER",
             ),
@@ -5470,6 +5475,7 @@ class OffenderEventsTransformerTest {
         assertThat(eventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-DELETED")
         assertThat(corporateId).isEqualTo(4730074L)
         assertThat(internetAddressId).isEqualTo(5623860L)
+        assertThat(internetAddressClass).isEqualTo("WEB")
         assertThat(nomisEventType).isEqualTo("INTERNET_ADDRESSES_CORPORATE-DELETED")
         assertThat(auditModuleName).isEqualTo("OUMAGENC")
       }
