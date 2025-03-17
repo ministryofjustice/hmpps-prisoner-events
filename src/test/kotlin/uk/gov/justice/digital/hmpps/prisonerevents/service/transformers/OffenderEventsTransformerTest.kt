@@ -53,6 +53,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffend
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.externalMovementEventOf
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.localDateOf
@@ -608,6 +609,106 @@ class OffenderEventsTransformerTest {
       assertThat(offenderIdDisplay).isEqualTo("AF123")
       assertThat(agencyLocationId).isEqualTo("MDI")
       assertThat(auditModuleName).isEqualTo("visit_screen")
+    }
+  }
+
+  @Nested
+  inner class VisitBalanceAdjustmentEvents {
+    @Test
+    fun visitBalanceAdjustmentCreatedMappedCorrectly() {
+      val now = LocalDateTime.now()
+      withCallTransformer<VisitBalanceAdjustmentEvent>(
+        Xtag(
+          eventType = ("OFFENDER_VISIT_BALANCE_ADJS-INSERTED"),
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "2323",
+              "p_event_date" to "2022-08-23",
+              "p_offender_visit_balance_adj_id" to "112233",
+              "p_offender_book_id" to "434",
+              "p_offender_id_display" to "A1234BC",
+              "p_offender_id" to "12345",
+              "p_root_offender_id" to "34567",
+              "p_audit_module_name" to "visit_balance_screen",
+              "p_nomis_timestamp" to "20230509215740.443718000",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_VISIT_BALANCE_ADJS-INSERTED")
+        assertThat(visitBalanceAdjustmentId).isEqualTo(112233)
+        assertThat(bookingId).isEqualTo(434L)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(offenderId).isEqualTo(12345)
+        assertThat(rootOffenderId).isEqualTo(34567)
+        assertThat(auditModuleName).isEqualTo("visit_balance_screen")
+        assertThat(eventDatetime).isEqualTo(now)
+      }
+    }
+
+    @Test
+    fun visitBalanceAdjustmentUpdatedMappedCorrectly() {
+      val now = LocalDateTime.now()
+      withCallTransformer<VisitBalanceAdjustmentEvent>(
+        Xtag(
+          eventType = ("OFFENDER_VISIT_BALANCE_ADJS-UPDATED"),
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "2323",
+              "p_event_date" to "2022-08-23",
+              "p_offender_visit_balance_adj_id" to "112233",
+              "p_offender_book_id" to "434",
+              "p_offender_id_display" to "A1234BC",
+              "p_offender_id" to "12345",
+              "p_root_offender_id" to "34567",
+              "p_audit_module_name" to "visit_balance_screen",
+              "p_nomis_timestamp" to "20230509215740.443718000",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_VISIT_BALANCE_ADJS-UPDATED")
+        assertThat(visitBalanceAdjustmentId).isEqualTo(112233)
+        assertThat(bookingId).isEqualTo(434L)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(offenderId).isEqualTo(12345)
+        assertThat(rootOffenderId).isEqualTo(34567)
+        assertThat(auditModuleName).isEqualTo("visit_balance_screen")
+        assertThat(eventDatetime).isEqualTo(now)
+      }
+    }
+
+    @Test
+    fun visitBalanceAdjustmentDeletedMappedCorrectly() {
+      val now = LocalDateTime.now()
+      withCallTransformer<VisitBalanceAdjustmentEvent>(
+        Xtag(
+          eventType = ("OFFENDER_VISIT_BALANCE_ADJS-DELETED"),
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_visit_balance_adj_id" to "112233",
+              "p_offender_book_id" to "434",
+              "p_offender_id_display" to "A1234BC",
+              "p_offender_id" to "12345",
+              "p_root_offender_id" to "34567",
+              "p_audit_module_name" to "visit_balance_screen",
+              "p_nomis_timestamp" to "20230509215740.443718000",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_VISIT_BALANCE_ADJS-DELETED")
+        assertThat(visitBalanceAdjustmentId).isEqualTo(112233)
+        assertThat(bookingId).isEqualTo(434L)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(offenderId).isEqualTo(12345)
+        assertThat(rootOffenderId).isEqualTo(34567)
+        assertThat(auditModuleName).isEqualTo("visit_balance_screen")
+        assertThat(eventDatetime).isEqualTo(now)
+      }
     }
   }
 
