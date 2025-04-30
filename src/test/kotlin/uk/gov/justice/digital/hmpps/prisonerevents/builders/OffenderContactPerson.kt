@@ -9,11 +9,15 @@ fun OffenderContactPerson.Companion.build(
   person: Person,
   contactType: String = "S",
   relationshipType: String = "BRO",
+  createUserName: String = "J.SMITH",
+  modifyUserName: String? = null,
   init: OffenderContactPerson.() -> Unit = {},
 ) = OffenderContactPerson.new {
   this.offenderBooking = offenderBooking
   this.person = person
   this.contactType = contactType
   this.relationshipType = relationshipType
+  this.createUserName = createUserName
+  this.modifyUserName = modifyUserName
   init()
 }

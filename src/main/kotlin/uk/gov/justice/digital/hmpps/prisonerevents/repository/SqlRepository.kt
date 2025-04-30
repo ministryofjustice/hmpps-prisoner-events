@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.repository
 
+import org.springframework.jdbc.core.ResultSetExtractor
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
@@ -61,23 +62,37 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     )
   }
 
-  fun getCreatedByUserOffenderContact(offenderContactPersonId: Long): String? = jdbcTemplate.queryForObject(
+  fun getCreatedByUserOffenderContact(offenderContactPersonId: Long): String? = jdbcTemplate.query(
     """
         SELECT CREATE_USER_ID
         FROM OFFENDER_CONTACT_PERSONS
         WHERE OFFENDER_CONTACT_PERSON_ID = :offenderContactPersonId
     """,
     MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
-  ) { resultSet: ResultSet, _: Int -> resultSet.getString("CREATE_USER_ID") }
+    ResultSetExtractor { resultSet: ResultSet ->
+      if (resultSet.next()) {
+        resultSet.getString("CREATE_USER_ID")
+      } else {
+        null
+      }
+    },
+  )
 
-  fun getModifiedByUserOffenderContact(offenderContactPersonId: Long): String? = jdbcTemplate.queryForObject(
+  fun getModifiedByUserOffenderContact(offenderContactPersonId: Long): String? = jdbcTemplate.query(
     """
         SELECT MODIFY_USER_ID
         FROM OFFENDER_CONTACT_PERSONS
         WHERE OFFENDER_CONTACT_PERSON_ID = :offenderContactPersonId
     """,
     MapSqlParameterSource().addValue("offenderContactPersonId", offenderContactPersonId),
-  ) { resultSet: ResultSet, _: Int -> resultSet.getString("MODIFY_USER_ID") }
+    ResultSetExtractor { resultSet: ResultSet ->
+      if (resultSet.next()) {
+        resultSet.getString("MODIFY_USER_ID")
+      } else {
+        null
+      }
+    },
+  )
 
   fun getExceptionMessageIds(
     exceptionQueue: String,
