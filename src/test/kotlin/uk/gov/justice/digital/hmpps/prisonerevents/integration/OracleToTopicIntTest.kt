@@ -346,6 +346,240 @@ class OracleToTopicIntTest : IntegrationTestBase() {
     }
 
     @Nested
+    @DisplayName("OFFENDER_CONTACT-INSERTED -> OFFENDER_CONTACT-INSERTED")
+    inner class OffenderContactInserted {
+      private lateinit var prisonerEvent: PrisonerEventMessage
+      private val offenderNo = "A1234AA"
+      private lateinit var person: Person
+      private lateinit var booking: OffenderBooking
+      private lateinit var offenderContactPerson: OffenderContactPerson
+
+      @BeforeEach
+      fun setUp() {
+        transaction {
+          this.addLogger(StdOutSqlLogger)
+          person = Person.build {}
+          Offender.build {
+            offenderNo = this@OffenderContactInserted.offenderNo
+          }.also {
+            booking = OffenderBooking.build(offender = it).also {
+              offenderContactPerson = OffenderContactPerson.build(offenderBooking = it, person = person, createUserName = "M.MARGE")
+            }
+          }
+        }
+      }
+
+      @Nested
+      inner class HappyPath {
+        @BeforeEach
+        fun setUp() {
+          simulateTrigger(
+            nomisEventType = "OFFENDER_CONTACT-INSERTED",
+            "p_offender_contact_person_id" to offenderContactPerson.id.value,
+            "p_person_id" to person.id.value,
+            "p_offender_book_id" to booking.id.value,
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_approved_visitor_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_active_flag" to "Y",
+            "p_next_of_kin_flag" to "Y",
+            "p_offender_id_display" to offenderNo,
+            "p_relationship_type" to "CA",
+            "p_contact_type" to "O",
+            "p_audit_module_name" to "OCDPERSO",
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to OFFENDER_CONTACT-INSERTED`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "OFFENDER_CONTACT-INSERTED")
+            assertJsonPath("nomisEventType", "OFFENDER_CONTACT-INSERTED")
+            assertJsonPath("contactId", "${offenderContactPerson.id.value}")
+            assertJsonPath("personId", "${person.personId.value}")
+            assertJsonPath("bookingId", "${booking.id.value}")
+            assertJsonPath("approvedVisitor", "false")
+            assertJsonPath("offenderIdDisplay", offenderNo)
+            assertJsonPath("username", "M.MARGE")
+            assertJsonPath("auditModuleName", "OCDPERSO")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("OFFENDER_CONTACT-INSERTED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
+      }
+
+      @Nested
+      inner class HappyPathRecordDeleted {
+        @BeforeEach
+        fun setUp() {
+          simulateTrigger(
+            nomisEventType = "OFFENDER_CONTACT-INSERTED",
+            "p_offender_contact_person_id" to 999,
+            "p_person_id" to person.id.value,
+            "p_offender_book_id" to booking.id.value,
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_approved_visitor_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_active_flag" to "Y",
+            "p_next_of_kin_flag" to "Y",
+            "p_offender_id_display" to offenderNo,
+            "p_relationship_type" to "CA",
+            "p_contact_type" to "O",
+            "p_audit_module_name" to "OCDPERSO",
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to OFFENDER_CONTACT-INSERTED even if record has been deleted`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "OFFENDER_CONTACT-INSERTED")
+            assertJsonPath("nomisEventType", "OFFENDER_CONTACT-INSERTED")
+            assertJsonPath("contactId", "999")
+            assertJsonPath("personId", "${person.personId.value}")
+            assertJsonPath("bookingId", "${booking.id.value}")
+            assertJsonPath("approvedVisitor", "false")
+            assertJsonPath("offenderIdDisplay", offenderNo)
+            assertDoesNotHaveJsonPath("username")
+            assertJsonPath("auditModuleName", "OCDPERSO")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("OFFENDER_CONTACT-INSERTED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
+      }
+    }
+
+    @Nested
+    @DisplayName("OFFENDER_CONTACT-UPDATED -> OFFENDER_CONTACT-UPDATED")
+    inner class OffenderContactUpdated {
+      private lateinit var prisonerEvent: PrisonerEventMessage
+      private val offenderNo = "A1234AA"
+      private lateinit var person: Person
+      private lateinit var booking: OffenderBooking
+      private lateinit var offenderContactPerson: OffenderContactPerson
+
+      @BeforeEach
+      fun setUp() {
+        transaction {
+          this.addLogger(StdOutSqlLogger)
+          person = Person.build {}
+          Offender.build {
+            offenderNo = this@OffenderContactUpdated.offenderNo
+          }.also {
+            booking = OffenderBooking.build(offender = it).also {
+              offenderContactPerson = OffenderContactPerson.build(offenderBooking = it, person = person, modifyUserName = "M.MARGE")
+            }
+          }
+        }
+      }
+
+      @Nested
+      inner class HappyPath {
+        @BeforeEach
+        fun setUp() {
+          simulateTrigger(
+            nomisEventType = "OFFENDER_CONTACT-UPDATED",
+            "p_offender_contact_person_id" to offenderContactPerson.id.value,
+            "p_person_id" to person.id.value,
+            "p_offender_book_id" to booking.id.value,
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_approved_visitor_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_active_flag" to "Y",
+            "p_next_of_kin_flag" to "Y",
+            "p_offender_id_display" to offenderNo,
+            "p_relationship_type" to "CA",
+            "p_contact_type" to "O",
+            "p_audit_module_name" to "OCDPERSO",
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to OFFENDER_CONTACT-UPDATED`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "OFFENDER_CONTACT-UPDATED")
+            assertJsonPath("nomisEventType", "OFFENDER_CONTACT-UPDATED")
+            assertJsonPath("contactId", "${offenderContactPerson.id.value}")
+            assertJsonPath("personId", "${person.personId.value}")
+            assertJsonPath("bookingId", "${booking.id.value}")
+            assertJsonPath("approvedVisitor", "false")
+            assertJsonPath("offenderIdDisplay", offenderNo)
+            assertJsonPath("username", "M.MARGE")
+            assertJsonPath("auditModuleName", "OCDPERSO")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("OFFENDER_CONTACT-UPDATED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
+      }
+
+      @Nested
+      inner class HappyPathRecordDeleted {
+        @BeforeEach
+        fun setUp() {
+          simulateTrigger(
+            nomisEventType = "OFFENDER_CONTACT-UPDATED",
+            "p_offender_contact_person_id" to 999,
+            "p_person_id" to person.id.value,
+            "p_offender_book_id" to booking.id.value,
+            "p_emergency_contact_flag" to "N",
+            "p_can_be_contacted_flag" to "N",
+            "p_approved_visitor_flag" to "N",
+            "p_aware_of_charges_flag" to "N",
+            "p_active_flag" to "Y",
+            "p_next_of_kin_flag" to "Y",
+            "p_offender_id_display" to offenderNo,
+            "p_relationship_type" to "CA",
+            "p_contact_type" to "O",
+            "p_audit_module_name" to "OCDPERSO",
+          )
+
+          prisonerEvent = awaitMessage()
+        }
+
+        @Test
+        fun `will map to OFFENDER_CONTACT-UPDATED even if record has been deleted`() {
+          with(prisonerEvent.message) {
+            assertJsonPath("eventType", "OFFENDER_CONTACT-UPDATED")
+            assertJsonPath("nomisEventType", "OFFENDER_CONTACT-UPDATED")
+            assertJsonPath("contactId", "999")
+            assertJsonPath("personId", "${person.personId.value}")
+            assertJsonPath("bookingId", "${booking.id.value}")
+            assertJsonPath("approvedVisitor", "false")
+            assertJsonPath("offenderIdDisplay", offenderNo)
+            assertDoesNotHaveJsonPath("username")
+            assertJsonPath("auditModuleName", "OCDPERSO")
+          }
+        }
+
+        @Test
+        fun `will map meta data for the event`() {
+          assertThat(prisonerEvent.eventType).isEqualTo("OFFENDER_CONTACT-UPDATED")
+          assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+        }
+      }
+    }
+
+    @Nested
     @DisplayName("OFF_PERS_RESTRICTS-UPDATED -> PERSON_RESTRICTION-DELETED")
     inner class PersonRestrictionDeleted {
       private lateinit var prisonerEvent: PrisonerEventMessage
