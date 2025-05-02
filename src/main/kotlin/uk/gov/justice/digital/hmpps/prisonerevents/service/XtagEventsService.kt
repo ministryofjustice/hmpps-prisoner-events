@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.prisonerevents.service
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonerevents.model.BookingNumberChangedType
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
@@ -61,7 +62,7 @@ class XtagEventsService(
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.offenderId!!).firstOrNull()
         oe.previousOffenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.previousOffenderId).firstOrNull()
         oe.bookingStartDateTime = exposeRepository.getBookingStartDateForOffenderBooking(oe.bookingId!!)
-        oe.lastAdmissionDate = exposeRepository.getLastAdmissionDateForOffenderBooking(oe.bookingId)
+        oe.lastAdmissionDate = exposeRepository.getLastAdmissionDateForOffenderBooking(oe.bookingId!!)
       }
 
       "OFFENDER_ADDRESS-INSERTED", "OFFENDER_ADDRESS-UPDATED" -> {
@@ -77,6 +78,12 @@ class XtagEventsService(
       "OFFENDER_CONTACT-UPDATED" -> {
         oe as OffenderContactEvent
         oe.username = sqlRepository.getModifiedByUserOffenderContact(oe.contactId)
+      }
+
+      "COURT_EVENT_CHARGES-LINKED", "COURT_EVENT_CHARGES-UNLINKED" -> {
+        oe as CourtEventChargeLinkingEvent
+        oe.bookingId = exposeRepository.getBookingIdFromChargeId(oe.chargeId!!)
+        oe.offenderIdDisplay = oe.bookingId?.let { sqlRepository.getNomsIdFromBooking(it).firstOrNull() }
       }
 
       "BOOKING_NUMBER-CHANGED" -> {

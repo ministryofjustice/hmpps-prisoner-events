@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 open class OffenderEvent(
   val eventType: String? = null,
   val eventDatetime: LocalDateTime? = null,
-  val bookingId: Long? = null,
+  var bookingId: Long? = null,
   val offenderId: Long? = null,
   var offenderIdDisplay: String? = null,
   val nomisEventType: String? = null,
