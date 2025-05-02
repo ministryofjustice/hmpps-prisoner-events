@@ -21,6 +21,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateTypeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
@@ -233,6 +234,18 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED", "COURT_EVENT_CHARGES-UPDATED" -> courtEventChargeEventOf(
           xtag,
+        )
+
+        "OFFENDER_CASES-UPDATED" if xtag.content.p_previous_combined_case_id != null -> courtCaseLinkingEventOf(
+          xtag,
+          eventType = "OFFENDER_CASES-UNLINKED",
+          combinedCaseId = xtag.content.p_previous_combined_case_id!!.toLong(),
+        )
+
+        "OFFENDER_CASES-UPDATED" if xtag.content.p_combined_case_id != null -> courtCaseLinkingEventOf(
+          xtag,
+          eventType = "OFFENDER_CASES-LINKED",
+          combinedCaseId = xtag.content.p_combined_case_id!!.toLong(),
         )
 
         "OFFENDER_CASES-UPDATED", "OFFENDER_CASES-INSERTED", "OFFENDER_CASES-DELETED" -> courtCaseEventOf(
@@ -1203,6 +1216,17 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     caseId = xtag.content.p_case_id?.toLong(),
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun courtCaseLinkingEventOf(xtag: Xtag, eventType: String, combinedCaseId: Long) = CourtCaseLinkingEvent(
+    eventType = eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    caseId = xtag.content.p_case_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+    combinedCaseId = combinedCaseId,
   )
 
   private fun caseIdentifierEventOf(xtag: Xtag) = CaseIdentifierEvent(

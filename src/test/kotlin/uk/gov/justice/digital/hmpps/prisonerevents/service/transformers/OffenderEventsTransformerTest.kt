@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporatePhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CorporateTypeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
@@ -3056,6 +3057,80 @@ class OffenderEventsTransformerTest {
   @Test
   fun `court case deleted event mapped correctly`() {
     courtCaseEventMappedCorrectly("OFFENDER_CASES-DELETED")
+  }
+
+  @Test
+  fun `court case linked event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtCaseLinkingEvent>(
+      Xtag(
+        eventType = "OFFENDER_CASES-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_case_status" to "I",
+            "p_status_update_staff_id" to "485887",
+            "p_lids_case_number" to "6",
+            "p_combined_case_id" to "23456",
+            "p_begin_date" to "20250501",
+            "p_status_update_date" to "20250501",
+            "p_case_seq" to "7",
+            "p_agy_loc_id" to "ABDSUM",
+            "p_case_type" to "Y",
+            "p_status_update_reason" to "LINKED",
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_case_id" to "1604141",
+            "p_audit_module_name" to "OCULCASE",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CASES-LINKED")
+      assertThat(nomisEventType).isEqualTo("OFFENDER_CASES-UPDATED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(caseId).isEqualTo(1604141)
+      assertThat(combinedCaseId).isEqualTo(23456)
+      assertThat(auditModuleName).isEqualTo("OCULCASE")
+    }
+  }
+
+  @Test
+  fun `court case unlinked event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtCaseLinkingEvent>(
+      Xtag(
+        eventType = "OFFENDER_CASES-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_case_status" to "A",
+            "p_status_update_staff_id" to "485887",
+            "p_lids_case_number" to "6",
+            "p_previous_combined_case_id" to "23456",
+            "p_begin_date" to "20250501",
+            "p_status_update_date" to "20250501",
+            "p_case_seq" to "7",
+            "p_agy_loc_id" to "ABDSUM",
+            "p_case_type" to "Y",
+            "p_status_update_reason" to "A",
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_case_id" to "1604141",
+            "p_audit_module_name" to "OCULCASE",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CASES-UNLINKED")
+      assertThat(nomisEventType).isEqualTo("OFFENDER_CASES-UPDATED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(caseId).isEqualTo(1604141)
+      assertThat(combinedCaseId).isEqualTo(23456)
+      assertThat(auditModuleName).isEqualTo("OCULCASE")
+    }
   }
 
   private fun courtCaseEventMappedCorrectly(eventName: String) {

@@ -453,7 +453,7 @@ class CourtEventChargeEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class CourtCaseEvent(
+open class CourtCaseEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,
@@ -467,6 +467,26 @@ class CourtCaseEvent(
   bookingId = bookingId,
   offenderIdDisplay = offenderIdDisplay,
   nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class CourtCaseLinkingEvent(
+  val combinedCaseId: Long,
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long? = null,
+  offenderIdDisplay: String? = null,
+  auditModuleName: String? = null,
+  caseId: Long?,
+) : CourtCaseEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+  nomisEventType = nomisEventType,
+  auditModuleName = auditModuleName,
+  caseId = caseId,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
