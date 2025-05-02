@@ -23,6 +23,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
@@ -234,6 +235,16 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED", "COURT_EVENT_CHARGES-UPDATED" -> courtEventChargeEventOf(
           xtag,
+        )
+
+        "LINK_CASE_TXNS-INSERTED" -> courtEventChargeLinkingEventOf(
+          xtag,
+          eventType = "COURT_EVENT_CHARGES-LINKED",
+        )
+
+        "LINK_CASE_TXNS-DELETED" -> courtEventChargeLinkingEventOf(
+          xtag,
+          eventType = "COURT_EVENT_CHARGES-UNLINKED",
         )
 
         "OFFENDER_CASES-UPDATED" if xtag.content.p_previous_combined_case_id != null -> courtCaseLinkingEventOf(
@@ -1206,6 +1217,18 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     chargeId = xtag.content.p_offender_charge_id?.toLong(),
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun courtEventChargeLinkingEventOf(xtag: Xtag, eventType: String) = CourtEventChargeLinkingEvent(
+    eventType = eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    eventId = xtag.content.p_event_id?.toLong(),
+    chargeId = xtag.content.p_offender_charge_id?.toLong(),
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+    combinedCaseId = xtag.content.p_combined_case_id!!.toLong(),
   )
 
   private fun courtCaseEventOf(xtag: Xtag) = CourtCaseEvent(

@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtAppearanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
@@ -3172,6 +3173,70 @@ class OffenderEventsTransformerTest {
   @Test
   fun `court event charge updated event mapped correctly`() {
     courtEventChargeEventMappedCorrectly("COURT_EVENT_CHARGES-UPDATED")
+  }
+
+  @Test
+  fun `court event charge linked event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtEventChargeLinkingEvent>(
+      Xtag(
+        eventType = "LINK_CASE_TXNS-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_charge_id" to "23456",
+            "p_event_id" to "65432",
+            "p_case_id" to "1604142",
+            "p_combined_case_id" to "1604141",
+            "p_audit_module_name" to "OCULCASE",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("COURT_EVENT_CHARGES-LINKED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("LINK_CASE_TXNS-INSERTED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(chargeId).isEqualTo(23456)
+      assertThat(eventId).isEqualTo(65432)
+      assertThat(combinedCaseId).isEqualTo(1604141)
+      assertThat(auditModuleName).isEqualTo("OCULCASE")
+    }
+  }
+
+  @Test
+  fun `court event charge unlinked event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtEventChargeLinkingEvent>(
+      Xtag(
+        eventType = "LINK_CASE_TXNS-DELETED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_charge_id" to "23456",
+            "p_event_id" to "65432",
+            "p_case_id" to "1604142",
+            "p_combined_case_id" to "1604141",
+            "p_audit_module_name" to "OCULCASE",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("COURT_EVENT_CHARGES-UNLINKED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("LINK_CASE_TXNS-DELETED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(chargeId).isEqualTo(23456)
+      assertThat(eventId).isEqualTo(65432)
+      assertThat(combinedCaseId).isEqualTo(1604141)
+      assertThat(auditModuleName).isEqualTo("OCULCASE")
+    }
   }
 
   private fun courtEventChargeEventMappedCorrectly(eventName: String) {
