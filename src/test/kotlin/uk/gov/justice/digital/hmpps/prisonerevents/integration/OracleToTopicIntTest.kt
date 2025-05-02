@@ -43,6 +43,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.repository.MergeTransactions
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Offender
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderBooking
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderBookings
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderCharge
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactPerson
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactPersons
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderContactRestriction
@@ -1031,6 +1032,62 @@ class OracleToTopicIntTest : IntegrationTestBase() {
           assertThat(prisonerEvent.eventType).isEqualTo("BOOKING_NUMBER-CHANGED")
           assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
         }
+      }
+    }
+
+    @Nested
+    @DisplayName("LINK_CASE_TXNS-INSERTED -> COURT_EVENT_CHARGES-LINKED")
+    inner class CourtEventChargesLinked {
+      private lateinit var prisonerEvent: PrisonerEventMessage
+      private val offenderNo = "A1234AA"
+      private lateinit var booking: OffenderBooking
+      private lateinit var charge: OffenderCharge
+
+      @BeforeEach
+      fun setUp() {
+        transaction {
+          this.addLogger(StdOutSqlLogger)
+          Offender.build {
+            offenderNo = this@CourtEventChargesLinked.offenderNo
+          }.also {
+            booking = OffenderBooking.build(offender = it).also { booking ->
+              charge = OffenderCharge.build(
+                offenderBooking = booking,
+                caseId = 8765L,
+              )
+            }
+          }
+        }
+
+        simulateTrigger(
+          nomisEventType = "LINK_CASE_TXNS-INSERTED",
+          "p_offender_charge_id" to "${charge.offenderChargeId.value}",
+          "p_event_id" to "65432",
+          "p_case_id" to "1604142",
+          "p_combined_case_id" to "1604141",
+          "p_audit_module_name" to "OCULCASE",
+        )
+        prisonerEvent = awaitMessage()
+      }
+
+      @Test
+      fun `will map to COURT_EVENT_CHARGES-LINKED with additional parameters`() {
+        with(prisonerEvent.message) {
+          assertJsonPath("nomisEventType", "LINK_CASE_TXNS-INSERTED")
+          assertJsonPath("eventType", "COURT_EVENT_CHARGES-LINKED")
+          //   assertJsonPath("offenderIdDisplay", offenderNo)
+          assertJsonPath("bookingId", "${booking.bookingId.value}")
+          assertJsonPath("chargeId", "${charge.offenderChargeId.value}")
+          assertJsonPath("eventId", "65432")
+          assertJsonPath("combinedCaseId", "1604141")
+          assertJsonPath("auditModuleName", "OCULCASE")
+        }
+      }
+
+      @Test
+      fun `will map meta data for the event`() {
+        assertThat(prisonerEvent.eventType).isEqualTo("COURT_EVENT_CHARGES-LINKED")
+        assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
       }
     }
   }

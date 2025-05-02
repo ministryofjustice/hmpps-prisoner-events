@@ -46,4 +46,10 @@ class ExposeRepository {
     ?.get(OffenderExternalMovements.date)
 
   fun getOffenderById(offenderId: Long): Offender? = Offender.findById(offenderId)
+
+  fun getBookingIdFromChargeId(offenderChargeId: Long): Long? = OffenderCharges
+    .select(OffenderCharges.offenderBooking)
+    .where(OffenderCharges.id eq offenderChargeId)
+    .singleOrNull()
+    ?.get(OffenderBookings.id)?.value
 }
