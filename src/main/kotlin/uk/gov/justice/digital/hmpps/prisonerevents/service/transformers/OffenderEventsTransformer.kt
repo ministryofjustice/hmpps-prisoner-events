@@ -227,10 +227,10 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "PRISONER_ACTIVITY-UPDATE" -> prisonerActivityUpdateEventOf(xtag)
         "PRISONER_APPOINTMENT-UPDATE" -> prisonerAppointmentUpdateEventOf(xtag)
         "OFFENDER_CHARGES-UPDATED", "OFFENDER_CHARGES-INSERTED", "OFFENDER_CHARGES-DELETED",
-          -> offenderChargeEventOf(xtag)
+        -> offenderChargeEventOf(xtag)
 
-        "COURT_EVENT-UPDATED", "COURT_EVENT-INSERTED", "COURT_EVENT-DELETED"
-           -> courtAppearanceEventOf(xtag)
+        "COURT_EVENT-UPDATED", "COURT_EVENT-INSERTED", "COURT_EVENT-DELETED",
+        -> courtAppearanceEventOf(xtag)
 
         "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED", "COURT_EVENT_CHARGES-UPDATED" ->
           courtEventChargeEventOf(xtag)
@@ -257,24 +257,24 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
           combinedCaseId = xtag.content.p_combined_case_id!!.toLong(),
         )
 
-        "OFFENDER_CASES-UPDATED", "OFFENDER_CASES-INSERTED", "OFFENDER_CASES-DELETED"
-           -> courtCaseEventOf(xtag)
+        "OFFENDER_CASES-UPDATED", "OFFENDER_CASES-INSERTED", "OFFENDER_CASES-DELETED",
+        -> courtCaseEventOf(xtag)
 
-        "ORDERS-UPDATED", "ORDERS-INSERTED", "ORDERS-DELETED"
-           -> orderEventOf(xtag)
+        "ORDERS-UPDATED", "ORDERS-INSERTED", "ORDERS-DELETED",
+        -> orderEventOf(xtag)
 
         "AGENCY_INTERNAL_LOCATIONS-UPDATED",
         "AGY_INT_LOC_PROFILES-UPDATED",
         "INT_LOC_USAGE_LOCATIONS-UPDATED",
-          -> agencyInternalLocationUpdatedEventOf(xtag)
+        -> agencyInternalLocationUpdatedEventOf(xtag)
 
         "PHONES-INSERTED", "PHONES-UPDATED", "PHONES-DELETED" -> offenderPhoneNoEventOf(xtag)
 
         "INTERNET_ADDRESSES-INSERTED", "INTERNET_ADDRESSES-UPDATED", "INTERNET_ADDRESSES-DELETED",
-          -> offenderEmailEventOf(xtag)
+        -> offenderEmailEventOf(xtag)
 
         "OFFENDER_CONTACT-INSERTED", "OFFENDER_CONTACT-UPDATED", "OFFENDER_CONTACT-DELETED",
-          -> offenderContactEventOf(xtag)
+        -> offenderContactEventOf(xtag)
 
         "CSIP_REPORTS-INSERTED", "CSIP_REPORTS-UPDATED", "CSIP_REPORTS-DELETED" -> csipReportEventOf(xtag)
         "CSIP_PLANS-INSERTED", "CSIP_PLANS-UPDATED", "CSIP_PLANS-DELETED" -> csipPlanEventOf(xtag)
