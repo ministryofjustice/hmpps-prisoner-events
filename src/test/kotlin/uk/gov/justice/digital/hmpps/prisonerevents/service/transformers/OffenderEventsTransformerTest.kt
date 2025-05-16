@@ -1364,6 +1364,28 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
+  fun `offender booking deleted mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<GenericOffenderEvent>(
+      Xtag(
+        eventType = "BOOKING-DELETED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A1234AA",
+            "p_offender_book_id" to "1234",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(bookingId).isEqualTo(1234L)
+      assertThat(offenderIdDisplay).isEqualTo("A1234AA")
+      assertThat(nomisEventType).isEqualTo("BOOKING-DELETED")
+      assertThat(eventType).isEqualTo("BOOKING-DELETED")
+    }
+  }
+
+  @Test
   fun `offender details changed mapped correctly`() {
     val now = LocalDateTime.now()
     withCallTransformer<GenericOffenderEvent>(

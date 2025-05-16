@@ -133,6 +133,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "P2_RESULT" -> offenderUpdatedEventOf(xtag)
         "OFF_BKB_INS" -> offenderBookingInsertedEventOf(xtag)
         "OFF_BKB_UPD" -> offenderBookingReassignedEventOf(xtag)
+        "BOOKING-DELETED" -> bookingDeleted(xtag)
         "OFF_CONT_PER_INS" -> contactPersonInsertedEventOf(xtag)
         "OFF_CONT_PER_UPD" -> if (xtag.content.p_address_deleted == "Y") {
           contactPersonDeletedEventOf(xtag)
@@ -225,17 +226,14 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "VISITOR_RESTRICTS-UPDATED" -> visitorRestrictionEventOf(xtag)
         "PRISONER_ACTIVITY-UPDATE" -> prisonerActivityUpdateEventOf(xtag)
         "PRISONER_APPOINTMENT-UPDATE" -> prisonerAppointmentUpdateEventOf(xtag)
-        "OFFENDER_CHARGES-UPDATED", "OFFENDER_CHARGES-INSERTED", "OFFENDER_CHARGES-DELETED" -> offenderChargeEventOf(
-          xtag,
-        )
+        "OFFENDER_CHARGES-UPDATED", "OFFENDER_CHARGES-INSERTED", "OFFENDER_CHARGES-DELETED",
+        -> offenderChargeEventOf(xtag)
 
-        "COURT_EVENT-UPDATED", "COURT_EVENT-INSERTED", "COURT_EVENT-DELETED" -> courtAppearanceEventOf(
-          xtag,
-        )
+        "COURT_EVENT-UPDATED", "COURT_EVENT-INSERTED", "COURT_EVENT-DELETED",
+        -> courtAppearanceEventOf(xtag)
 
-        "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED", "COURT_EVENT_CHARGES-UPDATED" -> courtEventChargeEventOf(
-          xtag,
-        )
+        "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED", "COURT_EVENT_CHARGES-UPDATED" ->
+          courtEventChargeEventOf(xtag)
 
         "LINK_CASE_TXNS-INSERTED" -> courtEventChargeLinkingEventOf(
           xtag,
@@ -259,13 +257,11 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
           combinedCaseId = xtag.content.p_combined_case_id!!.toLong(),
         )
 
-        "OFFENDER_CASES-UPDATED", "OFFENDER_CASES-INSERTED", "OFFENDER_CASES-DELETED" -> courtCaseEventOf(
-          xtag,
-        )
+        "OFFENDER_CASES-UPDATED", "OFFENDER_CASES-INSERTED", "OFFENDER_CASES-DELETED",
+        -> courtCaseEventOf(xtag)
 
-        "ORDERS-UPDATED", "ORDERS-INSERTED", "ORDERS-DELETED" -> orderEventOf(
-          xtag,
-        )
+        "ORDERS-UPDATED", "ORDERS-INSERTED", "ORDERS-DELETED",
+        -> orderEventOf(xtag)
 
         "AGENCY_INTERNAL_LOCATIONS-UPDATED",
         "AGY_INT_LOC_PROFILES-UPDATED",
@@ -274,8 +270,11 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "PHONES-INSERTED", "PHONES-UPDATED", "PHONES-DELETED" -> offenderPhoneNoEventOf(xtag)
 
-        "INTERNET_ADDRESSES-INSERTED", "INTERNET_ADDRESSES-UPDATED", "INTERNET_ADDRESSES-DELETED" -> offenderEmailEventOf(xtag)
-        "OFFENDER_CONTACT-INSERTED", "OFFENDER_CONTACT-UPDATED", "OFFENDER_CONTACT-DELETED" -> offenderContactEventOf(xtag)
+        "INTERNET_ADDRESSES-INSERTED", "INTERNET_ADDRESSES-UPDATED", "INTERNET_ADDRESSES-DELETED",
+        -> offenderEmailEventOf(xtag)
+
+        "OFFENDER_CONTACT-INSERTED", "OFFENDER_CONTACT-UPDATED", "OFFENDER_CONTACT-DELETED",
+        -> offenderContactEventOf(xtag)
 
         "CSIP_REPORTS-INSERTED", "CSIP_REPORTS-UPDATED", "CSIP_REPORTS-DELETED" -> csipReportEventOf(xtag)
         "CSIP_PLANS-INSERTED", "CSIP_PLANS-UPDATED", "CSIP_PLANS-DELETED" -> csipPlanEventOf(xtag)
@@ -500,7 +499,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     scheduleEventType = xtag.content.p_event_type,
     scheduleEventSubType = xtag.content.p_event_sub_type,
     scheduleEventStatus = xtag.content.p_event_status,
-    recordDeleted = "Y".equals(xtag.content.p_delete_flag),
+    recordDeleted = "Y" == xtag.content.p_delete_flag,
     agencyLocationId = xtag.content.p_agy_loc_id,
     nomisEventType = xtag.eventType,
   )
@@ -932,6 +931,14 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
   )
 
+  private fun bookingDeleted(xtag: Xtag) = GenericOffenderEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+  )
+
   fun externalMovementRecordEventOf(xtag: Xtag, overrideEventType: String?) = ExternalMovementOffenderEvent(
     eventType = overrideEventType ?: xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
@@ -1103,7 +1110,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     caseNoteId = xtag.content.p_case_note_id?.toLong(),
     caseNoteType = xtag.content.p_case_note_type,
     caseNoteSubType = xtag.content.p_case_note_sub_type,
-    recordDeleted = "Y".equals(xtag.content.p_delete_flag),
+    recordDeleted = "Y" == xtag.content.p_delete_flag,
   )
 
   private fun nonAssociationDetailsEventOf(xtag: Xtag) = NonAssociationDetailsOffenderEvent(
@@ -1193,7 +1200,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     offenderIdDisplay = xtag.content.p_offender_id_display,
     chargeId = xtag.content.p_offender_charge_id?.toLong(),
     nomisEventType = xtag.eventType,
-    offenceCodeChange = "Y".equals(xtag.content.p_has_offence_code_changed),
+    offenceCodeChange = "Y" == xtag.content.p_has_offence_code_changed,
     auditModuleName = xtag.content.p_audit_module_name,
   )
 
@@ -1321,12 +1328,10 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
   )
 
   private fun offenderPhoneNoEventOf(xtag: Xtag) = OffenderPhoneNumberEvent(
-    eventType = if (xtag.content.p_owner_class == "OFF") {
-      xtag.eventType?.replace("PHONES-", "OFFENDER_PHONE-")
-    } else if (xtag.content.p_owner_class == "ADDR") {
-      xtag.eventType?.replace("PHONES-", "OFFENDER_ADDRESS_PHONE-")
-    } else {
-      xtag.eventType
+    eventType = when (xtag.content.p_owner_class) {
+      "OFF" -> xtag.eventType?.replace("PHONES-", "OFFENDER_PHONE-")
+      "ADDR" -> xtag.eventType?.replace("PHONES-", "OFFENDER_ADDRESS_PHONE-")
+      else -> xtag.eventType
     },
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
