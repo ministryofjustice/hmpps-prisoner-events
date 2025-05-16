@@ -14,7 +14,7 @@ on:
       oracle-tag:
         type: string
         default: '18-slim'
-        required: true
+        required: false
       oracle-password:
         type: string
         default: 'test'
