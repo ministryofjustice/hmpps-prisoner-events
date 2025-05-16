@@ -6,7 +6,7 @@ generic-service:
   replicaCount: 4
 
   image:
-    repository: quay.io/hmpps/hmpps-prisoner-events
+    repository: ghcr.io/ministryofjustice/hmpps-prisoner-events
     tag: app_version    # override at deployment time
     port: 8080
 
@@ -40,7 +40,7 @@ generic-service:
     SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 21
 
   namespace_secrets:
-    application-insights:
+    hmpps-prisoner-events-application-insights:
       APPLICATIONINSIGHTS_CONNECTION_STRING: "APPLICATIONINSIGHTS_CONNECTION_STRING"
     hmpps-prisoner-events:
       JDBC_URL: "JDBC_URL"
