@@ -873,6 +873,22 @@ class CorporateTypeEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderFixedTermRecallEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String? = null,
+  bookingId: Long,
+  val auditModuleName: String,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class OffenderIdentifyingMarksEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
