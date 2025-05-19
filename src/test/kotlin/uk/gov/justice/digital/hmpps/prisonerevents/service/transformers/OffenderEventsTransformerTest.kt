@@ -36,6 +36,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderFixedTermRecallEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMarksEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderMarksImageEvent
@@ -3557,6 +3558,93 @@ class OffenderEventsTransformerTest {
       assertThat(sentenceSeq).isEqualTo(2)
       assertThat(termSequence).isEqualTo(3)
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `OFFENDER_FIXED_TERM_RECALLS-INSERTED mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderFixedTermRecallEvent>(
+      Xtag(
+        eventType = "OFFENDER_FIXED_TERM_RECALLS-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_comment_text" to "comment",
+            "p_staff_id" to "485887",
+            "p_recall_length" to "28",
+            "p_return_to_custody_date" to "2025-05-16 00:00",
+            "p_audit_module_name" to "OIUFTRDA",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_FIXED_TERM_RECALLS-INSERTED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("OFFENDER_FIXED_TERM_RECALLS-INSERTED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(auditModuleName).isEqualTo("OIUFTRDA")
+    }
+  }
+
+  @Test
+  fun `OFFENDER_FIXED_TERM_RECALLS-UPDATED mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderFixedTermRecallEvent>(
+      Xtag(
+        eventType = "OFFENDER_FIXED_TERM_RECALLS-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_comment_text" to "comment",
+            "p_staff_id" to "485887",
+            "p_recall_length" to "28",
+            "p_return_to_custody_date" to "2025-05-16 00:00",
+            "p_audit_module_name" to "OIUFTRDA",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_FIXED_TERM_RECALLS-UPDATED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("OFFENDER_FIXED_TERM_RECALLS-UPDATED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(auditModuleName).isEqualTo("OIUFTRDA")
+    }
+  }
+
+  @Test
+  fun `OFFENDER_FIXED_TERM_RECALLS-DELETED mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<OffenderFixedTermRecallEvent>(
+      Xtag(
+        eventType = "OFFENDER_FIXED_TERM_RECALLS-DELETED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_comment_text" to "comment",
+            "p_staff_id" to "485887",
+            "p_recall_length" to "28",
+            "p_return_to_custody_date" to "2025-05-16 00:00",
+            "p_audit_module_name" to "OIUFTRDA",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_FIXED_TERM_RECALLS-DELETED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("OFFENDER_FIXED_TERM_RECALLS-DELETED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(auditModuleName).isEqualTo("OIUFTRDA")
     }
   }
 
