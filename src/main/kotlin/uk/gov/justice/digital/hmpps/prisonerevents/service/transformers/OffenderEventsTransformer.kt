@@ -37,7 +37,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderFixedTermRecallEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMarksEvent
-import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderMarksImageEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
@@ -1497,6 +1497,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
   private fun offenderImageEventOf(xtag: Xtag) = when (xtag.content.p_image_object_type) {
     "OFF_IDM" -> offenderMarksImageEventOf(xtag)
+    "OFF_BKG" -> offenderBookingImageEventOf(xtag)
     else -> null
   }
 
@@ -1521,7 +1522,23 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     xtag.content.p_active_flag_changed == "Y" -> "OFFENDER_MARKS_IMAGE-UPDATED"
     else -> null
   }?.let { newEventType ->
-    OffenderMarksImageEvent(
+    OffenderImageEvent(
+      eventType = newEventType,
+      eventDatetime = xtag.nomisTimestamp,
+      nomisEventType = xtag.eventType,
+      bookingId = xtag.content.p_offender_book_id!!.toLong(),
+      offenderImageId = xtag.content.p_offender_image_id!!.toLong(),
+      auditModuleName = xtag.content.p_audit_module_name!!,
+    )
+  }
+
+  private fun offenderBookingImageEventOf(xtag: Xtag) = when {
+    xtag.eventType == "OFFENDER_IMAGES-DELETED" -> "OFFENDER_IMAGE-DELETED"
+    xtag.content.p_full_size_image_changed == "Y" -> "OFFENDER_IMAGE-CREATED"
+    xtag.content.p_active_flag_changed == "Y" -> "OFFENDER_IMAGE-UPDATED"
+    else -> null
+  }?.let { newEventType ->
+    OffenderImageEvent(
       eventType = newEventType,
       eventDatetime = xtag.nomisTimestamp,
       nomisEventType = xtag.eventType,
