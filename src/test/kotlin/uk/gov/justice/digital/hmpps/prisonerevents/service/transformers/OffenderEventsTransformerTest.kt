@@ -5993,6 +5993,57 @@ class OffenderEventsTransformerTest {
     @Test
     fun `OFFENDER_IMAGES-UPDATED for identifying marks record created before image added is ignored`() {
       val now = LocalDateTime.now()
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFFENDER_IMAGES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "N",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "OFF_IDM",
+              "p_active_flag_changed" to "N",
+              "p_image_view_type" to "TAT",
+              "p_offender_book_id" to "1108078",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_offender_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ).also {
+        assertThat(it).isNull()
+      }
+    }
+
+//    @Test
+//    fun `OFFENDER_IMAGES-UPDATED for offender image is ignored`() {
+//      val now = LocalDateTime.now()
+//      offenderEventsTransformer.offenderEventOf(
+//        Xtag(
+//          eventType = "OFFENDER_IMAGES-UPDATED",
+//          nomisTimestamp = now,
+//          content = XtagContent(
+//            mapOf(
+//              "p_full_size_image_changed" to "Y",
+//              "p_thumbnail_image_changed" to "Y",
+//              "p_audit_module_name" to "OCUIMAGE",
+//              "p_image_object_type" to "OFF_BKG",
+//              "p_active_flag_changed" to "N",
+//              "p_offender_book_id" to "1108078",
+//              "p_nomis_timestamp" to "20250103091727.250845000",
+//              "p_offender_image_id" to "1996215",
+//            ),
+//          ),
+//        ),
+//      ).also {
+//        assertThat(it).isNull()
+//      }
+//    }
+
+    @Test
+    fun `OFFENDER_IMAGES-UPDATED for offender facial image with full size image added publishes created event`() {
+      val now = LocalDateTime.now()
       withCallTransformer<OffenderImageEvent>(
         Xtag(
           eventType = "OFFENDER_IMAGES-UPDATED",
@@ -6023,32 +6074,6 @@ class OffenderEventsTransformerTest {
     fun `OFFENDER_IMAGES-UPDATED for offender facial image with active flag changed publishes updated event`() {
       val now = LocalDateTime.now()
       withCallTransformer<OffenderImageEvent>(
-        Xtag(
-          eventType = "OFFENDER_IMAGES-UPDATED",
-          nomisTimestamp = now,
-          content = XtagContent(
-            mapOf(
-              "p_full_size_image_changed" to "N",
-              "p_thumbnail_image_changed" to "Y",
-              "p_audit_module_name" to "OCUIMAGE",
-              "p_image_object_type" to "OFF_IDM",
-              "p_active_flag_changed" to "N",
-              "p_image_view_type" to "TAT",
-              "p_offender_book_id" to "1108078",
-              "p_nomis_timestamp" to "20250103091727.250845000",
-              "p_offender_image_id" to "1996215",
-            ),
-          ),
-        ),
-      ).also {
-        assertThat(it).isNull()
-      }
-    }
-
-    @Test
-    fun `OFFENDER_IMAGES-UPDATED for offender facial image with full size image added publishes created event`() {
-      val now = LocalDateTime.now()
-      offenderEventsTransformer.offenderEventOf(
         Xtag(
           eventType = "OFFENDER_IMAGES-UPDATED",
           nomisTimestamp = now,
