@@ -931,7 +931,7 @@ enum class BookingNumberChangedType {
 }
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-class OffenderMarksImageEvent(
+class OffenderImageEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,

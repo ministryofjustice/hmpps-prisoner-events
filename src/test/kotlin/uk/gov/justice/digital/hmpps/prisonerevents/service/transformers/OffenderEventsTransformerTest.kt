@@ -39,7 +39,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderFixedTermRecallEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMarksEvent
-import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderMarksImageEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
@@ -5903,11 +5903,10 @@ class OffenderEventsTransformerTest {
 
   @Nested
   inner class OffenderImageEvents {
-
     @Test
     fun `OFFENDER_IMAGES-UPDATED for identifying marks with full size image added publishes created event`() {
       val now = LocalDateTime.now()
-      withCallTransformer<OffenderMarksImageEvent>(
+      withCallTransformer<OffenderImageEvent>(
         Xtag(
           eventType = "OFFENDER_IMAGES-UPDATED",
           nomisTimestamp = now,
@@ -5936,7 +5935,7 @@ class OffenderEventsTransformerTest {
     @Test
     fun `OFFENDER_IMAGES-UPDATED for identifying marks with active flag changed publishes updated event`() {
       val now = LocalDateTime.now()
-      withCallTransformer<OffenderMarksImageEvent>(
+      withCallTransformer<OffenderImageEvent>(
         Xtag(
           eventType = "OFFENDER_IMAGES-UPDATED",
           nomisTimestamp = now,
@@ -5965,7 +5964,7 @@ class OffenderEventsTransformerTest {
     @Test
     fun `OFFENDER_IMAGES-DELETED for identifying marks publishes deleted event`() {
       val now = LocalDateTime.now()
-      withCallTransformer<OffenderMarksImageEvent>(
+      withCallTransformer<OffenderImageEvent>(
         Xtag(
           eventType = "OFFENDER_IMAGES-DELETED",
           nomisTimestamp = now,
@@ -6018,9 +6017,9 @@ class OffenderEventsTransformerTest {
     }
 
     @Test
-    fun `OFFENDER_IMAGES-UPDATED for offender image is ignored`() {
+    fun `OFFENDER_IMAGES-UPDATED for offender facial image with full size image added publishes created event`() {
       val now = LocalDateTime.now()
-      offenderEventsTransformer.offenderEventOf(
+      withCallTransformer<OffenderImageEvent>(
         Xtag(
           eventType = "OFFENDER_IMAGES-UPDATED",
           nomisTimestamp = now,
@@ -6031,6 +6030,94 @@ class OffenderEventsTransformerTest {
               "p_audit_module_name" to "OCUIMAGE",
               "p_image_object_type" to "OFF_BKG",
               "p_active_flag_changed" to "N",
+              "p_image_view_type" to "FACE",
+              "p_offender_book_id" to "1108078",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_offender_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_IMAGE-CREATED")
+        assertThat(bookingId).isEqualTo(1108078)
+        assertThat(offenderImageId).isEqualTo(1996215)
+        assertThat(auditModuleName).isEqualTo("OCUIMAGE")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_IMAGES-UPDATED for offender facial image with active flag changed publishes updated event`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<OffenderImageEvent>(
+        Xtag(
+          eventType = "OFFENDER_IMAGES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "N",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "OFF_BKG",
+              "p_active_flag_changed" to "Y",
+              "p_image_view_type" to "FACE",
+              "p_offender_book_id" to "1108078",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_offender_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_IMAGE-UPDATED")
+        assertThat(bookingId).isEqualTo(1108078)
+        assertThat(offenderImageId).isEqualTo(1996215)
+        assertThat(auditModuleName).isEqualTo("OCUIMAGE")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_IMAGES-DELETED for offender facial image publishes deleted event`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<OffenderImageEvent>(
+        Xtag(
+          eventType = "OFFENDER_IMAGES-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "Y",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "OFF_BKG",
+              "p_active_flag_changed" to "Y",
+              "p_image_view_type" to "FACE",
+              "p_offender_book_id" to "1108078",
+              "p_nomis_timestamp" to "20250103091727.250845000",
+              "p_offender_image_id" to "1996215",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_IMAGE-DELETED")
+        assertThat(bookingId).isEqualTo(1108078)
+        assertThat(offenderImageId).isEqualTo(1996215)
+        assertThat(auditModuleName).isEqualTo("OCUIMAGE")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_IMAGES-UPDATED for offender facial image record created before image added is ignored`() {
+      val now = LocalDateTime.now()
+      offenderEventsTransformer.offenderEventOf(
+        Xtag(
+          eventType = "OFFENDER_IMAGES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_full_size_image_changed" to "N",
+              "p_thumbnail_image_changed" to "Y",
+              "p_audit_module_name" to "OCUIMAGE",
+              "p_image_object_type" to "OFF_BKG",
+              "p_active_flag_changed" to "N",
+              "p_image_view_type" to "FACE",
               "p_offender_book_id" to "1108078",
               "p_nomis_timestamp" to "20250103091727.250845000",
               "p_offender_image_id" to "1996215",
