@@ -28,6 +28,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
@@ -6268,6 +6269,127 @@ class OffenderEventsTransformerTest {
         ),
       ).also {
         assertThat(it).isNull()
+      }
+    }
+  }
+
+  @Nested
+  inner class HealthEvents {
+    val now = LocalDateTime.now()
+
+    @Test
+    fun `OFF_HEALTH_PROBLEMS-INSERTED is mapped`() {
+      withCallTransformer<HealthEvent>(
+        Xtag(
+          eventType = "OFF_HEALTH_PROBLEMS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_start_date" to "2025-05-29 13:14",
+              "p_end_date" to "2025-05-29 15:16",
+              "p_caseload_type" to "INST",
+              "p_audit_module_name" to "OCDHEALT",
+              "p_description" to "test",
+              "p_offender_book_id" to "1117525",
+              "p_offender_health_problem_id" to "1388109",
+              "p_problem_status" to "ON",
+              "p_problem_code" to "BSC4.5",
+              "p_problem_type" to "BSCAN",
+              "p_nomis_timestamp" to "20250529134835.553626000",
+              "p_offender_id_display" to "G4133UO",
+              //t={p_start_date=2025-05-29 00:00, p_caseload_type=INST, p_audit_module_name=OCDHEALT, p_description=steve test, p_offender_book_id=1117525, p_offender_health_problem_id=1388109, p_problem_status=ON, p_problem_code=BSC4.5, p_problem_type=BSCAN, p_nomis_timestamp=20250529134835.553626000, p_offender_id_display=G4133UO}, eventType=OFF_HEALTH_PROBLEMS-INSERTED)...
+              //Processing Xtag(nomisTimestamp
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFF_HEALTH_PROBLEMS-INSERTED")
+        assertThat(offenderHealthProblemId).isEqualTo(1388109L)
+        assertThat(problemType).isEqualTo("BSCAN")
+        assertThat(problemCode).isEqualTo("BSC4.5")
+        assertThat(startDate).isEqualTo(LocalDateTime.parse("2025-05-29T13:14:00"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2025-05-29T15:16:00"))
+        assertThat(caseloadType).isEqualTo("INST")
+        assertThat(description).isEqualTo("test")
+        assertThat(problemStatus).isEqualTo("ON")
+        assertThat(auditModuleName).isEqualTo("OCDHEALT")
+        assertThat(nomisEventType).isEqualTo("OFF_HEALTH_PROBLEMS-INSERTED")
+      }
+    }
+
+    @Test
+    fun `OFF_HEALTH_PROBLEMS-UPDATED is mapped`() {
+      withCallTransformer<HealthEvent>(
+        Xtag(
+          eventType = "OFF_HEALTH_PROBLEMS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_start_date" to "2025-05-29 13:14",
+              "p_end_date" to "2025-05-29 15:16",
+              "p_caseload_type" to "INST",
+              "p_audit_module_name" to "OCDHEALT",
+              "p_description" to "test",
+              "p_offender_book_id" to "1117525",
+              "p_offender_health_problem_id" to "1388109",
+              "p_problem_status" to "ON",
+              "p_problem_code" to "BSC4.5",
+              "p_problem_type" to "BSCAN",
+              "p_nomis_timestamp" to "20250529134835.553626000",
+              "p_offender_id_display" to "G4133UO",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFF_HEALTH_PROBLEMS-UPDATED")
+        assertThat(offenderHealthProblemId).isEqualTo(1388109L)
+        assertThat(problemType).isEqualTo("BSCAN")
+        assertThat(problemCode).isEqualTo("BSC4.5")
+        assertThat(startDate).isEqualTo(LocalDateTime.parse("2025-05-29T13:14:00"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2025-05-29T15:16:00"))
+        assertThat(caseloadType).isEqualTo("INST")
+        assertThat(description).isEqualTo("test")
+        assertThat(problemStatus).isEqualTo("ON")
+        assertThat(auditModuleName).isEqualTo("OCDHEALT")
+        assertThat(nomisEventType).isEqualTo("OFF_HEALTH_PROBLEMS-UPDATED")
+      }
+    }
+
+    @Test
+    fun `OFF_HEALTH_PROBLEMS-DELETED is mapped`() {
+      withCallTransformer<HealthEvent>(
+        Xtag(
+          eventType = "OFF_HEALTH_PROBLEMS-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_start_date" to "2025-05-29 13:14",
+              "p_end_date" to "2025-05-29 15:16",
+              "p_caseload_type" to "INST",
+              "p_audit_module_name" to "OCDHEALT",
+              "p_description" to "test",
+              "p_offender_book_id" to "1117525",
+              "p_offender_health_problem_id" to "1388109",
+              "p_problem_status" to "ON",
+              "p_problem_code" to "BSC4.5",
+              "p_problem_type" to "BSCAN",
+              "p_nomis_timestamp" to "20250529134835.553626000",
+              "p_offender_id_display" to "G4133UO",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFF_HEALTH_PROBLEMS-DELETED")
+        assertThat(offenderHealthProblemId).isEqualTo(1388109L)
+        assertThat(problemType).isEqualTo("BSCAN")
+        assertThat(problemCode).isEqualTo("BSC4.5")
+        assertThat(startDate).isEqualTo(LocalDateTime.parse("2025-05-29T13:14:00"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2025-05-29T15:16:00"))
+        assertThat(caseloadType).isEqualTo("INST")
+        assertThat(description).isEqualTo("test")
+        assertThat(problemStatus).isEqualTo("ON")
+        assertThat(auditModuleName).isEqualTo("OCDHEALT")
+        assertThat(nomisEventType).isEqualTo("OFF_HEALTH_PROBLEMS-DELETED")
       }
     }
   }

@@ -170,5 +170,14 @@ class XtagContent(private val map: Map<String, String>) {
   val p_active_flag_changed by m
   val p_image_object_id by m
   val p_tag_image_id by m
+
+  val p_offender_health_problem_id by m
+  val p_problem_type by m
+  val p_problem_code by m
+  val p_start_date by m
+  val p_end_date by m
+  val p_caseload_type by m
+  val p_problem_status by m
+
   override fun toString(): String = map.toString()
 }

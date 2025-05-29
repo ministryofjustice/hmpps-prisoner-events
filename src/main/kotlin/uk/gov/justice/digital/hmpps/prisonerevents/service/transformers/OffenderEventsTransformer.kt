@@ -26,6 +26,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
@@ -308,6 +309,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "TAG_IMAGES-UPDATED", "TAG_IMAGES-DELETED" -> personOrStaffImageEventOf(xtag)
         "CORPORATE_TYPES-INSERTED", "CORPORATE_TYPES-UPDATED", "CORPORATE_TYPES-DELETED" -> corporateTypeEventOf(xtag)
         "OFFENDER_FIXED_TERM_RECALLS-INSERTED", "OFFENDER_FIXED_TERM_RECALLS-UPDATED", "OFFENDER_FIXED_TERM_RECALLS-DELETED" -> offenderFixedTermRecallEventOf(xtag)
+        "OFF_HEALTH_PROBLEMS-INSERTED", "OFF_HEALTH_PROBLEMS-UPDATED","OFF_HEALTH_PROBLEMS-DELETED"  -> healthEventOf(xtag)
         else -> OffenderEvent(
           eventType = xtag.eventType,
           eventDatetime = xtag.nomisTimestamp,
@@ -1564,6 +1566,93 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     )
   }
 
+  private fun healthEventOf(xtag: Xtag) = HealthEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    offenderHealthProblemId = xtag.content.p_offender_health_problem_id!!.toLong(),
+    problemType = xtag.content.p_problem_type!!,
+    problemCode = xtag.content.p_problem_code!!,
+    problemStatus = xtag.content.p_problem_status,
+    startDate = localDateTimeOf(xtag.content.p_start_date),
+    endDate = localDateTimeOf(xtag.content.p_end_date),
+    caseloadType = xtag.content.p_caseload_type!!,
+    description = xtag.content.p_description,
+    auditModuleName = xtag.content.p_audit_module_name!!,
+    /*
+    'p_offender_health_problem_id', :new.offender_health_problem_id),
+    'p_offender_book_id', :new.offender_book_id),
+    'p_offender_id_display', get_offender_id_display(:new.offender_book_id)),
+    'p_problem_type', :new.problem_type),
+    'p_problem_code', :new.problem_code),
+    'p_start_date', to_char(:new.start_date, 'YYYY-MM-DD HH24:MI')),
+    'p_end_date', to_char(:new.end_date, 'YYYY-MM-DD HH24:MI')),
+    'p_caseload_type', :new.caseload_type),
+    'p_description', :new.description),
+    'p_problem_status', :new.problem_status),
+    'p_audit_module_name', :new.audit_module_name),
+    'p_nomis_timestamp', to_char(:new.audit_timestamp, 'YYYYMMDDHH24MISS.FF9'))
+     */
+  )
+
+  private fun languageEventOf(xtag: Xtag) = HealthEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    offenderHealthProblemId = xtag.content.p_offender_health_problem_id!!.toLong(),
+    problemType = xtag.content.p_problem_type!!,
+    problemCode = xtag.content.p_problem_code!!,
+    problemStatus = xtag.content.p_problem_status,
+    startDate = localDateTimeOf(xtag.content.p_start_date),
+    endDate = localDateTimeOf(xtag.content.p_end_date),
+    caseloadType = xtag.content.p_caseload_type!!,
+    description = xtag.content.p_description,
+    auditModuleName = xtag.content.p_audit_module_name!!,
+    /*
+    'p_offender_health_problem_id', :new.offender_health_problem_id),
+    'p_offender_book_id', :new.offender_book_id),
+    'p_offender_id_display', get_offender_id_display(:new.offender_book_id)),
+    'p_problem_type', :new.problem_type),
+    'p_problem_code', :new.problem_code),
+    'p_start_date', to_char(:new.start_date, 'YYYY-MM-DD HH24:MI')),
+    'p_end_date', to_char(:new.end_date, 'YYYY-MM-DD HH24:MI')),
+    'p_caseload_type', :new.caseload_type),
+    'p_description', :new.description),
+    'p_problem_status', :new.problem_status),
+    'p_audit_module_name', :new.audit_module_name),
+    'p_nomis_timestamp', to_char(:new.audit_timestamp, 'YYYYMMDDHH24MISS.FF9'))
+     */
+  )
+
+  /*
+  Processing Xtag(nomisTimestamp=2025-05-29T13:48:35, content=
+  {p_start_date=2025-05-29 00:00, p_caseload_type=INST, p_audit_module_name=OCDHEALT, p_description=steve test, p_offender_book_id=1117525,
+   p_offender_health_problem_id=1388109, p_problem_status=ON, p_problem_code=BSC4.5, p_problem_type=BSCAN, p_nomis_timestamp=20250529134835.553626000,
+    p_offender_id_display=G4133UO}, eventType=OFF_HEALTH_PROBLEMS-INSERTED)...
+
+Processing Xtag(nomisTimestamp=2025-05-29T14:05:15, content={
+p_prefered_speak_flag=N, p_language_code=BEN, p_write_skill=Y, p_audit_module_name=OCDLANGS, p_read_skill=Y, p_speak_skill=Y,
+ p_offender_book_id=1117525, p_prefered_write_flag=N, p_language_type=SEC, p_interpreter_requested_flag=N, p_nomis_timestamp=20250529140515.415786000,
+  p_offender_id_display=G4133UO}, eventType=OFFENDER_LANGUAGES-INSERTED)...
+
+Processing Xtag(nomisTimestamp=2025-05-29T14:05:15, content={
+p_prefered_speak_flag=N, p_language_code=ENG, p_audit_module_name=OCDLANGS, p_offender_book_id=1117525, p_prefered_write_flag=N, p_language_type=PRIM,
+ p_interpreter_requested_flag=N, p_nomis_timestamp=20250529140515.401762000, p_comment_text=steve test, p_offender_id_display=G4133UO},
+  eventType=OFFENDER_LANGUAGES-INSERTED)...
+
+Processing Xtag(nomisTimestamp=2025-05-29T14:05:15, content={
+p_prefered_speak_flag=N, p_language_code=KOR, p_write_skill=N, p_audit_module_name=OCDLANGS, p_read_skill=N, p_speak_skill=N,
+ p_offender_book_id=1117525, p_prefered_write_flag=Y, p_language_type=PREF_WRITE, p_interpreter_requested_flag=N, p_nomis_timestamp=20250529140515.407647000,
+  p_offender_id_display=G4133UO}, eventType=OFFENDER_LANGUAGES-INSERTED)...
+
+Processing Xtag(nomisTimestamp=2025-05-29T14:05:15, content={p_prefered_speak_flag=Y, p_language_code=ALB, p_write_skill=N, p_audit_module_name=OCDLANGS, p_read_skill=N, p_speak_skill=N, p_offender_book_id=1117525, p_prefered_write_flag=N,
+ p_language_type=PREF_SPEAK, p_interpreter_requested_flag=N, p_nomis_timestamp=20250529140515.410838000, p_offender_id_display=G4133UO}, eventType=OFFENDER_LANGUAGES-INSERTED)...
+   */
+
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -1623,7 +1712,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
       }
     }
 
-    private const val TIMESTAMP_PATTERN = "yyyyMMddHHmmss.SSSSSSSSS"
+    private const val TIMESTAMP_PATTERN = "[yyyyMMddHHmmss.SSSSSSSSS][yyyy-MM-dd HH:mm]"
 
     fun localDateTimeOf(dateTime: String?): LocalDateTime? = try {
       dateTime?.let {

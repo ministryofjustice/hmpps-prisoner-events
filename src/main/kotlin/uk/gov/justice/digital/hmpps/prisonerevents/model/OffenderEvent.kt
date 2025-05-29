@@ -962,6 +962,30 @@ class PersonImageEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class HealthEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay:String?,
+  bookingId: Long,
+  val offenderHealthProblemId: Long,
+  val problemType: String,
+  val problemCode: String,
+  val startDate: LocalDateTime?,
+  val endDate: LocalDateTime?,
+  val caseloadType: String,
+  val description: String?,
+  val problemStatus: String?,
+  val auditModuleName: String,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
