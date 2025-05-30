@@ -26,7 +26,9 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.LanguageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
@@ -308,6 +310,12 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "TAG_IMAGES-UPDATED", "TAG_IMAGES-DELETED" -> personOrStaffImageEventOf(xtag)
         "CORPORATE_TYPES-INSERTED", "CORPORATE_TYPES-UPDATED", "CORPORATE_TYPES-DELETED" -> corporateTypeEventOf(xtag)
         "OFFENDER_FIXED_TERM_RECALLS-INSERTED", "OFFENDER_FIXED_TERM_RECALLS-UPDATED", "OFFENDER_FIXED_TERM_RECALLS-DELETED" -> offenderFixedTermRecallEventOf(xtag)
+        "OFF_HEALTH_PROBLEMS-INSERTED", "OFF_HEALTH_PROBLEMS-UPDATED", "OFF_HEALTH_PROBLEMS-DELETED" ->
+          healthEventOf(xtag)
+
+        "OFFENDER_LANGUAGES-INSERTED", "OFFENDER_LANGUAGES-UPDATED", "OFFENDER_LANGUAGES-DELETED" ->
+          languageEventOf(xtag)
+
         else -> OffenderEvent(
           eventType = xtag.eventType,
           eventDatetime = xtag.nomisTimestamp,
@@ -1564,6 +1572,42 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     )
   }
 
+  private fun healthEventOf(xtag: Xtag) = HealthEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    offenderHealthProblemId = xtag.content.p_offender_health_problem_id!!.toLong(),
+    problemType = xtag.content.p_problem_type!!,
+    problemCode = xtag.content.p_problem_code!!,
+    problemStatus = xtag.content.p_problem_status,
+    startDate = localDateTimeOf(xtag.content.p_start_date),
+    endDate = localDateTimeOf(xtag.content.p_end_date),
+    caseloadType = xtag.content.p_caseload_type!!,
+    description = xtag.content.p_description,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun languageEventOf(xtag: Xtag) = LanguageEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    languageType = xtag.content.p_language_type!!,
+    languageCode = xtag.content.p_language_code!!,
+    readSkill = xtag.content.p_read_skill,
+    speakSkill = xtag.content.p_speak_skill,
+    writeSkill = xtag.content.p_write_skill,
+    commentText = xtag.content.p_comment_text,
+    numeracySkill = xtag.content.p_numeracy_skill,
+    preferedWriteFlag = xtag.content.p_prefered_write_flag!!,
+    preferedSpeakFlag = xtag.content.p_prefered_speak_flag!!,
+    interpreterRequestedFlag = xtag.content.p_interpreter_requested_flag!!,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -1623,7 +1667,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
       }
     }
 
-    private const val TIMESTAMP_PATTERN = "yyyyMMddHHmmss.SSSSSSSSS"
+    private const val TIMESTAMP_PATTERN = "[yyyyMMddHHmmss.SSSSSSSSS][yyyy-MM-dd HH:mm]"
 
     fun localDateTimeOf(dateTime: String?): LocalDateTime? = try {
       dateTime?.let {

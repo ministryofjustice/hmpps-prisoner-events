@@ -962,6 +962,56 @@ class PersonImageEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class HealthEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  bookingId: Long,
+  val offenderHealthProblemId: Long,
+  val problemType: String,
+  val problemCode: String,
+  val startDate: LocalDateTime?,
+  val endDate: LocalDateTime?,
+  val caseloadType: String,
+  val description: String?,
+  val problemStatus: String?,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class LanguageEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  bookingId: Long,
+  val languageType: String,
+  val languageCode: String,
+  val readSkill: String?,
+  val speakSkill: String?,
+  val writeSkill: String?,
+  val commentText: String?,
+  val numeracySkill: String?,
+  val preferedWriteFlag: String,
+  val preferedSpeakFlag: String,
+  val interpreterRequestedFlag: String,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,

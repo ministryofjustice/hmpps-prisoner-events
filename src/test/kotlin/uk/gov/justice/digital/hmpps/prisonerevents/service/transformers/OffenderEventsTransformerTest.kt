@@ -28,7 +28,9 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.LanguageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
@@ -6268,6 +6270,258 @@ class OffenderEventsTransformerTest {
         ),
       ).also {
         assertThat(it).isNull()
+      }
+    }
+  }
+
+  @Nested
+  inner class HealthEvents {
+    @Test
+    fun `OFF_HEALTH_PROBLEMS-INSERTED is mapped`() {
+      withCallTransformer<HealthEvent>(
+        Xtag(
+          eventType = "OFF_HEALTH_PROBLEMS-INSERTED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_start_date" to "2025-05-29 13:14",
+              "p_end_date" to "2025-05-29 15:16",
+              "p_caseload_type" to "INST",
+              "p_audit_module_name" to "OCDHEALT",
+              "p_description" to "test",
+              "p_offender_book_id" to "1117525",
+              "p_offender_health_problem_id" to "1388109",
+              "p_problem_status" to "ON",
+              "p_problem_code" to "BSC4.5",
+              "p_problem_type" to "BSCAN",
+              "p_nomis_timestamp" to "20250529134835.553626000",
+              "p_offender_id_display" to "G4133UO",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(offenderIdDisplay).isEqualTo("G4133UO")
+        assertThat(bookingId).isEqualTo(1117525L)
+        assertThat(eventType).isEqualTo("OFF_HEALTH_PROBLEMS-INSERTED")
+        assertThat(offenderHealthProblemId).isEqualTo(1388109L)
+        assertThat(problemType).isEqualTo("BSCAN")
+        assertThat(problemCode).isEqualTo("BSC4.5")
+        assertThat(startDate).isEqualTo(LocalDateTime.parse("2025-05-29T13:14:00"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2025-05-29T15:16:00"))
+        assertThat(caseloadType).isEqualTo("INST")
+        assertThat(description).isEqualTo("test")
+        assertThat(problemStatus).isEqualTo("ON")
+        assertThat(auditModuleName).isEqualTo("OCDHEALT")
+        assertThat(nomisEventType).isEqualTo("OFF_HEALTH_PROBLEMS-INSERTED")
+      }
+    }
+
+    @Test
+    fun `OFF_HEALTH_PROBLEMS-UPDATED is mapped`() {
+      withCallTransformer<HealthEvent>(
+        Xtag(
+          eventType = "OFF_HEALTH_PROBLEMS-UPDATED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_start_date" to "2025-05-29 13:14",
+              "p_end_date" to "2025-05-29 15:16",
+              "p_caseload_type" to "INST",
+              "p_audit_module_name" to "OCDHEALT",
+              "p_description" to "test",
+              "p_offender_book_id" to "1117525",
+              "p_offender_health_problem_id" to "1388109",
+              "p_problem_status" to "ON",
+              "p_problem_code" to "BSC4.5",
+              "p_problem_type" to "BSCAN",
+              "p_nomis_timestamp" to "20250529134835.553626000",
+              "p_offender_id_display" to "G4133UO",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFF_HEALTH_PROBLEMS-UPDATED")
+        assertThat(offenderHealthProblemId).isEqualTo(1388109L)
+        assertThat(problemType).isEqualTo("BSCAN")
+        assertThat(problemCode).isEqualTo("BSC4.5")
+        assertThat(startDate).isEqualTo(LocalDateTime.parse("2025-05-29T13:14:00"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2025-05-29T15:16:00"))
+        assertThat(caseloadType).isEqualTo("INST")
+        assertThat(description).isEqualTo("test")
+        assertThat(problemStatus).isEqualTo("ON")
+        assertThat(auditModuleName).isEqualTo("OCDHEALT")
+        assertThat(nomisEventType).isEqualTo("OFF_HEALTH_PROBLEMS-UPDATED")
+      }
+    }
+
+    @Test
+    fun `OFF_HEALTH_PROBLEMS-DELETED is mapped`() {
+      withCallTransformer<HealthEvent>(
+        Xtag(
+          eventType = "OFF_HEALTH_PROBLEMS-DELETED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_start_date" to "2025-05-29 13:14",
+              "p_end_date" to "2025-05-29 15:16",
+              "p_caseload_type" to "INST",
+              "p_audit_module_name" to "OCDHEALT",
+              "p_description" to "test",
+              "p_offender_book_id" to "1117525",
+              "p_offender_health_problem_id" to "1388109",
+              "p_problem_status" to "ON",
+              "p_problem_code" to "BSC4.5",
+              "p_problem_type" to "BSCAN",
+              "p_nomis_timestamp" to "20250529134835.553626000",
+              "p_offender_id_display" to "G4133UO",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFF_HEALTH_PROBLEMS-DELETED")
+        assertThat(offenderHealthProblemId).isEqualTo(1388109L)
+        assertThat(problemType).isEqualTo("BSCAN")
+        assertThat(problemCode).isEqualTo("BSC4.5")
+        assertThat(startDate).isEqualTo(LocalDateTime.parse("2025-05-29T13:14:00"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2025-05-29T15:16:00"))
+        assertThat(caseloadType).isEqualTo("INST")
+        assertThat(description).isEqualTo("test")
+        assertThat(problemStatus).isEqualTo("ON")
+        assertThat(auditModuleName).isEqualTo("OCDHEALT")
+        assertThat(nomisEventType).isEqualTo("OFF_HEALTH_PROBLEMS-DELETED")
+      }
+    }
+  }
+
+  @Nested
+  inner class LanguageEvents {
+    @Test
+    fun `OFFENDER_LANGUAGES-INSERTED is mapped`() {
+      withCallTransformer<LanguageEvent>(
+        Xtag(
+          eventType = "OFFENDER_LANGUAGES-INSERTED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_prefered_speak_flag" to "N",
+              "p_language_code" to "BEN",
+              "p_write_skill" to "Y",
+              "p_audit_module_name" to "OCDLANGS",
+              "p_read_skill" to "Y",
+              "p_speak_skill" to "Y",
+              "p_offender_book_id" to "1117525",
+              "p_prefered_write_flag" to "N",
+              "p_language_type" to "SEC",
+              "p_interpreter_requested_flag" to "N",
+              "p_nomis_timestamp" to "20250529140515.415786000",
+              "p_offender_id_display" to "G4133UO",
+              "p_comment_text" to "comment",
+              "p_numeracy_skill" to "N",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_LANGUAGES-INSERTED")
+        assertThat(offenderIdDisplay).isEqualTo("G4133UO")
+        assertThat(bookingId).isEqualTo(1117525L)
+        assertThat(languageType).isEqualTo("SEC")
+        assertThat(languageCode).isEqualTo("BEN")
+        assertThat(readSkill).isEqualTo("Y")
+        assertThat(speakSkill).isEqualTo("Y")
+        assertThat(writeSkill).isEqualTo("Y")
+        assertThat(commentText).isEqualTo("comment")
+        assertThat(numeracySkill).isEqualTo("N")
+        assertThat(preferedWriteFlag).isEqualTo("N")
+        assertThat(preferedSpeakFlag).isEqualTo("N")
+        assertThat(interpreterRequestedFlag).isEqualTo("N")
+        assertThat(auditModuleName).isEqualTo("OCDLANGS")
+        assertThat(nomisEventType).isEqualTo("OFFENDER_LANGUAGES-INSERTED")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_LANGUAGES-UPDATED is mapped`() {
+      withCallTransformer<LanguageEvent>(
+        Xtag(
+          eventType = "OFFENDER_LANGUAGES-UPDATED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_prefered_speak_flag" to "N",
+              "p_language_code" to "BEN",
+              "p_write_skill" to "Y",
+              "p_audit_module_name" to "OCDLANGS",
+              "p_read_skill" to "Y",
+              "p_speak_skill" to "Y",
+              "p_offender_book_id" to "1117525",
+              "p_prefered_write_flag" to "N",
+              "p_language_type" to "SEC",
+              "p_interpreter_requested_flag" to "N",
+              "p_nomis_timestamp" to "20250529140515.415786000",
+              "p_offender_id_display" to "G4133UO",
+              "p_comment_text" to "comment",
+              "p_numeracy_skill" to "N",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_LANGUAGES-UPDATED")
+        assertThat(offenderIdDisplay).isEqualTo("G4133UO")
+        assertThat(bookingId).isEqualTo(1117525L)
+        assertThat(languageType).isEqualTo("SEC")
+        assertThat(languageCode).isEqualTo("BEN")
+        assertThat(readSkill).isEqualTo("Y")
+        assertThat(speakSkill).isEqualTo("Y")
+        assertThat(writeSkill).isEqualTo("Y")
+        assertThat(commentText).isEqualTo("comment")
+        assertThat(numeracySkill).isEqualTo("N")
+        assertThat(preferedWriteFlag).isEqualTo("N")
+        assertThat(preferedSpeakFlag).isEqualTo("N")
+        assertThat(interpreterRequestedFlag).isEqualTo("N")
+        assertThat(nomisEventType).isEqualTo("OFFENDER_LANGUAGES-UPDATED")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_LANGUAGES-DELETED is mapped`() {
+      withCallTransformer<LanguageEvent>(
+        Xtag(
+          eventType = "OFFENDER_LANGUAGES-DELETED",
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_prefered_speak_flag" to "N",
+              "p_language_code" to "BEN",
+              "p_write_skill" to "Y",
+              "p_audit_module_name" to "OCDLANGS",
+              "p_read_skill" to "Y",
+              "p_speak_skill" to "Y",
+              "p_offender_book_id" to "1117525",
+              "p_prefered_write_flag" to "N",
+              "p_language_type" to "SEC",
+              "p_interpreter_requested_flag" to "N",
+              "p_nomis_timestamp" to "20250529140515.415786000",
+              "p_offender_id_display" to "G4133UO",
+              "p_comment_text" to "comment",
+              "p_numeracy_skill" to "N",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_LANGUAGES-DELETED")
+        assertThat(offenderIdDisplay).isEqualTo("G4133UO")
+        assertThat(bookingId).isEqualTo(1117525L)
+        assertThat(languageType).isEqualTo("SEC")
+        assertThat(languageCode).isEqualTo("BEN")
+        assertThat(readSkill).isEqualTo("Y")
+        assertThat(speakSkill).isEqualTo("Y")
+        assertThat(writeSkill).isEqualTo("Y")
+        assertThat(commentText).isEqualTo("comment")
+        assertThat(numeracySkill).isEqualTo("N")
+        assertThat(preferedWriteFlag).isEqualTo("N")
+        assertThat(preferedSpeakFlag).isEqualTo("N")
+        assertThat(interpreterRequestedFlag).isEqualTo("N")
+        assertThat(nomisEventType).isEqualTo("OFFENDER_LANGUAGES-DELETED")
       }
     }
   }
