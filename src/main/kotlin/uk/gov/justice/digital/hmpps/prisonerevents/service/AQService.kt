@@ -57,11 +57,11 @@ class AQService(
     val ids = sqlRepository.getExceptionMessageIds(originalQueue, onlyBefore)
     val messageCount = ids.size
     if (messageCount == 0) {
-      log.info("No messages found for $originalQueue on exception queue $EXCEPTION_QUEUE_NAME")
+      log.info("No messages found for $originalQueue on exception queue $EXCEPTION_QUEUE_NAME before $onlyBefore")
       return
     }
 
-    log.info("For exception queue $EXCEPTION_QUEUE_NAME of $originalQueue we found $messageCount messages, attempting to dequeue them")
+    log.info("For exception queue $EXCEPTION_QUEUE_NAME of $originalQueue before $onlyBefore we found $messageCount messages, attempting to dequeue them")
     telemetryClient?.trackEvent("DequeueDLQ", mapOf("queue-name" to originalQueue, "messages-found" to "$messageCount", "only-before" to "$onlyBefore"))
 
     ids.chunked(10).forEach { chunk ->

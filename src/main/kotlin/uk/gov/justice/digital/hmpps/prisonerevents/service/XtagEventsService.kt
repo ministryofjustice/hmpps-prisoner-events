@@ -37,7 +37,7 @@ class XtagEventsService(
       ->
         oe.offenderIdDisplay = oe.bookingId?.let { sqlRepository.getNomsIdFromBooking(it).firstOrNull() }
 
-      "EXTERNAL_MOVEMENT_RECORD-INSERTED" -> {
+      "EXTERNAL_MOVEMENT_RECORD-INSERTED", "EXTERNAL_MOVEMENT-CHANGED" -> {
         oe as ExternalMovementOffenderEvent
         sqlRepository.getMovement(oe.bookingId!!, oe.movementSeq!!.toInt())
           .firstOrNull()
