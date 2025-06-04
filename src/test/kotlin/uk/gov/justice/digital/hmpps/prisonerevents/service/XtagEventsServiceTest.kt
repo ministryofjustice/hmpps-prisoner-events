@@ -45,8 +45,9 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
   }
 
-  @Test
-  fun shouldDecorateWithExternalMovementData() {
+  @ParameterizedTest
+  @ValueSource(strings = ["EXTERNAL_MOVEMENT_RECORD-INSERTED", "EXTERNAL_MOVEMENT-CHANGED"])
+  fun shouldDecorateWithExternalMovementData(eventType: String) {
     whenever(repository.getMovement(1L, 2)).thenReturn(
       listOf(
         Movement(
@@ -65,7 +66,7 @@ class XtagEventsServiceTest {
       ExternalMovementOffenderEvent(
         bookingId = 1L,
         movementSeq = 2L,
-        eventType = "EXTERNAL_MOVEMENT_RECORD-INSERTED",
+        eventType = eventType,
         movementDateTime = null,
         movementType = null,
         movementReasonCode = null,
