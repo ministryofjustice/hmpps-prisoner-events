@@ -1,4 +1,3 @@
-
 name: Run gradle checks with an oracle instance
 on:
   workflow_call:
@@ -22,6 +21,10 @@ on:
       gradle-command:
         type: string
         default: './gradlew check'
+        required: false
+      artifact-name:
+        type: string
+        default: 'test results'
         required: false
 permissions:
   contents: read
@@ -61,7 +64,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: upload test results
+          name: ${{ inputs.artifact-name }}
           path: |
             build/test-results
             build/reports/tests
