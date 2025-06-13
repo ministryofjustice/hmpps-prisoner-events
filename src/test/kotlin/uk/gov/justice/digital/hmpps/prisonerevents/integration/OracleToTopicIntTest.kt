@@ -522,7 +522,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
             assertJsonPath("approvedVisitor", "false")
             assertJsonPath("offenderIdDisplay", offenderNo)
             assertJsonPath("username", "M.MARGE")
-            assertJsonPath("auditModuleName", "OCDPERSO")
+            assertJsonPath("auditModuleName", "OCDPERSO2")
           }
         }
 
