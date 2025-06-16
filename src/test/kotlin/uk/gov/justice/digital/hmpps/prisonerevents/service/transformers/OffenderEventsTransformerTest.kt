@@ -3224,6 +3224,7 @@ class OffenderEventsTransformerTest {
       assertThat(chargeId).isEqualTo(23456)
       assertThat(eventId).isEqualTo(65432)
       assertThat(combinedCaseId).isEqualTo(1604141)
+      assertThat(caseId).isEqualTo(1604142)
       assertThat(auditModuleName).isEqualTo("OCULCASE")
     }
   }

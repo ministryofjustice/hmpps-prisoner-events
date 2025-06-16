@@ -454,6 +454,7 @@ open class CourtEventChargeEvent(
 
 class CourtEventChargeLinkingEvent(
   val combinedCaseId: Long,
+  val caseId: Long,
   eventType: String?,
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,
