@@ -426,6 +426,7 @@ class CourtAppearanceEvent(
   val auditModuleName: String? = null,
   val eventId: Long?,
   val caseId: Long?,
+  val isBreachHearing: Boolean,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,

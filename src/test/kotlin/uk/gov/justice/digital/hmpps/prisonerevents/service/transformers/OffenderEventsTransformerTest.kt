@@ -3337,6 +3337,37 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
+  fun `breach court appearance inserted event mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtAppearanceEvent>(
+      Xtag(
+        eventType = "COURT_EVENT-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_event_id" to "65432",
+            "p_case_id" to "55555",
+            "p_court_event_type" to "BREACH",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("COURT_EVENTS-INSERTED")
+      assertThat(offenderId).isNull()
+      assertThat(nomisEventType).isEqualTo("COURT_EVENT-INSERTED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(eventId).isEqualTo(65432)
+      assertThat(caseId).isEqualTo(55555)
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+      assertThat(isBreachHearing).isEqualTo(true)
+    }
+  }
+
+  @Test
   fun `court appearance deleted event mapped correctly`() {
     courtAppearanceEventMappedCorrectly(eventName = "COURT_EVENT-DELETED", translatedEventName = "COURT_EVENTS-DELETED")
   }
@@ -3366,6 +3397,7 @@ class OffenderEventsTransformerTest {
       assertThat(eventId).isEqualTo(65432)
       assertThat(caseId).isEqualTo(55555)
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+      assertThat(isBreachHearing).isEqualTo(false)
     }
   }
 

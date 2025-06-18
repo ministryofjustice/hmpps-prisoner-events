@@ -73,6 +73,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_living_unit_id by m
   val p_record_deleted by m
   val p_event_id by m
+  val p_court_event_type by m
   val p_start_time by m
   val p_end_time by m
   val p_event_class by m
