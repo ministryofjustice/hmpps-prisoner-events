@@ -69,7 +69,7 @@ jobs:
             build/test-results
             build/reports/tests
       - name: publish test report
-        if: always()
+        if: ${{ !cancelled() }}
         uses: dorny/test-reporter@v2
         with:
           artifact: ${{ inputs.artifact-name }}
