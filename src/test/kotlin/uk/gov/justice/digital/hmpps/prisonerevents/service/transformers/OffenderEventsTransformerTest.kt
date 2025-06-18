@@ -3159,6 +3159,43 @@ class OffenderEventsTransformerTest {
     }
   }
 
+  @Test
+  fun `court case updated with both combined and previous combined ids is mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<CourtCaseEvent>(
+      Xtag(
+        eventType = "OFFENDER_CASES-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_case_status" to "A",
+            "p_status_update_staff_id" to "485887",
+            "p_lids_case_number" to "6",
+            "p_combined_case_id" to "23456",
+            "p_previous_combined_case_id" to "23456",
+            "p_begin_date" to "20250501",
+            "p_status_update_date" to "20250501",
+            "p_case_seq" to "7",
+            "p_agy_loc_id" to "ABDSUM",
+            "p_case_type" to "Y",
+            "p_status_update_reason" to "A",
+            "p_offender_id_display" to "A234BC",
+            "p_offender_book_id" to "12345",
+            "p_case_id" to "1604141",
+            "p_audit_module_name" to "OCULCASE",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("OFFENDER_CASES-UPDATED")
+      assertThat(nomisEventType).isEqualTo("OFFENDER_CASES-UPDATED")
+      assertThat(offenderIdDisplay).isEqualTo("A234BC")
+      assertThat(bookingId).isEqualTo(12345)
+      assertThat(caseId).isEqualTo(1604141)
+      assertThat(auditModuleName).isEqualTo("OCULCASE")
+    }
+  }
+
   private fun courtCaseEventMappedCorrectly(eventName: String) {
     val now = LocalDateTime.now()
     withCallTransformer<CourtCaseEvent>(
@@ -3224,6 +3261,7 @@ class OffenderEventsTransformerTest {
       assertThat(chargeId).isEqualTo(23456)
       assertThat(eventId).isEqualTo(65432)
       assertThat(combinedCaseId).isEqualTo(1604141)
+      assertThat(caseId).isEqualTo(1604142)
       assertThat(auditModuleName).isEqualTo("OCULCASE")
     }
   }

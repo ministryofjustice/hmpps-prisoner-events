@@ -248,13 +248,13 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
           eventType = "COURT_EVENT_CHARGES-UNLINKED",
         )
 
-        "OFFENDER_CASES-UPDATED" if xtag.content.p_previous_combined_case_id != null -> courtCaseLinkingEventOf(
+        "OFFENDER_CASES-UPDATED" if (xtag.content.p_previous_combined_case_id != null && xtag.content.p_previous_combined_case_id != xtag.content.p_combined_case_id) -> courtCaseLinkingEventOf(
           xtag,
           eventType = "OFFENDER_CASES-UNLINKED",
           combinedCaseId = xtag.content.p_previous_combined_case_id!!.toLong(),
         )
 
-        "OFFENDER_CASES-UPDATED" if xtag.content.p_combined_case_id != null -> courtCaseLinkingEventOf(
+        "OFFENDER_CASES-UPDATED" if (xtag.content.p_combined_case_id != null && xtag.content.p_previous_combined_case_id == null) -> courtCaseLinkingEventOf(
           xtag,
           eventType = "OFFENDER_CASES-LINKED",
           combinedCaseId = xtag.content.p_combined_case_id!!.toLong(),
@@ -1245,6 +1245,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     chargeId = xtag.content.p_offender_charge_id?.toLong(),
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
+    caseId = xtag.content.p_case_id!!.toLong(),
     combinedCaseId = xtag.content.p_combined_case_id!!.toLong(),
   )
 
