@@ -687,6 +687,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     incidentCaseId = xtag.content.p_incident_case_id?.toLong(),
     nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun incidentUpdatedEventOf(xtag: Xtag): OffenderEvent {
@@ -700,6 +701,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
       incidentRequirementSeq = xtag.content.p_requirement_seq?.toLong(),
       incidentQuestionSeq = xtag.content.p_question_seq?.toLong(),
       incidentResponseSeq = xtag.content.p_response_seq?.toLong(),
+      auditModuleName = xtag.content.p_audit_module_name,
       nomisEventType = xtag.eventType,
     )
   }

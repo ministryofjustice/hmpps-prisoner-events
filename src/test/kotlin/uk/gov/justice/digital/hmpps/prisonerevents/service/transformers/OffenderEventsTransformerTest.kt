@@ -2027,6 +2027,7 @@ class OffenderEventsTransformerTest {
         content = XtagContent(
           mapOf(
             "p_incident_case_id" to "234",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2035,6 +2036,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentCaseId).isEqualTo(234L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-INSERTED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
@@ -2050,6 +2052,7 @@ class OffenderEventsTransformerTest {
             "p_incident_case_id" to "234",
             "p_table_name" to "incident_cases",
             "p_delete_flag" to "N",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2058,6 +2061,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentCaseId).isEqualTo(234L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
@@ -2073,6 +2077,7 @@ class OffenderEventsTransformerTest {
             "p_incident_case_id" to "234",
             "p_table_name" to "incident_cases",
             "p_delete_flag" to "Y",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2081,6 +2086,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentCaseId).isEqualTo(234L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
@@ -2097,6 +2103,7 @@ class OffenderEventsTransformerTest {
             "p_party_seq" to "123",
             "p_table_name" to "incident_case_parties",
             "p_delete_flag" to "N",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2106,6 +2113,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentPartySeq).isEqualTo(123L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
@@ -2122,6 +2130,7 @@ class OffenderEventsTransformerTest {
             "p_party_seq" to "123",
             "p_table_name" to "incident_case_parties",
             "p_delete_flag" to "Y",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2131,6 +2140,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentPartySeq).isEqualTo(123L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
@@ -2148,6 +2158,7 @@ class OffenderEventsTransformerTest {
             "p_response_seq" to "345",
             "p_table_name" to "incident_case_responses",
             "p_delete_flag" to "N",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2158,6 +2169,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentResponseSeq).isEqualTo(345L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
@@ -2175,6 +2187,7 @@ class OffenderEventsTransformerTest {
             "p_response_seq" to "345",
             "p_table_name" to "incident_case_responses",
             "p_delete_flag" to "Y",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2185,6 +2198,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentResponseSeq).isEqualTo(345L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
@@ -2201,6 +2215,7 @@ class OffenderEventsTransformerTest {
             "p_requirement_seq" to "456",
             "p_table_name" to "incident_case_requirements",
             "p_delete_flag" to "N",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2210,6 +2225,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentRequirementSeq).isEqualTo(456L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
@@ -2226,6 +2242,7 @@ class OffenderEventsTransformerTest {
             "p_requirement_seq" to "456",
             "p_table_name" to "incident_case_requirements",
             "p_delete_flag" to "Y",
+            "p_audit_module_name" to "DPS_AUDIT",
           ),
         ),
       ),
@@ -2235,6 +2252,7 @@ class OffenderEventsTransformerTest {
       assertThat(incidentRequirementSeq).isEqualTo(456L)
       assertThat(nomisEventType).isEqualTo("INCIDENT-UPDATED")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
 
