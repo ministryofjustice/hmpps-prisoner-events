@@ -116,10 +116,10 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "A3_RESULT" -> offenderSanctionEventOf(xtag)
         "P1_RESULT", "BOOK_UPD_OASYS" -> bookingNumberEventOf(xtag)
 
-        "GL_TRANSACTIONS-INSERTED", "GL_TRANSACTIONS-UPDATED", "GL_TRANSACTIONS-DELETED"
-         -> gLTransactionEventOf(xtag)
-        "OFFENDER_TRANSACTIONS-INSERTED", "OFFENDER_TRANSACTIONS-UPDATED", "OFFENDER_TRANSACTIONS-DELETED"
-         -> offenderTransactionEventOf(xtag)
+        "GL_TRANSACTIONS-INSERTED", "GL_TRANSACTIONS-UPDATED", "GL_TRANSACTIONS-DELETED",
+        -> gLTransactionEventOf(xtag)
+        "OFFENDER_TRANSACTIONS-INSERTED", "OFFENDER_TRANSACTIONS-UPDATED", "OFFENDER_TRANSACTIONS-DELETED",
+        -> offenderTransactionEventOf(xtag)
 
         "OFF_HEALTH_PROB_INS" -> maternityStatusInsertedEventOf(xtag)
         "OFF_HEALTH_PROB_UPD" -> maternityStatusUpdatedEventOf(xtag)
@@ -300,7 +300,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "IWP_DOCUMENTS-INSERTED", "IWP_DOCUMENTS-UPDATED", "IWP_DOCUMENTS-DELETED" -> iwpDocumentEventOf(xtag)
 
-        "OFFENDER_CASE_IDENTIFIERS-UPDATED", "OFFENDER_CASE_IDENTIFIERS-INSERTED", "OFFENDER_CASE_IDENTIFIERS-DELETED"
+        "OFFENDER_CASE_IDENTIFIERS-UPDATED", "OFFENDER_CASE_IDENTIFIERS-INSERTED", "OFFENDER_CASE_IDENTIFIERS-DELETED",
         -> caseIdentifierEventOf(xtag)
 
         "PERSON-INSERTED", "PERSON-UPDATED", "PERSON-DELETED" -> personEventOf(xtag)

@@ -14,7 +14,7 @@ open class OffenderEvent(
   val nomisEventType: String? = null,
 ) {
   override fun toString() = "(eventType=$eventType, offenderIdDisplay=$offenderIdDisplay, bookingId=$bookingId," +
-      " eventDatetime=$eventDatetime, offenderId=$offenderId, nomisEventType=$nomisEventType)"
+    " eventDatetime=$eventDatetime, offenderId=$offenderId, nomisEventType=$nomisEventType)"
 }
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
