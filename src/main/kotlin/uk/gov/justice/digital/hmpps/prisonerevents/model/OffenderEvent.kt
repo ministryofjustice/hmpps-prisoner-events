@@ -13,7 +13,8 @@ open class OffenderEvent(
   var offenderIdDisplay: String? = null,
   val nomisEventType: String? = null,
 ) {
-  override fun toString() = "(eventType=$eventType, offenderIdDisplay=$offenderIdDisplay, bookingId=$bookingId, eventDatetime=$eventDatetime, offenderId=$offenderId, nomisEventType=$nomisEventType)"
+  override fun toString() = "(eventType=$eventType, offenderIdDisplay=$offenderIdDisplay, bookingId=$bookingId," +
+      " eventDatetime=$eventDatetime, offenderId=$offenderId, nomisEventType=$nomisEventType)"
 }
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -1004,6 +1005,47 @@ class LanguageEvent(
   val preferedWriteFlag: String,
   val preferedSpeakFlag: String,
   val interpreterRequestedFlag: String,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class GLTransactionEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  bookingId: Long?,
+
+  val transactionId: Long,
+  val entrySequence: Int?,
+  val gLEntrySequence: Int?,
+  val caseload: String,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class TransactionOffenderEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String,
+  bookingId: Long?,
+
+  val transactionId: Long,
+  val entrySequence: Int,
+  val caseload: String,
   val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
