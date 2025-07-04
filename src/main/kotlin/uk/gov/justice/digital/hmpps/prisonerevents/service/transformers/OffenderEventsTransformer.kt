@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.GLTransactionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
@@ -56,6 +57,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffend
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.Xtag
@@ -113,6 +115,12 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "P8_RESULT" -> riskScoreEventOf(xtag)
         "A3_RESULT" -> offenderSanctionEventOf(xtag)
         "P1_RESULT", "BOOK_UPD_OASYS" -> bookingNumberEventOf(xtag)
+
+        "GL_TRANSACTIONS-INSERTED", "GL_TRANSACTIONS-UPDATED", "GL_TRANSACTIONS-DELETED",
+        -> gLTransactionEventOf(xtag)
+        "OFFENDER_TRANSACTIONS-INSERTED", "OFFENDER_TRANSACTIONS-UPDATED", "OFFENDER_TRANSACTIONS-DELETED",
+        -> offenderTransactionEventOf(xtag)
+
         "OFF_HEALTH_PROB_INS" -> maternityStatusInsertedEventOf(xtag)
         "OFF_HEALTH_PROB_UPD" -> maternityStatusUpdatedEventOf(xtag)
         "SCHEDULE_INT_APP-CHANGED" -> offenderIndividualScheduleChanged(xtag)
@@ -292,9 +300,8 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "IWP_DOCUMENTS-INSERTED", "IWP_DOCUMENTS-UPDATED", "IWP_DOCUMENTS-DELETED" -> iwpDocumentEventOf(xtag)
 
-        "OFFENDER_CASE_IDENTIFIERS-UPDATED", "OFFENDER_CASE_IDENTIFIERS-INSERTED", "OFFENDER_CASE_IDENTIFIERS-DELETED" -> caseIdentifierEventOf(
-          xtag,
-        )
+        "OFFENDER_CASE_IDENTIFIERS-UPDATED", "OFFENDER_CASE_IDENTIFIERS-INSERTED", "OFFENDER_CASE_IDENTIFIERS-DELETED",
+        -> caseIdentifierEventOf(xtag)
 
         "PERSON-INSERTED", "PERSON-UPDATED", "PERSON-DELETED" -> personEventOf(xtag)
         "ADDRESSES_PERSON-INSERTED", "ADDRESSES_PERSON-UPDATED", "ADDRESSES_PERSON-DELETED" -> personAddressEventOf(xtag)
@@ -980,6 +987,31 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     movementSeq = xtag.content.p_movement_seq?.toLong(),
     nomisEventType = xtag.eventType,
+  )
+
+  private fun offenderTransactionEventOf(xtag: Xtag) = TransactionOffenderEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display!!,
+    transactionId = xtag.content.p_txn_id!!.toLong(),
+    entrySequence = xtag.content.p_txn_entry_seq!!.toInt(),
+    caseload = xtag.content.p_caseload_id!!,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun gLTransactionEventOf(xtag: Xtag) = GLTransactionEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    transactionId = xtag.content.p_txn_id!!.toLong(),
+    entrySequence = xtag.content.p_txn_entry_seq?.toInt(),
+    gLEntrySequence = xtag.content.p_gl_entry_seq?.toInt(),
+    caseload = xtag.content.p_caseload_id!!,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun maternityStatusInsertedEventOf(xtag: Xtag) = GenericOffenderEvent(

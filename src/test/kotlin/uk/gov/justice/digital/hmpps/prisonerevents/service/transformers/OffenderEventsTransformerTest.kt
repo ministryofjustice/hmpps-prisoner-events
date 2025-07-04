@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.GLTransactionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
@@ -58,6 +59,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffend
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.externalMovementEventOf
@@ -1218,6 +1220,142 @@ class OffenderEventsTransformerTest {
       assertThat(movementSeq).isEqualTo(789)
       assertThat(offenderIdDisplay).isNull()
       assertThat(nomisEventType).isEqualTo("OFF_RECEP_OASYS")
+    }
+  }
+
+  @Nested
+  inner class TransactionEvents {
+    @Test
+    fun `GL transaction mapped correctly`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<GLTransactionEvent>(
+        Xtag(
+          eventType = "GL_TRANSACTIONS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            // A lot of fields come in from the trigger but we dont need most of them
+            mapOf(
+              "p_txn_id" to "1234567890123",
+              "p_txn_entry_seq" to "5",
+              "p_caseload_id" to "RMI",
+              "p_offender_id" to "xxxxx",
+              "p_offender_book_id" to "434",
+              "p_offender_id_display" to "A2468ZZ",
+              "p_gl_entry_seq" to "17",
+              "p_account_period_id" to "xxxxx",
+              "p_account_code" to "xxxxx",
+              "p_txn_entry_date" to "YYYY-MM-DD HH24:MI",
+              "p_txn_type" to "xxxxx",
+              "p_txn_post_usage" to "xxxxx",
+              "p_txn_entry_amount" to "xxxxx",
+              "p_txn_entry_desc" to "xxxxx",
+              "p_txn_reference_number" to "xxxxx",
+              "p_bank_statement_date" to "YYYY-MM-DD HH24:MI",
+              "p_recon_clear_flag" to "xxxxx",
+              "p_txn_reversed_flag" to "xxxxx",
+              "p_reversed_txn_id" to "xxxxx",
+              "p_payee_person_id" to "xxxxx",
+              "p_reversed_txn_entry_seq" to "xxxxx",
+              "p_reversed_gl_entry_seq" to "xxxxx",
+              "p_payee_corporate_id" to "xxxxx",
+              "p_payee_name_text" to "xxxxx",
+              "p_txn_object_code" to "xxxxx",
+              "p_list_seq" to "xxxxx",
+              "p_txn_object_id" to "xxxxx",
+              "p_create_date" to "YYYY-MM-DD HH24:MI",
+              "p_info_number" to "xxxxx",
+              "p_deduction_id" to "xxxxx",
+              "p_txn_entry_time" to "YYYY-MM-DD HH24:MI",
+              "p_receipt_number" to "xxxxx",
+              "p_reversal_reason_code" to "xxxxx",
+              "p_txn_loc_id" to "xxxxx",
+              "p_payee_clear_flag" to "xxxxx",
+              "p_audit_module_name" to "MODULE",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("GL_TRANSACTIONS-INSERTED")
+        assertThat(nomisEventType).isEqualTo("GL_TRANSACTIONS-INSERTED")
+        assertThat(bookingId).isEqualTo(434L)
+        assertThat(offenderIdDisplay).isEqualTo("A2468ZZ")
+        assertThat(transactionId).isEqualTo(1234567890123L)
+        assertThat(entrySequence).isEqualTo(5)
+        assertThat(gLEntrySequence).isEqualTo(17)
+        assertThat(caseload).isEqualTo("RMI")
+        assertThat(auditModuleName).isEqualTo("MODULE")
+      }
+    }
+
+    @Test
+    fun `offender transaction mapped correctly`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<TransactionOffenderEvent>(
+        Xtag(
+          eventType = "OFFENDER_TRANSACTIONS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            // A lot of fields come in from the trigger but we dont need most of them
+            mapOf(
+              "p_txn_id" to "123456789",
+              "p_txn_entry_seq" to "5",
+              "p_caseload_id" to "RMI",
+              "p_offender_id" to "xxxxx",
+              "p_offender_book_id" to "434",
+              "p_offender_id_display" to "A2468ZZ",
+              "p_txn_posting_type" to "xxxxx",
+              "p_txn_type" to "xxxxx",
+              "p_txn_entry_desc" to "xxxxx",
+              "p_txn_entry_amount" to "xxxxx",
+              "p_txn_entry_date" to "YYYY-MM-DD HH24:MI",
+              "p_sub_account_type" to "xxxxx",
+              "p_txn_reference_number" to "xxxxx",
+              "p_modify_date" to "YYYY-MM-DD HH24:MI",
+              "p_receipt_number" to "xxxxx",
+              "p_slip_printed_flag" to "xxxxx",
+              "p_transfer_caseload_id" to "xxxxx",
+              "p_receipt_printed_flag" to "xxxxx",
+              "p_pre_withhold_amount" to "xxxxx",
+              "p_deduction_flag" to "xxxxx",
+              "p_closing_cheque_number" to "xxxxx",
+              "p_remitter_name" to "xxxxx",
+              "p_payee_code" to "xxxxx",
+              "p_payee_name_text" to "xxxxx",
+              "p_payee_corporate_id" to "xxxxx",
+              "p_payee_person_id" to "xxxxx",
+              "p_adjust_txn_id" to "xxxxx",
+              "p_adjust_txn_entry_id" to "xxxxx",
+              "p_adjust_offender_id" to "xxxxx",
+              "p_adjust_account_code" to "xxxxx",
+              "p_txn_adjusted_flag" to "xxxxx",
+              "p_deduction_type" to "xxxxx",
+              "p_info_number" to "xxxxx",
+              "p_hold_clear_flag" to "xxxxx",
+              "p_hold_until_date" to "YYYY-MM-DD HH24:MI",
+              "p_hold_number" to "xxxxx",
+              "p_gross_amount" to "xxxxx",
+              "p_gross_net_flag" to "xxxxx",
+              "p_remitter_id" to "xxxxx",
+              "p_apply_spending_limit_amount" to "xxxxx",
+              "p_receipt_pending_print_flag" to "xxxxx",
+              "p_event_id" to "xxxxx",
+              "p_from_date" to "YYYY-MM-DD HH24:MI",
+              "p_to_date" to "YYYY-MM-DD HH24:MI",
+              "p_client_unique_ref" to "xxxxx",
+              "p_audit_module_name" to "MODULE",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_TRANSACTIONS-INSERTED")
+        assertThat(nomisEventType).isEqualTo("OFFENDER_TRANSACTIONS-INSERTED")
+        assertThat(bookingId).isEqualTo(434L)
+        assertThat(offenderIdDisplay).isEqualTo("A2468ZZ")
+        assertThat(transactionId).isEqualTo(123456789L)
+        assertThat(entrySequence).isEqualTo(5)
+        assertThat(caseload).isEqualTo("RMI")
+        assertThat(auditModuleName).isEqualTo("MODULE")
+      }
     }
   }
 
