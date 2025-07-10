@@ -281,6 +281,8 @@ class RestrictionOffenderEvent(
   val expiryDate: LocalDate?,
   val authorisedById: Long?,
   val enteredById: Long?,
+  val auditModuleName: String,
+  val isUpdated: Boolean,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
