@@ -1187,6 +1187,8 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     expiryDate = localDateOf(xtag.content.p_expiry_date),
     authorisedById = xtag.content.p_authorised_staff_id?.toLong(),
     enteredById = xtag.content.p_entered_staff_id?.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    isUpdated = xtag.content.p_update_flag == "Y",
   )
 
   private fun restrictionPersonEventOf(xtag: Xtag) = PersonRestrictionOffenderEvent(

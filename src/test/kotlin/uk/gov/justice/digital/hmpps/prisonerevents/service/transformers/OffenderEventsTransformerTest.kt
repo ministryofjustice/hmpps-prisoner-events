@@ -881,7 +881,7 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun `restriction changes mapped correctly`() {
+  fun `restriction changes mapped correctly for creation`() {
     withCallTransformer<RestrictionOffenderEvent>(
       Xtag(
         eventType = "OFF_RESTRICTS-UPDATED",
@@ -897,6 +897,8 @@ class OffenderEventsTransformerTest {
             "p_authorised_staff_id" to "12345",
             "p_comment_text" to "comment",
             "p_entered_staff_id" to "23456",
+            "p_audit_module_name" to "OIDVIRES",
+            "p_update_flag" to "N",
           ),
         ),
       ),
@@ -912,6 +914,85 @@ class OffenderEventsTransformerTest {
       assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
       assertThat(authorisedById).isEqualTo(12345L)
       assertThat(enteredById).isEqualTo(23456L)
+      assertThat(auditModuleName).isEqualTo("OIDVIRES")
+      assertThat(isUpdated).isFalse
+    }
+  }
+
+  @Test
+  fun `restriction changes mapped correctly for update`() {
+    withCallTransformer<RestrictionOffenderEvent>(
+      Xtag(
+        eventType = "OFF_RESTRICTS-UPDATED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_restriction_id" to "12345678900",
+            "p_restriction_type" to "TYPE",
+            "p_effective_date" to "12-AUG-2022",
+            "p_expiry_date" to "2023-03-31",
+            "p_authorised_staff_id" to "12345",
+            "p_comment_text" to "comment",
+            "p_entered_staff_id" to "23456",
+            "p_audit_module_name" to "OIDVIRES",
+            "p_update_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("RESTRICTION-UPSERTED")
+      assertThat(nomisEventType).isEqualTo("OFF_RESTRICTS-UPDATED")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345L)
+      assertThat(offenderRestrictionId).isEqualTo(12345678900L)
+      assertThat(restrictionType).isEqualTo("TYPE")
+      assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
+      assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
+      assertThat(authorisedById).isEqualTo(12345L)
+      assertThat(enteredById).isEqualTo(23456L)
+      assertThat(auditModuleName).isEqualTo("OIDVIRES")
+      assertThat(isUpdated).isTrue
+    }
+  }
+
+  @Test
+  fun `restriction changes mapped correctly for delete`() {
+    withCallTransformer<RestrictionOffenderEvent>(
+      Xtag(
+        eventType = "OFF_RESTRICTS-UPDATED",
+        nomisTimestamp = fixedEventTime,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "A123BC",
+            "p_offender_book_id" to "12345",
+            "p_offender_restriction_id" to "12345678900",
+            "p_restriction_type" to "TYPE",
+            "p_effective_date" to "12-AUG-2022",
+            "p_expiry_date" to "2023-03-31",
+            "p_authorised_staff_id" to "12345",
+            "p_comment_text" to "comment",
+            "p_entered_staff_id" to "23456",
+            "p_audit_module_name" to "OIDVIRES",
+            "p_delete_flag" to "Y",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("RESTRICTION-DELETED")
+      assertThat(nomisEventType).isEqualTo("OFF_RESTRICTS-UPDATED")
+      assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      assertThat(offenderIdDisplay).isEqualTo("A123BC")
+      assertThat(bookingId).isEqualTo(12345L)
+      assertThat(offenderRestrictionId).isEqualTo(12345678900L)
+      assertThat(restrictionType).isEqualTo("TYPE")
+      assertThat(effectiveDate).isEqualTo(LocalDate.of(2022, 8, 12))
+      assertThat(expiryDate).isEqualTo(LocalDate.of(2023, 3, 31))
+      assertThat(authorisedById).isEqualTo(12345L)
+      assertThat(enteredById).isEqualTo(23456L)
+      assertThat(auditModuleName).isEqualTo("OIDVIRES")
     }
   }
 
