@@ -973,7 +973,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
     recordInserted = xtag.content.p_insert_flag?.equals("Y"),
     recordDeleted = xtag.content.p_delete_flag?.equals("Y"),
-    auditModuleName = xtag.content.p_audit_module_name,
+    auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
   )
 
   private fun offenderMovementDischargeEventOf(xtag: Xtag) = GenericOffenderEvent(
