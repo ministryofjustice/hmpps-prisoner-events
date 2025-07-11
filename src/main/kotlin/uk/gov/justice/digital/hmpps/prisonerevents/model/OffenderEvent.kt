@@ -231,6 +231,9 @@ class ExternalMovementOffenderEvent(
   val escortCode: String?,
   var fromAgencyLocationId: String?,
   var toAgencyLocationId: String?,
+  var recordInserted: Boolean? = null,
+  var recordDeleted: Boolean? = null,
+  var auditModuleName: String? = null,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,

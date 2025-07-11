@@ -287,6 +287,9 @@ class OffenderEventsTransformerTest {
             "p_movement_seq" to "1",
             "p_movement_date" to "2019-02-14",
             "p_movement_time" to "2019-02-14 10:11:12",
+            "p_insert_flag" to "Y",
+            "p_delete_flag" to "N",
+            "p_audit_module_name" to "DPS_SYNCHRONISATION",
           ),
         ),
       ),
@@ -301,6 +304,9 @@ class OffenderEventsTransformerTest {
       assertThat(directionCode).isEqualTo("OUT")
       assertThat(movementReasonCode).isEqualTo("HP")
       assertThat(movementType).isEqualTo("REL")
+      assertThat(recordInserted).isEqualTo(true)
+      assertThat(recordDeleted).isEqualTo(false)
+      assertThat(auditModuleName).isEqualTo("DPS_SYNCHRONISATION")
     }
   }
 
