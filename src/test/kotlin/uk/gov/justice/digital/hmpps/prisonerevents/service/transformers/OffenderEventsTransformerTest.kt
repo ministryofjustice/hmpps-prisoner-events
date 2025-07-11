@@ -311,6 +311,20 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
+  fun externalMovementAuditModuleHandlesNull() {
+    val now = LocalDateTime.now()
+    withCallTransformer<ExternalMovementOffenderEvent>(
+      Xtag(
+        eventType = "EXTERNAL_MOVEMENT-CHANGED",
+        nomisTimestamp = now,
+        content = XtagContent(mapOf()),
+      ),
+    ) {
+      assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
+    }
+  }
+
+  @Test
   fun sentencingChangedCorrectlyMapped() {
     val now = LocalDateTime.now()
     withCallTransformer<GenericOffenderEvent>(

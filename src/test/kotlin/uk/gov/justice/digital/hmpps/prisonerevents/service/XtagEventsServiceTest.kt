@@ -74,6 +74,9 @@ class XtagEventsServiceTest {
         escortCode = null,
         fromAgencyLocationId = null,
         toAgencyLocationId = null,
+        recordInserted = true,
+        recordDeleted = false,
+        auditModuleName = "DPS_SYNCHRONISATION",
       ),
     ) as ExternalMovementOffenderEvent?
 
@@ -83,6 +86,9 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.movementDateTime).isEqualTo(movementTime.toLocalDateTime())
     assertThat(offenderEvent?.movementType).isEqualTo("REL")
     assertThat(offenderEvent?.directionCode).isEqualTo("IN")
+    assertThat(offenderEvent?.recordInserted).isTrue
+    assertThat(offenderEvent?.recordDeleted).isFalse
+    assertThat(offenderEvent?.auditModuleName).isEqualTo("DPS_SYNCHRONISATION")
   }
 
   @Test
@@ -103,6 +109,9 @@ class XtagEventsServiceTest {
         escortCode = null,
         fromAgencyLocationId = null,
         toAgencyLocationId = null,
+        recordInserted = null,
+        recordDeleted = null,
+        auditModuleName = null,
       ),
     ) as ExternalMovementOffenderEvent?
 
@@ -114,6 +123,9 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.movementDateTime).isNull()
     assertThat(offenderEvent?.movementType).isNull()
     assertThat(offenderEvent?.directionCode).isNull()
+    assertThat(offenderEvent?.recordInserted).isNull()
+    assertThat(offenderEvent?.recordDeleted).isNull()
+    assertThat(offenderEvent?.auditModuleName).isNull()
   }
 
   @Test
@@ -132,6 +144,9 @@ class XtagEventsServiceTest {
         escortCode = null,
         fromAgencyLocationId = null,
         toAgencyLocationId = null,
+        recordInserted = null,
+        recordDeleted = null,
+        auditModuleName = null,
       ),
     ) as ExternalMovementOffenderEvent?
 
@@ -143,6 +158,9 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.movementDateTime).isNull()
     assertThat(offenderEvent?.movementType).isNull()
     assertThat(offenderEvent?.directionCode).isNull()
+    assertThat(offenderEvent?.recordInserted).isNull()
+    assertThat(offenderEvent?.recordDeleted).isNull()
+    assertThat(offenderEvent?.auditModuleName).isNull()
   }
 
   @Test
