@@ -32,6 +32,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.LanguageEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
@@ -6850,6 +6851,97 @@ class OffenderEventsTransformerTest {
         assertThat(interpreterRequestedFlag).isEqualTo("N")
         assertThat(nomisEventType).isEqualTo("OFFENDER_LANGUAGES-DELETED")
       }
+    }
+  }
+
+  @Test
+  fun `MOVEMENT_APPLICATION-INSERTED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<MovementApplicationEvent>(
+      Xtag(
+        eventType = "MOVEMENT_APPLICATION-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_from_date" to "2025-07-14 00:00",
+            "p_application_time" to "2025-07-14 00:00",
+            "p_to_date" to "2025-07-15 00:00",
+            "p_return_time" to "2025-07-15 09:00",
+            "p_tap_abs_subtype" to "RDR",
+            "p_tap_abs_type" to "RR",
+            "p_application_date" to "2025-07-14 00:00",
+            "p_event_class" to "EXT_MOV",
+            "p_event_type" to "TAP",
+            "p_offender_id_display" to "G2610GR",
+            "p_transport_code" to "POL",
+            "p_application_status" to "PEN",
+            "p_application_type" to "SINGLE",
+            "p_agy_loc_id" to "RSI",
+            "p_escort_code" to "Z",
+            "p_release_time" to "2025-07-14 09:00",
+            "p_audit_module_name" to "OIDTAAPP",
+            "p_offender_book_id" to "1007000",
+            "p_event_sub_type" to "FB",
+            "p_offender_movement_app_id" to "2883190",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-INSERTED")
+      assertThat(auditModuleName).isEqualTo("OIDTAAPP")
+      assertThat(movementApplicationId).isEqualTo(2883190)
+      assertThat(bookingId).isEqualTo(1007000)
+      assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+    }
+  }
+
+  @Test
+  fun `MOVEMENT_APPLICATION-UPDATED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<MovementApplicationEvent>(
+      Xtag(
+        eventType = "MOVEMENT_APPLICATION-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "G2610GR",
+            "p_offender_book_id" to "1007000",
+            "p_offender_movement_app_id" to "2883190",
+            "p_audit_module_name" to "DPS_SYNCHRONISATION",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-UPDATED")
+      assertThat(auditModuleName).isEqualTo("DPS_SYNCHRONISATION")
+      assertThat(movementApplicationId).isEqualTo(2883190)
+      assertThat(bookingId).isEqualTo(1007000)
+      assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+    }
+  }
+
+  @Test
+  fun `MOVEMENT_APPLICATION-DELETED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<MovementApplicationEvent>(
+      Xtag(
+        eventType = "MOVEMENT_APPLICATION-DELETED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_id_display" to "G2610GR",
+            "p_offender_book_id" to "1007000",
+            "p_offender_movement_app_id" to "2883190",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-DELETED")
+      assertThat(movementApplicationId).isEqualTo(2883190)
+      assertThat(bookingId).isEqualTo(1007000)
+      assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+      // check missing audit module is handled
+      assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
     }
   }
 
