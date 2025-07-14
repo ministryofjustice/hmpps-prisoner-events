@@ -33,6 +33,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.LanguageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationMultiEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
@@ -6940,6 +6941,82 @@ class OffenderEventsTransformerTest {
       assertThat(movementApplicationId).isEqualTo(2883190)
       assertThat(bookingId).isEqualTo(1007000)
       assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+      // check missing audit module is handled
+      assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
+    }
+  }
+
+  @Test
+  fun `MOVEMENT_APPLICATION_MULTI-INSERTED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<MovementApplicationMultiEvent>(
+      Xtag(
+        eventType = "MOVEMENT_APPLICATION_MULTI-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_from_date" to "2025-07-14 00:00",
+            "p_to_date" to "2025-07-15 00:00",
+            "p_return_time" to "2025-07-15 08:00",
+            "p_release_time" to "2025-07-14 17:00",
+            "p_tap_abs_subtype" to "RDR",
+            "p_tap_abs_type" to "RR",
+            "p_event_sub_type" to "RO",
+            "p_audit_module_name" to "OCMOMSCH",
+            "p_offender_movement_app_multi_id" to "245",
+            "p_offender_movement_app_id" to "2883190",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-INSERTED")
+      assertThat(auditModuleName).isEqualTo("OCMOMSCH")
+      assertThat(movementApplicationId).isEqualTo(2883190)
+      assertThat(movementApplicationMultiId).isEqualTo(245)
+    }
+  }
+
+  @Test
+  fun `MOVEMENT_APPLICATION_MULTI-UPDATED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<MovementApplicationMultiEvent>(
+      Xtag(
+        eventType = "MOVEMENT_APPLICATION_MULTI-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_audit_module_name" to "DPS_SYNCHRONISATION",
+            "p_offender_movement_app_multi_id" to "245",
+            "p_offender_movement_app_id" to "2883190",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-UPDATED")
+      assertThat(auditModuleName).isEqualTo("DPS_SYNCHRONISATION")
+      assertThat(movementApplicationId).isEqualTo(2883190)
+      assertThat(movementApplicationMultiId).isEqualTo(245)
+    }
+  }
+
+  @Test
+  fun `MOVEMENT_APPLICATION_MULTI-DELETED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<MovementApplicationMultiEvent>(
+      Xtag(
+        eventType = "MOVEMENT_APPLICATION_MULTI-DELETED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_offender_movement_app_multi_id" to "245",
+            "p_offender_movement_app_id" to "2883190",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-DELETED")
+      assertThat(movementApplicationId).isEqualTo(2883190)
+      assertThat(movementApplicationMultiId).isEqualTo(245)
       // check missing audit module is handled
       assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
     }
