@@ -1078,6 +1078,20 @@ class MovementApplicationEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class MovementApplicationMultiEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val movementApplicationMultiId: Long,
+  val movementApplicationId: Long,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
