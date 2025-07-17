@@ -6963,7 +6963,7 @@ class OffenderEventsTransformerTest {
             "p_tap_abs_type" to "RR",
             "p_event_sub_type" to "RO",
             "p_audit_module_name" to "OCMOMSCH",
-            "p_offender_movement_app_multi_id" to "245",
+            "p_off_movement_apps_multi_id" to "245",
             "p_offender_movement_app_id" to "2883190",
           ),
         ),
@@ -6986,7 +6986,7 @@ class OffenderEventsTransformerTest {
         content = XtagContent(
           mapOf(
             "p_audit_module_name" to "DPS_SYNCHRONISATION",
-            "p_offender_movement_app_multi_id" to "245",
+            "p_off_movement_apps_multi_id" to "245",
             "p_offender_movement_app_id" to "2883190",
           ),
         ),
@@ -7008,7 +7008,7 @@ class OffenderEventsTransformerTest {
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
-            "p_offender_movement_app_multi_id" to "245",
+            "p_off_movement_apps_multi_id" to "245",
             "p_offender_movement_app_id" to "2883190",
           ),
         ),
