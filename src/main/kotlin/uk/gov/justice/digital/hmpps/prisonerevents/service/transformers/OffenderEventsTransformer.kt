@@ -1673,7 +1673,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
     movementApplicationId = xtag.content.p_offender_movement_app_id!!.toLong(),
-    movementApplicationMultiId = xtag.content.p_offender_movement_app_multi_id!!.toLong(),
+    movementApplicationMultiId = xtag.content.p_off_movement_apps_multi_id!!.toLong(),
   )
 
   companion object {

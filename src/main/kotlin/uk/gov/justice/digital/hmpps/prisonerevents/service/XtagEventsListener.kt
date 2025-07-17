@@ -23,9 +23,12 @@ class XtagEventsListener(
           log.debug("Publishing {}", it)
           eventsEmitter.sendEvent(it)
         }
+    } catch (ne: NullPointerException) {
+      // TODO we handle null pointers separately because they don't appear in App Insights due to a bug on their side - can remove this when fixed
+      log.error("Failed to send event with message due to null pointer {}", ne.cause?.message)
+      throw ne
     } catch (ex: Exception) {
-      log.error("Failed to send event with message {}", ex.message)
-      log.error("Failed to send event", ex)
+      log.error("Failed to send event due to exception", ex)
       throw ex
     }
   }
