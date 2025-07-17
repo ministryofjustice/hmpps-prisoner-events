@@ -17,11 +17,17 @@ class XtagEventsListener(
 
   override fun onMessage(message: Message) {
     val aqMessage = message as AQjmsMapMessage
-    offenderEventsTransformer.offenderEventOf(aqMessage).addAdditionalEventData()
-      ?.also {
-        log.debug("Publishing {}", it)
-        eventsEmitter.sendEvent(it)
-      }
+    try {
+      offenderEventsTransformer.offenderEventOf(aqMessage).addAdditionalEventData()
+        ?.also {
+          log.debug("Publishing {}", it)
+          eventsEmitter.sendEvent(it)
+        }
+    } catch (ex: Exception) {
+      log.error("Failed to send event with message {}", ex.message)
+      log.error("Failed to send event", ex)
+      throw ex
+    }
   }
 
   companion object {

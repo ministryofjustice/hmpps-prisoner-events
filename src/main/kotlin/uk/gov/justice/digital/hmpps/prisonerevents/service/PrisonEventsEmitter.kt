@@ -33,12 +33,15 @@ class PrisonEventsEmitter(
 
   fun sendEvent(payload: OffenderEvent) {
     val publishResult: PublishResponse = try {
+      log.debug("Attempting to publish message: {} for booking {}", payload.eventType, payload.bookingId)
       prisonEventTopic.publish(
         eventType = payload.eventType!!,
         event = objectMapper.writeValueAsString(payload),
         attributes = metaData(payload),
         retryPolicy = NeverRetryPolicy(),
-      )
+      ).also {
+        log.debug("Apparently published message: {} for booking {}", payload.eventType, payload.bookingId)
+      }
     } catch (e: ExecutionException) {
       if (e.cause is ValidationException) {
         log.error("Invalid payload $payload or other parameter", e.cause)
@@ -55,12 +58,15 @@ class PrisonEventsEmitter(
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload))
       throw RuntimeException(e)
     }
+    log.debug("Checking http response status for: {} for booking {}", payload.eventType, payload.bookingId)
     val httpStatusCode = publishResult.sdkHttpResponse().statusCode()
     if (httpStatusCode >= 400) {
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload))
       throw RuntimeException("Attempt to publish message ${payload.eventType} resulted in an http $httpStatusCode error")
     }
+    log.debug("About to publish telemetry for: {} for booking {}", payload.eventType, payload.bookingId)
     telemetryClient.trackEvent(payload.eventType.toString(), asTelemetryMap(payload))
+    log.debug("Finished processing: {} for booking {}", payload.eventType, payload.bookingId)
   }
 
   private fun metaData(payload: OffenderEvent): Map<String, MessageAttributeValue> {
