@@ -810,19 +810,23 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventType = "OFFENDER_IDENTIFIER-INSERTED",
     eventDatetime = xtag.nomisTimestamp,
     offenderId = xtag.content.p_offender_id?.toLong(),
+    offenderIdSeq = xtag.content.p_offender_id_seq?.toInt(),
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     identifierType = xtag.content.p_identifier_type,
     identifierValue = xtag.content.p_identifier_value,
     nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun offenderIdentifierDeletedEventOf(xtag: Xtag) = OffenderIdentifierUpdatedEvent(
     eventType = "OFFENDER_IDENTIFIER-DELETED",
     eventDatetime = xtag.nomisTimestamp,
     offenderId = xtag.content.p_offender_id?.toLong(),
+    offenderIdSeq = xtag.content.p_offender_id_seq?.toInt(),
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     identifierType = xtag.content.p_identifier_type,
     nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun offenderIdentifierUpdatedEventOf(xtag: Xtag) = OffenderIdentifierUpdatedEvent(
@@ -831,9 +835,11 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     offenderId = xtag.content.p_offender_id?.toLong(),
+    offenderIdSeq = xtag.content.p_offender_id_seq?.toInt(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
     identifierType = xtag.content.p_identifier_type,
     identifierValue = xtag.content.p_identifier_value,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun educationLevelInsertedEventOf(xtag: Xtag) = GenericOffenderEvent(
