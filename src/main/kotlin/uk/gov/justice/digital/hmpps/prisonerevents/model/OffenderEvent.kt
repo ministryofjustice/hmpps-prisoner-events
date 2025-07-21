@@ -394,8 +394,10 @@ class OffenderIdentifierUpdatedEvent(
   offenderId: Long?,
   offenderIdDisplay: String? = null,
   val rootOffenderId: Long?,
+  val offenderIdSeq: Int?,
   val identifierType: String?,
   val identifierValue: String? = null,
+  val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,

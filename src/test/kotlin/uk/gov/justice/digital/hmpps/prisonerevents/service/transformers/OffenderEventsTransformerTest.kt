@@ -1993,17 +1993,21 @@ class OffenderEventsTransformerTest {
             "p_root_offender_id" to "456",
             "p_identifier_type" to "some type",
             "p_identifier_value" to "value",
+            "p_offender_id_seq" to "2",
+            "p_audit_module_name" to "OCUIMAGE",
           ),
         ),
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_IDENTIFIER-INSERTED")
       assertThat(offenderId).isEqualTo(123)
+      assertThat(offenderIdSeq).isEqualTo(2)
       assertThat(rootOffenderId).isEqualTo(456)
       assertThat(identifierType).isEqualTo("some type")
       assertThat(identifierValue).isEqualTo("value")
       assertThat(nomisEventType).isEqualTo("P3_RESULT")
       assertThat(offenderIdDisplay).isNull()
+      assertThat(auditModuleName).isEqualTo("OCUIMAGE")
     }
   }
 
@@ -2019,15 +2023,19 @@ class OffenderEventsTransformerTest {
             "p_offender_id" to "123",
             "p_root_offender_id" to "456",
             "p_identifier_type" to "some type",
+            "p_offender_id_seq" to "2",
+            "p_audit_module_name" to "OCUIMAGE",
           ),
         ),
       ),
     ) {
       assertThat(eventType).isEqualTo("OFFENDER_IDENTIFIER-DELETED")
       assertThat(offenderId).isEqualTo(123)
+      assertThat(offenderIdSeq).isEqualTo(2)
       assertThat(rootOffenderId).isEqualTo(456)
       assertThat(identifierType).isEqualTo("some type")
       assertThat(nomisEventType).isEqualTo("P3_RESULT")
+      assertThat(auditModuleName).isEqualTo("OCUIMAGE")
       assertThat(offenderIdDisplay).isNull()
     }
   }
@@ -2043,10 +2051,12 @@ class OffenderEventsTransformerTest {
           mapOf(
             "p_root_offender_id" to "456",
             "p_offender_id" to "123",
+            "p_offender_id_seq" to "2",
             "p_offender_id_display" to "A2435CD",
             "p_identifier_type" to "some type",
             "p_identifier_value" to "value",
             "p_nomis_timestamp" to "20230509215740.443718000",
+            "p_audit_module_name" to "OCUIMAGE",
           ),
         ),
       ),
@@ -2054,11 +2064,13 @@ class OffenderEventsTransformerTest {
       assertThat(eventType).isEqualTo("OFFENDER_IDENTIFIER-UPDATED")
       assertThat(rootOffenderId).isEqualTo(456)
       assertThat(offenderId).isEqualTo(123)
+      assertThat(offenderIdSeq).isEqualTo(2)
       assertThat(offenderIdDisplay).isEqualTo("A2435CD")
       assertThat(identifierType).isEqualTo("some type")
       assertThat(identifierValue).isEqualTo("value")
       assertThat(nomisEventType).isEqualTo("OFFENDER_IDENTIFIERS-UPDATED")
       assertThat(eventDatetime).isEqualTo(LocalDateTime.parse("2023-05-09T21:57:40.443718"))
+      assertThat(auditModuleName).isEqualTo("OCUIMAGE")
     }
   }
 
