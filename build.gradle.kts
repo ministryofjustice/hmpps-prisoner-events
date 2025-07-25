@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.3"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.4"
   kotlin("plugin.spring") version "2.2.0"
 }
 
@@ -8,11 +8,11 @@ configurations {
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.4.10")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.4.11")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:6.2.8")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.9")
+  implementation("org.springframework:spring-jms:6.2.9")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.10")
 
   implementation("org.flywaydb:flyway-database-oracle")
   implementation("org.hibernate.orm:hibernate-community-dialects")
@@ -23,12 +23,12 @@ dependencies {
   implementation("com.oracle.database.jdbc:ojdbc11:23.8.0.25.04")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.7.0.0")
 
-  implementation("org.apache.commons:commons-lang3:3.17.0")
+  implementation("org.apache.commons:commons-lang3:3.18.0")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.16.0")
   implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.61.0")
   implementation("org.jetbrains.exposed:exposed-java-time:0.61.0")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.4.7")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.4.11")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
