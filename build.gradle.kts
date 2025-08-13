@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.4"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.5"
   kotlin("plugin.spring") version "2.2.0"
 }
 
@@ -20,15 +20,15 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9")
 
   runtimeOnly("com.zaxxer:HikariCP")
-  implementation("com.oracle.database.jdbc:ojdbc11:23.8.0.25.04")
+  implementation("com.oracle.database.jdbc:ojdbc11:23.9.0.25.07")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.7.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.18.0")
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.16.0")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.18.1")
   implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.61.0")
   implementation("org.jetbrains.exposed:exposed-java-time:0.61.0")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.4.11")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.5.0")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
 
   testImplementation("org.mockito:mockito-inline:5.2.0")
@@ -36,7 +36,7 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.31") {
     exclude(group = "io.swagger.core.v3")
   }
-  testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.34")
+  testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.35")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:localstack:1.21.3")
   testImplementation("org.testcontainers:oracle-xe:1.21.3")
