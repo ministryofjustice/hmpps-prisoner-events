@@ -61,6 +61,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffend
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
@@ -7031,6 +7032,90 @@ class OffenderEventsTransformerTest {
       assertThat(movementApplicationMultiId).isEqualTo(245)
       // check missing audit module is handled
       assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
+    }
+  }
+
+  @Test
+  fun `SCHEDULED_EXT_MOVE-INSERTED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<ScheduledExternalMovementEvent>(
+      Xtag(
+        eventType = "SCHEDULED_EXT_MOVE-INSERTED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_event_id" to "579105221",
+            "p_audit_module_name" to "OIUSCINQ",
+            "p_offender_book_id" to "1125205",
+            "p_event_type" to "TAP",
+            "p_nomis_timestamp" to "20250815090952.912443000",
+            "p_offender_id_display" to "A1234BC",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-INSERTED")
+      assertThat(eventId).isEqualTo(579105221)
+      assertThat(auditModuleName).isEqualTo("OIUSCINQ")
+      assertThat(bookingId).isEqualTo(1125205)
+      assertThat(eventMovementType).isEqualTo("TAP")
+      assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+    }
+  }
+
+  @Test
+  fun `SCHEDULED_EXT_MOVE-UPDATED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<ScheduledExternalMovementEvent>(
+      Xtag(
+        eventType = "SCHEDULED_EXT_MOVE-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_event_id" to "579105221",
+            "p_audit_module_name" to "OIUSCINQ",
+            "p_offender_book_id" to "1125205",
+            "p_event_type" to "TAP",
+            "p_nomis_timestamp" to "20250815090952.912443000",
+            "p_offender_id_display" to "A1234BC",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-UPDATED")
+      assertThat(eventId).isEqualTo(579105221)
+      assertThat(auditModuleName).isEqualTo("OIUSCINQ")
+      assertThat(bookingId).isEqualTo(1125205)
+      assertThat(eventMovementType).isEqualTo("TAP")
+      assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+    }
+  }
+
+  @Test
+  fun `SCHEDULED_EXT_MOVE-DELETED is mapped`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<ScheduledExternalMovementEvent>(
+      Xtag(
+        eventType = "SCHEDULED_EXT_MOVE-DELETED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_event_id" to "579105221",
+            "p_audit_module_name" to "OIUSCINQ",
+            "p_offender_book_id" to "1125205",
+            "p_event_type" to "TAP",
+            "p_nomis_timestamp" to "20250815090952.912443000",
+            "p_offender_id_display" to "A1234BC",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-DELETED")
+      assertThat(eventId).isEqualTo(579105221)
+      assertThat(auditModuleName).isEqualTo("OIUSCINQ")
+      assertThat(bookingId).isEqualTo(1125205)
+      assertThat(eventMovementType).isEqualTo("TAP")
+      assertThat(offenderIdDisplay).isEqualTo("A1234BC")
     }
   }
 
