@@ -59,6 +59,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffend
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
@@ -330,6 +331,9 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "MOVEMENT_APPLICATION_MULTI-INSERTED", "MOVEMENT_APPLICATION_MULTI-UPDATED", "MOVEMENT_APPLICATION_MULTI-DELETED" ->
           movementApplicationMultiEventOf(xtag)
+
+        "SCHEDULED_EXT_MOVE-INSERTED", "SCHEDULED_EXT_MOVE-UPDATED", "SCHEDULED_EXT_MOVE-DELETED" ->
+          scheduledExternalMovementEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1680,6 +1684,17 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
     movementApplicationId = xtag.content.p_offender_movement_app_id!!.toLong(),
     movementApplicationMultiId = xtag.content.p_off_movement_apps_multi_id!!.toLong(),
+  )
+
+  private fun scheduledExternalMovementEventOf(xtag: Xtag) = ScheduledExternalMovementEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display!!,
+    auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
+    eventId = xtag.content.p_event_id!!.toLong(),
+    eventMovementType = xtag.content.p_event_type!!,
   )
 
   companion object {
