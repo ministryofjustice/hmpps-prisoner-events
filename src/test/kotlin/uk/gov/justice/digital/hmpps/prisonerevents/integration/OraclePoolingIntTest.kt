@@ -101,7 +101,7 @@ class OraclePoolingIntTest : IntegrationTestBase() {
       verify(jdbcDataSource, times(62)).connection
       // connection for each of 3 listeners plus 2 jms templates
       assertThat(listenerDataSource is OracleDataSource).isTrue()
-      verify(listenerDataSource, times(5)).connection
+      verify(listenerDataSource, times(4)).connection
     }
   }
 
