@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.5"
-  kotlin("plugin.spring") version "2.2.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "8.3.6"
+  kotlin("plugin.spring") version "2.2.10"
 }
 
 configurations {
@@ -11,7 +11,7 @@ dependencies {
   implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:1.5.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:6.2.9")
+  implementation("org.springframework:spring-jms:6.2.10")
   implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:5.4.10")
 
   implementation("org.flywaydb:flyway-database-oracle")
@@ -21,7 +21,7 @@ dependencies {
 
   runtimeOnly("com.zaxxer:HikariCP")
   implementation("com.oracle.database.jdbc:ojdbc11:23.9.0.25.07")
-  implementation("com.oracle.database.messaging:aqapi-jakarta:23.7.0.0")
+  implementation("com.oracle.database.messaging:aqapi-jakarta:23.8.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.18.0")
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.18.1")
