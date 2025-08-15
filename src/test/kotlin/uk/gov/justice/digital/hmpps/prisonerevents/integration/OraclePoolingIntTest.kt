@@ -76,8 +76,8 @@ class OraclePoolingIntTest : IntegrationTestBase() {
   inner class Consume {
 
     // This is best efforts to confirm connection factories are setup correctly and connection pooling
-    // is being used for jdbcTemplate but nt by the listeners
-    // Ideally we woul want to look at how many real Oracle connections have been created, but not sure of a good
+    // is being used for jdbcTemplate but not by the listeners
+    // Ideally we would want to look at how many real Oracle connections have been created, but not sure of a good
     // way to do this in an integration test.
     @Test
     fun `will consume all prison offender events message with pooled jdbc connection and connection per listener thread`() {
@@ -93,13 +93,13 @@ class OraclePoolingIntTest : IntegrationTestBase() {
 
       awaitQueueSizeToBe(count)
 
-      // NB The number of connections should match messages and threads buyt will not be exact due to health check beans
+      // NB The number of connections should match messages and threads but will not be exact due to health check beans
       // and test beans being created
       // connection for pooled jdbc connection called as many times as there is message plus 2 other beans
       // but check it is a Hikari pool so we trust it uses a pooled connection
       assertThat(jdbcDataSource is HikariDataSource).isTrue()
       verify(jdbcDataSource, times(62)).connection
-      // connection for each of 3 listeners plus 2 jms templates
+      // our hikari pool size is 4
       assertThat(listenerDataSource is OracleDataSource).isTrue()
       verify(listenerDataSource, times(4)).connection
     }
