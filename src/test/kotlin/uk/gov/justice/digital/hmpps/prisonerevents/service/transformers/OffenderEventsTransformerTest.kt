@@ -7050,6 +7050,7 @@ class OffenderEventsTransformerTest {
             "p_event_type" to "TAP",
             "p_nomis_timestamp" to "20250815090952.912443000",
             "p_offender_id_display" to "A1234BC",
+            "p_direction_code" to "OUT",
           ),
         ),
       ),
@@ -7060,6 +7061,7 @@ class OffenderEventsTransformerTest {
       assertThat(bookingId).isEqualTo(1125205)
       assertThat(eventMovementType).isEqualTo("TAP")
       assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+      assertThat(directionCode).isEqualTo("OUT")
     }
   }
 
@@ -7078,6 +7080,7 @@ class OffenderEventsTransformerTest {
             "p_event_type" to "TAP",
             "p_nomis_timestamp" to "20250815090952.912443000",
             "p_offender_id_display" to "A1234BC",
+            "p_direction_code" to "IN",
           ),
         ),
       ),
@@ -7088,6 +7091,7 @@ class OffenderEventsTransformerTest {
       assertThat(bookingId).isEqualTo(1125205)
       assertThat(eventMovementType).isEqualTo("TAP")
       assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+      assertThat(directionCode).isEqualTo("IN")
     }
   }
 
@@ -7106,6 +7110,7 @@ class OffenderEventsTransformerTest {
             "p_event_type" to "TAP",
             "p_nomis_timestamp" to "20250815090952.912443000",
             "p_offender_id_display" to "A1234BC",
+            "p_direction_code" to "OUT",
           ),
         ),
       ),
@@ -7116,6 +7121,7 @@ class OffenderEventsTransformerTest {
       assertThat(bookingId).isEqualTo(1125205)
       assertThat(eventMovementType).isEqualTo("TAP")
       assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+      assertThat(directionCode).isEqualTo("OUT")
     }
   }
 
