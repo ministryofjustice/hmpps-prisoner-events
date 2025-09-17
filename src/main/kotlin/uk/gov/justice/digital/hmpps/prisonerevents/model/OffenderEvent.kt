@@ -1103,6 +1103,7 @@ class ScheduledExternalMovementEvent(
   val eventId: Long,
   val eventMovementType: String,
   val auditModuleName: String?,
+  val directionCode: String?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
