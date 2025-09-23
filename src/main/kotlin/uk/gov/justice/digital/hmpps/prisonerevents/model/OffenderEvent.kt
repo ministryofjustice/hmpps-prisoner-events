@@ -12,9 +12,11 @@ open class OffenderEvent(
   val offenderId: Long? = null,
   var offenderIdDisplay: String? = null,
   val nomisEventType: String? = null,
+  open var prisonId: String? = null,
 ) {
   override fun toString() = "(eventType=$eventType, offenderIdDisplay=$offenderIdDisplay, bookingId=$bookingId," +
-    " eventDatetime=$eventDatetime, offenderId=$offenderId, nomisEventType=$nomisEventType)"
+    " eventDatetime=$eventDatetime, offenderId=$offenderId, nomisEventType=$nomisEventType," +
+    " prisonId=$prisonId)"
 }
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -341,7 +343,7 @@ class PrisonerActivityUpdateEvent(
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,
   offenderIdDisplay: String?,
-  val prisonId: String?,
+  override var prisonId: String?,
   val action: String?,
   val user: String?,
 ) : OffenderEvent(
@@ -357,7 +359,7 @@ class PrisonerAppointmentUpdateEvent(
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,
   offenderIdDisplay: String?,
-  val prisonId: String?,
+  override var prisonId: String?,
   val action: String?,
   val user: String?,
 ) : OffenderEvent(
@@ -599,7 +601,7 @@ class AgencyInternalLocationUpdatedEvent(
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,
   val internalLocationId: Long?,
-  val prisonId: String?,
+  override var prisonId: String?,
   val description: String?,
   val oldDescription: String?,
   val auditModuleName: String?,

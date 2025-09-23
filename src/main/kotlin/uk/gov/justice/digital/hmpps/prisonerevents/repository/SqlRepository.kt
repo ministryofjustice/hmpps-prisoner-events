@@ -32,6 +32,16 @@ class SqlRepository(private val jdbcTemplate: NamedParameterJdbcTemplate) {
     MapSqlParameterSource().addValue("bookingId", bookingId),
   ) { resultSet: ResultSet, _: Int -> resultSet.getString("OFFENDER_ID_DISPLAY") }
 
+  fun getPrisonIdFromOffender(offenderId: Long): Collection<String> = jdbcTemplate.query(
+    """
+      SELECT AGY_LOC_ID
+      FROM OFFENDER_BOOKINGS
+        INNER JOIN OFFENDERS ON OFFENDER_BOOKINGS.OFFENDER_ID = OFFENDERS.OFFENDER_ID 
+      WHERE OFFENDERS.OFFENDER_ID = :offenderId
+    """.trimIndent(),
+    MapSqlParameterSource().addValue("offenderId", offenderId),
+  ) { resultSet: ResultSet, _: Int -> resultSet.getString("AGY_LOC_ID") }
+
   fun getMovement(bookingId: Long, sequenceNumber: Int): Collection<Movement> = jdbcTemplate.query(
     """
       SELECT OFFENDERS.OFFENDER_ID_DISPLAY  AS OFFENDER_NO,
