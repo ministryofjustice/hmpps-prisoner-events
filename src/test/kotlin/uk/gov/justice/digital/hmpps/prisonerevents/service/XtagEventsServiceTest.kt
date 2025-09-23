@@ -164,8 +164,9 @@ class XtagEventsServiceTest {
   }
 
   @Test
-  fun shouldDecorateOffenderUpdatedWithOffenderDisplayNo() {
+  fun shouldDecorateOffenderUpdatedWithOffenderDisplayNoAndPrisonId() {
     assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId("OFFENDER-UPDATED")
+    assertEventIsDecoratedWithPrisonIdUsingOffenderId("OFFENDER-UPDATED")
   }
 
   @ParameterizedTest
@@ -267,6 +268,17 @@ class XtagEventsServiceTest {
     )
 
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
+    assertThat(offenderEvent?.offenderId).isEqualTo(1L)
+  }
+
+  private fun assertEventIsDecoratedWithPrisonIdUsingOffenderId(eventName: String) {
+    whenever(repository.getPrisonIdFromOffender(1L)).thenReturn(listOf("MDI"))
+
+    val offenderEvent = service.addAdditionalEventData(
+      OffenderEvent(offenderId = 1L, eventType = eventName),
+    )
+
+    assertThat(offenderEvent?.prisonId).isEqualTo("MDI")
     assertThat(offenderEvent?.offenderId).isEqualTo(1L)
   }
 

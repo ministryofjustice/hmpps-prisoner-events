@@ -50,6 +50,18 @@ class SqlRepositoryTest : IntegrationTestBase() {
   }
 
   @Test
+  fun getPrisonIdFromOffender() {
+    seedOffenders()
+    seedBookings()
+
+    val data = repository.getPrisonIdFromOffender(12L)
+    assertThat(data.first()).isEqualTo("MDI")
+    assertThat(data).hasSize(1)
+
+    assertThat(repository.getPrisonIdFromOffender(13L)).isEmpty()
+  }
+
+  @Test
   fun getMovement() {
     seedOffenders()
     seedBookings()
@@ -122,14 +134,16 @@ class SqlRepositoryTest : IntegrationTestBase() {
           BOOKING_BEGIN_DATE,
           IN_OUT_STATUS,
           YOUTH_ADULT_CODE,
-          BOOKING_SEQ
+          BOOKING_SEQ,
+          AGY_LOC_ID
         ) values (
           12, 
           1234,
           SYSDATE,
           'IN',
           'CODE',
-          1)""",
+          1,
+          'MDI')""",
     )
   }
 
