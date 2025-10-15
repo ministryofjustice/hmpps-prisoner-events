@@ -30,6 +30,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.LanguageEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.MilitaryEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationMultiEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
@@ -334,6 +335,9 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "SCHEDULED_EXT_MOVE-INSERTED", "SCHEDULED_EXT_MOVE-UPDATED", "SCHEDULED_EXT_MOVE-DELETED" ->
           scheduledExternalMovementEventOf(xtag)
+
+        "OFF_MILITARY_REC-INSERTED", "OFF_MILITARY_REC-UPDATED", "OFF_MILITARY_REC-DELETED" ->
+          militaryEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1696,6 +1700,16 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventId = xtag.content.p_event_id!!.toLong(),
     eventMovementType = xtag.content.p_event_type!!,
     directionCode = xtag.content.p_direction_code!!,
+  )
+
+  private fun militaryEventOf(xtag: Xtag) = MilitaryEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display!!,
+    militarySequence = xtag.content.p_military_seq!!.toInt(),
+    auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
   )
 
   companion object {

@@ -244,12 +244,28 @@ class XtagEventsServiceTest {
   }
 
   @Test
-  fun `should add offender number for offender address udpated event`() {
+  fun `should add offender number for offender address updated event`() {
     whenever(repository.getNomsIdFromOffender(1234L)).thenReturn(listOf("A1234GB"))
 
     val offenderEvent = service.addAdditionalEventData(
       GenericOffenderEvent(
         eventType = "OFFENDER_ADDRESS-UPDATED",
+        eventDatetime = LocalDateTime.now(),
+        nomisEventType = "ADDR_UPD",
+        ownerClass = "OFF",
+        ownerId = 1234L,
+      ),
+    )
+    assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234GB")
+  }
+
+  @Test
+  fun `should add merge details for offender merge event`() {
+    whenever(repository.getNomsIdFromOffender(1234L)).thenReturn(listOf("A1234GB"))
+
+    val offenderEvent = service.addAdditionalEventData(
+      GenericOffenderEvent(
+        eventType = "BOOKING_NUMBER-CHANGED",
         eventDatetime = LocalDateTime.now(),
         nomisEventType = "ADDR_UPD",
         ownerClass = "OFF",
@@ -280,4 +296,6 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
     assertThat(offenderEvent?.bookingId).isEqualTo(1234L)
   }
+
+
 }
