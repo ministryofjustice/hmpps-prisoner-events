@@ -3993,160 +3993,160 @@ class OffenderEventsTransformerTest {
     }
   }
 
-   @Nested
+  @Nested
   inner class AgencyInternalLocationEvents {
-     @Test
-     fun `Agency Internal Location Update Event mapped correctly`() {
-       val now = LocalDateTime.now()
+    @Test
+    fun `Agency Internal Location Update Event mapped correctly`() {
+      val now = LocalDateTime.now()
 
-       withCallTransformer<AgencyInternalLocationUpdatedEvent>(
-         Xtag(
-           eventType = "AGENCY_INTERNAL_LOCATIONS-UPDATED",
-           nomisTimestamp = now,
-           content = XtagContent(agencyInternalLocationMap),
-         ),
-       ) {
-         assertThat(eventType).isEqualTo("AGENCY_INTERNAL_LOCATIONS-UPDATED")
-         assertThat(eventDatetime).isEqualTo(now)
-         assertThat(internalLocationId).isEqualTo(12345)
-         assertThat(prisonId).isEqualTo("LEI")
-         assertThat(description).isEqualTo("LEI-E-3-135")
-         assertThat(oldDescription).isEqualTo("LEI-E-3-246")
-         assertThat(auditModuleName).isEqualTo("module")
-         assertThat(recordDeleted).isFalse()
-       }
-     }
+      withCallTransformer<AgencyInternalLocationUpdatedEvent>(
+        Xtag(
+          eventType = "AGENCY_INTERNAL_LOCATIONS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(agencyInternalLocationMap),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGENCY_INTERNAL_LOCATIONS-UPDATED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(internalLocationId).isEqualTo(12345)
+        assertThat(prisonId).isEqualTo("LEI")
+        assertThat(description).isEqualTo("LEI-E-3-135")
+        assertThat(oldDescription).isEqualTo("LEI-E-3-246")
+        assertThat(auditModuleName).isEqualTo("module")
+        assertThat(recordDeleted).isFalse()
+      }
+    }
 
-     @Test
-     fun `Agency Internal Location Delete Event mapped correctly`() {
-       withCallTransformer<AgencyInternalLocationUpdatedEvent>(
-         Xtag(
-           eventType = "AGENCY_INTERNAL_LOCATIONS-UPDATED",
-           nomisTimestamp = LocalDateTime.now(),
-           content = XtagContent(agencyInternalLocationMap + mapOf("p_delete_flag" to "Y")),
-         ),
-       ) {
-         assertThat(eventType).isEqualTo("AGENCY_INTERNAL_LOCATIONS-UPDATED")
-         assertThat(internalLocationId).isEqualTo(12345)
-         assertThat(recordDeleted).isTrue()
-       }
-     }
+    @Test
+    fun `Agency Internal Location Delete Event mapped correctly`() {
+      withCallTransformer<AgencyInternalLocationUpdatedEvent>(
+        Xtag(
+          eventType = "AGENCY_INTERNAL_LOCATIONS-UPDATED",
+          nomisTimestamp = LocalDateTime.now(),
+          content = XtagContent(agencyInternalLocationMap + mapOf("p_delete_flag" to "Y")),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGENCY_INTERNAL_LOCATIONS-UPDATED")
+        assertThat(internalLocationId).isEqualTo(12345)
+        assertThat(recordDeleted).isTrue()
+      }
+    }
 
-     @Test
-     fun `Agency Internal Location Usage Event mapped correctly`() {
-       val now = LocalDateTime.now()
+    @Test
+    fun `Agency Internal Location Usage Event mapped correctly`() {
+      val now = LocalDateTime.now()
 
-       withCallTransformer<AgencyInternalLocationUpdatedEvent>(
-         Xtag(
-           eventType = "INT_LOC_USAGE_LOCATIONS-UPDATED",
-           nomisTimestamp = now,
-           content = XtagContent(agencyInternalLocationUsageMap),
-         ),
-       ) {
-         assertThat(eventType).isEqualTo("INT_LOC_USAGE_LOCATIONS-UPDATED")
-         assertThat(eventDatetime).isEqualTo(now)
-         assertThat(internalLocationId).isEqualTo(34567)
-         assertThat(usageLocationId).isEqualTo(45678)
-         assertThat(auditModuleName).isEqualTo("module")
-         assertThat(recordDeleted).isFalse()
-       }
-     }
+      withCallTransformer<AgencyInternalLocationUpdatedEvent>(
+        Xtag(
+          eventType = "INT_LOC_USAGE_LOCATIONS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(agencyInternalLocationUsageMap),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("INT_LOC_USAGE_LOCATIONS-UPDATED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(internalLocationId).isEqualTo(34567)
+        assertThat(usageLocationId).isEqualTo(45678)
+        assertThat(auditModuleName).isEqualTo("module")
+        assertThat(recordDeleted).isFalse()
+      }
+    }
 
-     @Test
-     fun `Agency Internal Location Usage Deleted Event mapped correctly`() {
-       withCallTransformer<AgencyInternalLocationUpdatedEvent>(
-         Xtag(
-           eventType = "INT_LOC_USAGE_LOCATIONS-UPDATED",
-           nomisTimestamp = LocalDateTime.now(),
-           content = XtagContent(agencyInternalLocationUsageMap + mapOf("p_delete_flag" to "Y")),
-         ),
-       ) {
-         assertThat(eventType).isEqualTo("INT_LOC_USAGE_LOCATIONS-UPDATED")
-         assertThat(usageLocationId).isEqualTo(45678)
-         assertThat(recordDeleted).isTrue()
-       }
-     }
+    @Test
+    fun `Agency Internal Location Usage Deleted Event mapped correctly`() {
+      withCallTransformer<AgencyInternalLocationUpdatedEvent>(
+        Xtag(
+          eventType = "INT_LOC_USAGE_LOCATIONS-UPDATED",
+          nomisTimestamp = LocalDateTime.now(),
+          content = XtagContent(agencyInternalLocationUsageMap + mapOf("p_delete_flag" to "Y")),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("INT_LOC_USAGE_LOCATIONS-UPDATED")
+        assertThat(usageLocationId).isEqualTo(45678)
+        assertThat(recordDeleted).isTrue()
+      }
+    }
 
-     @Test
-     fun `Agency Internal Location Profile Event mapped correctly`() {
-       val now = LocalDateTime.now()
+    @Test
+    fun `Agency Internal Location Profile Event mapped correctly`() {
+      val now = LocalDateTime.now()
 
-       withCallTransformer<AgencyInternalLocationUpdatedEvent>(
-         Xtag(
-           eventType = "AGY_INT_LOC_PROFILES-UPDATED",
-           nomisTimestamp = now,
-           content = XtagContent(agencyInternalLocationProfileMap),
-         ),
-       ) {
-         assertThat(eventType).isEqualTo("AGY_INT_LOC_PROFILES-UPDATED")
-         assertThat(eventDatetime).isEqualTo(now)
-         assertThat(internalLocationId).isEqualTo(34567)
-         assertThat(auditModuleName).isEqualTo("module")
-         assertThat(recordDeleted).isFalse()
-       }
-     }
+      withCallTransformer<AgencyInternalLocationUpdatedEvent>(
+        Xtag(
+          eventType = "AGY_INT_LOC_PROFILES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(agencyInternalLocationProfileMap),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGY_INT_LOC_PROFILES-UPDATED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(internalLocationId).isEqualTo(34567)
+        assertThat(auditModuleName).isEqualTo("module")
+        assertThat(recordDeleted).isFalse()
+      }
+    }
 
-     @Test
-     fun `Agency Internal Location Profile Deleted Event mapped correctly`() {
-       withCallTransformer<AgencyInternalLocationUpdatedEvent>(
-         Xtag(
-           eventType = "AGY_INT_LOC_PROFILES-UPDATED",
-           nomisTimestamp = LocalDateTime.now(),
-           content = XtagContent(agencyInternalLocationProfileMap + mapOf("p_delete_flag" to "Y")),
-         ),
-       ) {
-         assertThat(eventType).isEqualTo("AGY_INT_LOC_PROFILES-UPDATED")
-         assertThat(internalLocationId).isEqualTo(34567)
-         assertThat(auditModuleName).isEqualTo("module")
-         assertThat(recordDeleted).isTrue()
-       }
-     }
+    @Test
+    fun `Agency Internal Location Profile Deleted Event mapped correctly`() {
+      withCallTransformer<AgencyInternalLocationUpdatedEvent>(
+        Xtag(
+          eventType = "AGY_INT_LOC_PROFILES-UPDATED",
+          nomisTimestamp = LocalDateTime.now(),
+          content = XtagContent(agencyInternalLocationProfileMap + mapOf("p_delete_flag" to "Y")),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGY_INT_LOC_PROFILES-UPDATED")
+        assertThat(internalLocationId).isEqualTo(34567)
+        assertThat(auditModuleName).isEqualTo("module")
+        assertThat(recordDeleted).isTrue()
+      }
+    }
 
-     private val agencyInternalLocationMap = mapOf(
-       "p_internal_location_id" to "12345",
-       "p_description" to "LEI-E-3-135",
-       "p_old_description" to "LEI-E-3-246",
-       "p_internal_location_code" to "135",
-       "p_agy_loc_id" to "LEI",
-       "p_internal_location_type" to "CELL",
-       "p_security_level_code" to "dummy",
-       "p_capacity" to "1",
-       "p_create_user_id" to "user",
-       "p_parent_internal_location_id" to "23456",
-       "p_active_flag" to "Y",
-       "p_list_seq" to "135",
-       "p_cna_no" to "1",
-       "p_certified_flag" to "Y",
-       "p_deactivate_date" to "2024-01-01",
-       "p_reactivate_date" to "2024-01-01",
-       "p_deactivate_reason_code" to "dummy",
-       "p_comment_text" to "comment",
-       "p_user_desc" to "description",
-       "p_aca_cap_rating" to "dummy",
-       "p_unit_type" to "NA",
-       "p_operation_capacity" to "1",
-       "p_tracking_flag" to "Y",
-       "p_audit_module_name" to "module",
-     )
+    private val agencyInternalLocationMap = mapOf(
+      "p_internal_location_id" to "12345",
+      "p_description" to "LEI-E-3-135",
+      "p_old_description" to "LEI-E-3-246",
+      "p_internal_location_code" to "135",
+      "p_agy_loc_id" to "LEI",
+      "p_internal_location_type" to "CELL",
+      "p_security_level_code" to "dummy",
+      "p_capacity" to "1",
+      "p_create_user_id" to "user",
+      "p_parent_internal_location_id" to "23456",
+      "p_active_flag" to "Y",
+      "p_list_seq" to "135",
+      "p_cna_no" to "1",
+      "p_certified_flag" to "Y",
+      "p_deactivate_date" to "2024-01-01",
+      "p_reactivate_date" to "2024-01-01",
+      "p_deactivate_reason_code" to "dummy",
+      "p_comment_text" to "comment",
+      "p_user_desc" to "description",
+      "p_aca_cap_rating" to "dummy",
+      "p_unit_type" to "NA",
+      "p_operation_capacity" to "1",
+      "p_tracking_flag" to "Y",
+      "p_audit_module_name" to "module",
+    )
 
-     private val agencyInternalLocationUsageMap = mapOf(
-       "p_internal_location_usage_id" to "12345",
-       "p_internal_location_id" to "34567",
-       "p_capacity" to "1",
-       "p_usage_location_type" to "135",
-       "p_list_seq" to "135",
-       "p_usage_location_id" to "45678",
-       "p_parent_usage_location_id" to "23456",
-       "p_audit_module_name" to "module",
-     )
+    private val agencyInternalLocationUsageMap = mapOf(
+      "p_internal_location_usage_id" to "12345",
+      "p_internal_location_id" to "34567",
+      "p_capacity" to "1",
+      "p_usage_location_type" to "135",
+      "p_list_seq" to "135",
+      "p_usage_location_id" to "45678",
+      "p_parent_usage_location_id" to "23456",
+      "p_audit_module_name" to "module",
+    )
 
-     private val agencyInternalLocationProfileMap = mapOf(
-       "p_internal_location_id" to "34567",
-       "p_int_loc_profile_type" to "TYPE",
-       "p_int_loc_profile_code" to "CODE",
-       "p_audit_module_name" to "module",
-     )
-   }
+    private val agencyInternalLocationProfileMap = mapOf(
+      "p_internal_location_id" to "34567",
+      "p_int_loc_profile_type" to "TYPE",
+      "p_int_loc_profile_code" to "CODE",
+      "p_audit_module_name" to "module",
+    )
+  }
 
   @Test
   fun `Offender phone number inserted mapped correctly`() {
