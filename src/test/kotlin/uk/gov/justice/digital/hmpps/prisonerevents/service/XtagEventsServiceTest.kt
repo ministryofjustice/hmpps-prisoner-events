@@ -296,6 +296,4 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A2345GB")
     assertThat(offenderEvent?.bookingId).isEqualTo(1234L)
   }
-
-
 }
