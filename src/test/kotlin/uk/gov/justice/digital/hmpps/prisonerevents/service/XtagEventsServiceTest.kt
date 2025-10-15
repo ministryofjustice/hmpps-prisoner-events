@@ -244,7 +244,7 @@ class XtagEventsServiceTest {
   }
 
   @Test
-  fun `should add offender number for offender address udpated event`() {
+  fun `should add offender number for offender address updated event`() {
     whenever(repository.getNomsIdFromOffender(1234L)).thenReturn(listOf("A1234GB"))
 
     val offenderEvent = service.addAdditionalEventData(
