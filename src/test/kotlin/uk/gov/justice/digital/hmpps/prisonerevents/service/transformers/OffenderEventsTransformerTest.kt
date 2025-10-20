@@ -644,6 +644,93 @@ class OffenderEventsTransformerTest {
   }
 
   @Nested
+  inner class OfficialVisits {
+    @Test
+    fun `OFFENDER_OFFICIAL_VISIT-INSERTED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<GenericOffenderEvent>(
+        Xtag(
+          eventType = "OFFENDER_OFFICIAL_VISIT-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agy_loc_id" to "MDI",
+              "p_offender_visit_id" to "10314507",
+              "p_offender_book_id" to "1231132",
+              "p_offender_id_display" to "A7764EC",
+              "p_audit_module_name" to "OIDUVISI",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_OFFICIAL_VISIT-INSERTED")
+        assertThat(bookingId).isEqualTo(1231132L)
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyLocationId).isEqualTo("MDI")
+        assertThat(visitId).isEqualTo(10314507L)
+        assertThat(offenderIdDisplay).isEqualTo("A7764EC")
+        assertThat(auditModuleName).isEqualTo("OIDUVISI")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_OFFICIAL_VISIT-UPDATED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<GenericOffenderEvent>(
+        Xtag(
+          eventType = "OFFENDER_OFFICIAL_VISIT-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agy_loc_id" to "MDI",
+              "p_offender_visit_id" to "10314507",
+              "p_offender_book_id" to "1231132",
+              "p_offender_id_display" to "A7764EC",
+              "p_audit_module_name" to "OIDUVISI",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_OFFICIAL_VISIT-UPDATED")
+        assertThat(bookingId).isEqualTo(1231132L)
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyLocationId).isEqualTo("MDI")
+        assertThat(visitId).isEqualTo(10314507L)
+        assertThat(offenderIdDisplay).isEqualTo("A7764EC")
+        assertThat(auditModuleName).isEqualTo("OIDUVISI")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_OFFICIAL_VISIT-DELETED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<GenericOffenderEvent>(
+        Xtag(
+          eventType = "OFFENDER_OFFICIAL_VISIT-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agy_loc_id" to "MDI",
+              "p_offender_visit_id" to "10314507",
+              "p_offender_book_id" to "1231132",
+              "p_offender_id_display" to "A7764EC",
+              "p_audit_module_name" to "OIDUVISI",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_OFFICIAL_VISIT-DELETED")
+        assertThat(bookingId).isEqualTo(1231132L)
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyLocationId).isEqualTo("MDI")
+        assertThat(visitId).isEqualTo(10314507L)
+        assertThat(offenderIdDisplay).isEqualTo("A7764EC")
+        assertThat(auditModuleName).isEqualTo("OIDUVISI")
+      }
+    }
+  }
+
+  @Nested
   inner class VisitBalanceAdjustmentEvents {
     @Test
     fun visitBalanceAdjustmentCreatedMappedCorrectly() {

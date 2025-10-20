@@ -222,6 +222,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "OFF_KEY_DATES_ADJ-UPDATED" -> keyDateAdjustmentUpdatedEventOf(xtag)
         "OFF_SENT_ADJ-UPDATED" -> sentenceAdjustmentUpdatedEventOf(xtag)
         "OFFENDER_VISIT-UPDATED" -> visitCancelledEventOf(xtag)
+        "OFFENDER_OFFICIAL_VISIT-INSERTED", "OFFENDER_OFFICIAL_VISIT-UPDATED", "OFFENDER_OFFICIAL_VISIT-DELETED" -> officialVisitEventOf(xtag)
 
         "OFFENDER_VISIT_BALANCE_ADJS-INSERTED",
         "OFFENDER_VISIT_BALANCE_ADJS-UPDATED",
@@ -1163,6 +1164,16 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
   private fun visitCancelledEventOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = "VISIT_CANCELLED",
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    agencyLocationId = xtag.content.p_agy_loc_id,
+    nomisEventType = xtag.eventType,
+    visitId = xtag.content.p_offender_visit_id?.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+  )
+  private fun officialVisitEventOf(xtag: Xtag) = GenericOffenderEvent(
+    eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
