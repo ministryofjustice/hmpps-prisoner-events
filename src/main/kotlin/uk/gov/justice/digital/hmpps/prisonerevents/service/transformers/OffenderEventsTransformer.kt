@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.FinePaymentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GLTransactionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
@@ -339,6 +340,9 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "OFF_MILITARY_REC-INSERTED", "OFF_MILITARY_REC-UPDATED", "OFF_MILITARY_REC-DELETED" ->
           militaryEventOf(xtag)
+
+        "OFFENDER_FINE_PAYMENTS-INSERTED", "OFFENDER_FINE_PAYMENTS-UPDATED", "OFFENDER_FINE_PAYMENTS-DELETED" ->
+          finePaymentEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1723,6 +1727,22 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
   )
 
+  private fun finePaymentEventOf(xtag: Xtag) = FinePaymentEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display!!,
+    paymentSequence = xtag.content.p_payment_seq!!.toInt(),
+    paymentDate = localDateTimeOf(xtag.content.p_payment_date)!!,
+    paymentAmount = xtag.content.p_payment_amount!!.toBigDecimal(),
+    comment = xtag.content.p_comment_text,
+    weekEndDays = xtag.content.p_weekend_days?.toInt(),
+    staffId = xtag.content.p_staff_id!!.toLong(),
+    paymentStatus = xtag.content.p_payment_status,
+    auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
+  )
+
   companion object {
     private val log = LoggerFactory.getLogger(this::class.java)
 
@@ -1760,7 +1780,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         LocalDate.parse(it, caseInsensitiveFormatter)
       }
     } catch (dtpe: DateTimeParseException) {
-      log.error("Unable to parse $date into a LocalDateTime using pattern $DATE_PATTERN", dtpe)
+      log.error("Unable to parse $date into a LocalDate using pattern $DATE_PATTERN", dtpe)
       null
     }
 
@@ -1782,7 +1802,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
       }
     }
 
-    private const val TIMESTAMP_PATTERN = "[yyyyMMddHHmmss.SSSSSSSSS][yyyy-MM-dd HH:mm]"
+    private const val TIMESTAMP_PATTERN = "[yyyyMMddHHmmss.SSSSSSSSS][yyyy-MM-dd HH:mm[:ss]]"
 
     fun localDateTimeOf(dateTime: String?): LocalDateTime? = try {
       dateTime?.let {

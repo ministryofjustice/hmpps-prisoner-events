@@ -27,6 +27,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtCaseLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.FinePaymentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GLTransactionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
@@ -73,6 +74,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.Offender
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.xtagFudgedTimestampOf
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.Xtag
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.XtagContent
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -7004,260 +7006,263 @@ class OffenderEventsTransformerTest {
     }
   }
 
-  @Test
-  fun `MOVEMENT_APPLICATION-INSERTED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<MovementApplicationEvent>(
-      Xtag(
-        eventType = "MOVEMENT_APPLICATION-INSERTED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_from_date" to "2025-07-14 00:00",
-            "p_application_time" to "2025-07-14 00:00",
-            "p_to_date" to "2025-07-15 00:00",
-            "p_return_time" to "2025-07-15 09:00",
-            "p_tap_abs_subtype" to "RDR",
-            "p_tap_abs_type" to "RR",
-            "p_application_date" to "2025-07-14 00:00",
-            "p_event_class" to "EXT_MOV",
-            "p_event_type" to "TAP",
-            "p_offender_id_display" to "G2610GR",
-            "p_transport_code" to "POL",
-            "p_application_status" to "PEN",
-            "p_application_type" to "SINGLE",
-            "p_agy_loc_id" to "RSI",
-            "p_escort_code" to "Z",
-            "p_release_time" to "2025-07-14 09:00",
-            "p_audit_module_name" to "OIDTAAPP",
-            "p_offender_book_id" to "1007000",
-            "p_event_sub_type" to "FB",
-            "p_offender_movement_app_id" to "2883190",
+  @Nested
+  inner class MovementEvents {
+    @Test
+    fun `MOVEMENT_APPLICATION-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<MovementApplicationEvent>(
+        Xtag(
+          eventType = "MOVEMENT_APPLICATION-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_from_date" to "2025-07-14 00:00",
+              "p_application_time" to "2025-07-14 00:00",
+              "p_to_date" to "2025-07-15 00:00",
+              "p_return_time" to "2025-07-15 09:00",
+              "p_tap_abs_subtype" to "RDR",
+              "p_tap_abs_type" to "RR",
+              "p_application_date" to "2025-07-14 00:00",
+              "p_event_class" to "EXT_MOV",
+              "p_event_type" to "TAP",
+              "p_offender_id_display" to "G2610GR",
+              "p_transport_code" to "POL",
+              "p_application_status" to "PEN",
+              "p_application_type" to "SINGLE",
+              "p_agy_loc_id" to "RSI",
+              "p_escort_code" to "Z",
+              "p_release_time" to "2025-07-14 09:00",
+              "p_audit_module_name" to "OIDTAAPP",
+              "p_offender_book_id" to "1007000",
+              "p_event_sub_type" to "FB",
+              "p_offender_movement_app_id" to "2883190",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-INSERTED")
-      assertThat(auditModuleName).isEqualTo("OIDTAAPP")
-      assertThat(movementApplicationId).isEqualTo(2883190)
-      assertThat(bookingId).isEqualTo(1007000)
-      assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+      ) {
+        assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OIDTAAPP")
+        assertThat(movementApplicationId).isEqualTo(2883190)
+        assertThat(bookingId).isEqualTo(1007000)
+        assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+      }
     }
-  }
 
-  @Test
-  fun `MOVEMENT_APPLICATION-UPDATED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<MovementApplicationEvent>(
-      Xtag(
-        eventType = "MOVEMENT_APPLICATION-UPDATED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_offender_id_display" to "G2610GR",
-            "p_offender_book_id" to "1007000",
-            "p_offender_movement_app_id" to "2883190",
-            "p_audit_module_name" to "DPS_SYNCHRONISATION",
+    @Test
+    fun `MOVEMENT_APPLICATION-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<MovementApplicationEvent>(
+        Xtag(
+          eventType = "MOVEMENT_APPLICATION-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id_display" to "G2610GR",
+              "p_offender_book_id" to "1007000",
+              "p_offender_movement_app_id" to "2883190",
+              "p_audit_module_name" to "DPS_SYNCHRONISATION",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-UPDATED")
-      assertThat(auditModuleName).isEqualTo("DPS_SYNCHRONISATION")
-      assertThat(movementApplicationId).isEqualTo(2883190)
-      assertThat(bookingId).isEqualTo(1007000)
-      assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+      ) {
+        assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-UPDATED")
+        assertThat(auditModuleName).isEqualTo("DPS_SYNCHRONISATION")
+        assertThat(movementApplicationId).isEqualTo(2883190)
+        assertThat(bookingId).isEqualTo(1007000)
+        assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+      }
     }
-  }
 
-  @Test
-  fun `MOVEMENT_APPLICATION-DELETED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<MovementApplicationEvent>(
-      Xtag(
-        eventType = "MOVEMENT_APPLICATION-DELETED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_offender_id_display" to "G2610GR",
-            "p_offender_book_id" to "1007000",
-            "p_offender_movement_app_id" to "2883190",
+    @Test
+    fun `MOVEMENT_APPLICATION-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<MovementApplicationEvent>(
+        Xtag(
+          eventType = "MOVEMENT_APPLICATION-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id_display" to "G2610GR",
+              "p_offender_book_id" to "1007000",
+              "p_offender_movement_app_id" to "2883190",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-DELETED")
-      assertThat(movementApplicationId).isEqualTo(2883190)
-      assertThat(bookingId).isEqualTo(1007000)
-      assertThat(offenderIdDisplay).isEqualTo("G2610GR")
-      // check missing audit module is handled
-      assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
+      ) {
+        assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION-DELETED")
+        assertThat(movementApplicationId).isEqualTo(2883190)
+        assertThat(bookingId).isEqualTo(1007000)
+        assertThat(offenderIdDisplay).isEqualTo("G2610GR")
+        // check missing audit module is handled
+        assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
+      }
     }
-  }
 
-  @Test
-  fun `MOVEMENT_APPLICATION_MULTI-INSERTED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<MovementApplicationMultiEvent>(
-      Xtag(
-        eventType = "MOVEMENT_APPLICATION_MULTI-INSERTED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_from_date" to "2025-07-14 00:00",
-            "p_to_date" to "2025-07-15 00:00",
-            "p_return_time" to "2025-07-15 08:00",
-            "p_release_time" to "2025-07-14 17:00",
-            "p_tap_abs_subtype" to "RDR",
-            "p_tap_abs_type" to "RR",
-            "p_event_sub_type" to "RO",
-            "p_audit_module_name" to "OCMOMSCH",
-            "p_off_movement_apps_multi_id" to "245",
-            "p_offender_movement_app_id" to "2883190",
+    @Test
+    fun `MOVEMENT_APPLICATION_MULTI-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<MovementApplicationMultiEvent>(
+        Xtag(
+          eventType = "MOVEMENT_APPLICATION_MULTI-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_from_date" to "2025-07-14 00:00",
+              "p_to_date" to "2025-07-15 00:00",
+              "p_return_time" to "2025-07-15 08:00",
+              "p_release_time" to "2025-07-14 17:00",
+              "p_tap_abs_subtype" to "RDR",
+              "p_tap_abs_type" to "RR",
+              "p_event_sub_type" to "RO",
+              "p_audit_module_name" to "OCMOMSCH",
+              "p_off_movement_apps_multi_id" to "245",
+              "p_offender_movement_app_id" to "2883190",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-INSERTED")
-      assertThat(auditModuleName).isEqualTo("OCMOMSCH")
-      assertThat(movementApplicationId).isEqualTo(2883190)
-      assertThat(movementApplicationMultiId).isEqualTo(245)
+      ) {
+        assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OCMOMSCH")
+        assertThat(movementApplicationId).isEqualTo(2883190)
+        assertThat(movementApplicationMultiId).isEqualTo(245)
+      }
     }
-  }
 
-  @Test
-  fun `MOVEMENT_APPLICATION_MULTI-UPDATED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<MovementApplicationMultiEvent>(
-      Xtag(
-        eventType = "MOVEMENT_APPLICATION_MULTI-UPDATED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_audit_module_name" to "DPS_SYNCHRONISATION",
-            "p_off_movement_apps_multi_id" to "245",
-            "p_offender_movement_app_id" to "2883190",
+    @Test
+    fun `MOVEMENT_APPLICATION_MULTI-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<MovementApplicationMultiEvent>(
+        Xtag(
+          eventType = "MOVEMENT_APPLICATION_MULTI-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_audit_module_name" to "DPS_SYNCHRONISATION",
+              "p_off_movement_apps_multi_id" to "245",
+              "p_offender_movement_app_id" to "2883190",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-UPDATED")
-      assertThat(auditModuleName).isEqualTo("DPS_SYNCHRONISATION")
-      assertThat(movementApplicationId).isEqualTo(2883190)
-      assertThat(movementApplicationMultiId).isEqualTo(245)
+      ) {
+        assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-UPDATED")
+        assertThat(auditModuleName).isEqualTo("DPS_SYNCHRONISATION")
+        assertThat(movementApplicationId).isEqualTo(2883190)
+        assertThat(movementApplicationMultiId).isEqualTo(245)
+      }
     }
-  }
 
-  @Test
-  fun `MOVEMENT_APPLICATION_MULTI-DELETED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<MovementApplicationMultiEvent>(
-      Xtag(
-        eventType = "MOVEMENT_APPLICATION_MULTI-DELETED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_off_movement_apps_multi_id" to "245",
-            "p_offender_movement_app_id" to "2883190",
+    @Test
+    fun `MOVEMENT_APPLICATION_MULTI-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<MovementApplicationMultiEvent>(
+        Xtag(
+          eventType = "MOVEMENT_APPLICATION_MULTI-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_off_movement_apps_multi_id" to "245",
+              "p_offender_movement_app_id" to "2883190",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-DELETED")
-      assertThat(movementApplicationId).isEqualTo(2883190)
-      assertThat(movementApplicationMultiId).isEqualTo(245)
-      // check missing audit module is handled
-      assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
+      ) {
+        assertThat(eventType).isEqualTo("MOVEMENT_APPLICATION_MULTI-DELETED")
+        assertThat(movementApplicationId).isEqualTo(2883190)
+        assertThat(movementApplicationMultiId).isEqualTo(245)
+        // check missing audit module is handled
+        assertThat(auditModuleName).isEqualTo("UNKNOWN_MODULE")
+      }
     }
-  }
 
-  @Test
-  fun `SCHEDULED_EXT_MOVE-INSERTED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<ScheduledExternalMovementEvent>(
-      Xtag(
-        eventType = "SCHEDULED_EXT_MOVE-INSERTED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_event_id" to "579105221",
-            "p_audit_module_name" to "OIUSCINQ",
-            "p_offender_book_id" to "1125205",
-            "p_event_type" to "TAP",
-            "p_nomis_timestamp" to "20250815090952.912443000",
-            "p_offender_id_display" to "A1234BC",
-            "p_direction_code" to "OUT",
+    @Test
+    fun `SCHEDULED_EXT_MOVE-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<ScheduledExternalMovementEvent>(
+        Xtag(
+          eventType = "SCHEDULED_EXT_MOVE-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "579105221",
+              "p_audit_module_name" to "OIUSCINQ",
+              "p_offender_book_id" to "1125205",
+              "p_event_type" to "TAP",
+              "p_nomis_timestamp" to "20250815090952.912443000",
+              "p_offender_id_display" to "A1234BC",
+              "p_direction_code" to "OUT",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-INSERTED")
-      assertThat(eventId).isEqualTo(579105221)
-      assertThat(auditModuleName).isEqualTo("OIUSCINQ")
-      assertThat(bookingId).isEqualTo(1125205)
-      assertThat(eventMovementType).isEqualTo("TAP")
-      assertThat(offenderIdDisplay).isEqualTo("A1234BC")
-      assertThat(directionCode).isEqualTo("OUT")
+      ) {
+        assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-INSERTED")
+        assertThat(eventId).isEqualTo(579105221)
+        assertThat(auditModuleName).isEqualTo("OIUSCINQ")
+        assertThat(bookingId).isEqualTo(1125205)
+        assertThat(eventMovementType).isEqualTo("TAP")
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(directionCode).isEqualTo("OUT")
+      }
     }
-  }
 
-  @Test
-  fun `SCHEDULED_EXT_MOVE-UPDATED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<ScheduledExternalMovementEvent>(
-      Xtag(
-        eventType = "SCHEDULED_EXT_MOVE-UPDATED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_event_id" to "579105221",
-            "p_audit_module_name" to "OIUSCINQ",
-            "p_offender_book_id" to "1125205",
-            "p_event_type" to "TAP",
-            "p_nomis_timestamp" to "20250815090952.912443000",
-            "p_offender_id_display" to "A1234BC",
-            "p_direction_code" to "IN",
+    @Test
+    fun `SCHEDULED_EXT_MOVE-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<ScheduledExternalMovementEvent>(
+        Xtag(
+          eventType = "SCHEDULED_EXT_MOVE-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "579105221",
+              "p_audit_module_name" to "OIUSCINQ",
+              "p_offender_book_id" to "1125205",
+              "p_event_type" to "TAP",
+              "p_nomis_timestamp" to "20250815090952.912443000",
+              "p_offender_id_display" to "A1234BC",
+              "p_direction_code" to "IN",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-UPDATED")
-      assertThat(eventId).isEqualTo(579105221)
-      assertThat(auditModuleName).isEqualTo("OIUSCINQ")
-      assertThat(bookingId).isEqualTo(1125205)
-      assertThat(eventMovementType).isEqualTo("TAP")
-      assertThat(offenderIdDisplay).isEqualTo("A1234BC")
-      assertThat(directionCode).isEqualTo("IN")
+      ) {
+        assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-UPDATED")
+        assertThat(eventId).isEqualTo(579105221)
+        assertThat(auditModuleName).isEqualTo("OIUSCINQ")
+        assertThat(bookingId).isEqualTo(1125205)
+        assertThat(eventMovementType).isEqualTo("TAP")
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(directionCode).isEqualTo("IN")
+      }
     }
-  }
 
-  @Test
-  fun `SCHEDULED_EXT_MOVE-DELETED is mapped`() {
-    val now = LocalDateTime.now()
-    withCallTransformer<ScheduledExternalMovementEvent>(
-      Xtag(
-        eventType = "SCHEDULED_EXT_MOVE-DELETED",
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_event_id" to "579105221",
-            "p_audit_module_name" to "OIUSCINQ",
-            "p_offender_book_id" to "1125205",
-            "p_event_type" to "TAP",
-            "p_nomis_timestamp" to "20250815090952.912443000",
-            "p_offender_id_display" to "A1234BC",
-            "p_direction_code" to "OUT",
+    @Test
+    fun `SCHEDULED_EXT_MOVE-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<ScheduledExternalMovementEvent>(
+        Xtag(
+          eventType = "SCHEDULED_EXT_MOVE-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "579105221",
+              "p_audit_module_name" to "OIUSCINQ",
+              "p_offender_book_id" to "1125205",
+              "p_event_type" to "TAP",
+              "p_nomis_timestamp" to "20250815090952.912443000",
+              "p_offender_id_display" to "A1234BC",
+              "p_direction_code" to "OUT",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-DELETED")
-      assertThat(eventId).isEqualTo(579105221)
-      assertThat(auditModuleName).isEqualTo("OIUSCINQ")
-      assertThat(bookingId).isEqualTo(1125205)
-      assertThat(eventMovementType).isEqualTo("TAP")
-      assertThat(offenderIdDisplay).isEqualTo("A1234BC")
-      assertThat(directionCode).isEqualTo("OUT")
+      ) {
+        assertThat(eventType).isEqualTo("SCHEDULED_EXT_MOVE-DELETED")
+        assertThat(eventId).isEqualTo(579105221)
+        assertThat(auditModuleName).isEqualTo("OIUSCINQ")
+        assertThat(bookingId).isEqualTo(1125205)
+        assertThat(eventMovementType).isEqualTo("TAP")
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(directionCode).isEqualTo("OUT")
+      }
     }
   }
 
@@ -7317,6 +7322,78 @@ class OffenderEventsTransformerTest {
       ) {
         assertThat(eventType).isEqualTo("OFF_MILITARY_REC-DELETED")
         assertThat(nomisEventType).isEqualTo("OFF_MILITARY_REC-DELETED")
+      }
+    }
+  }
+
+  @Nested
+  inner class FinePaymentEvents {
+    val xtagContent = XtagContent(
+      mapOf(
+        "p_payment_seq" to "4",
+        "p_payment_date" to "2025-10-20 13:45:56",
+        "p_payment_amount" to "456.79",
+        "p_comment_text" to "comment",
+        "p_weekend_days" to "2",
+        "p_staff_id" to "4567890000",
+        "p_payment_status" to "STATUS",
+        "p_audit_module_name" to "OCCIFINE",
+        "p_offender_book_id" to "1117525",
+        "p_nomis_timestamp" to "20250529140515.415786000",
+        "p_offender_id_display" to "G4133UO",
+      ),
+    )
+
+    @Test
+    fun `OFFENDER_FINE_PAYMENTS-INSERTED is mapped`() {
+      withCallTransformer<FinePaymentEvent>(
+        Xtag(
+          eventType = "OFFENDER_FINE_PAYMENTS-INSERTED",
+          nomisTimestamp = fixedEventTime,
+          content = xtagContent,
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_FINE_PAYMENTS-INSERTED")
+        assertThat(eventDatetime).isEqualTo(fixedEventTime)
+        assertThat(offenderIdDisplay).isEqualTo("G4133UO")
+        assertThat(bookingId).isEqualTo(1117525L)
+        assertThat(paymentSequence).isEqualTo(4)
+        assertThat(paymentDate).isEqualTo(LocalDateTime.parse("2025-10-20T13:45:56"))
+        assertThat(paymentAmount).isEqualTo(BigDecimal.valueOf(456.79))
+        assertThat(comment).isEqualTo("comment")
+        assertThat(weekEndDays).isEqualTo(2)
+        assertThat(staffId).isEqualTo(4567890000L)
+        assertThat(paymentStatus).isEqualTo("STATUS")
+        assertThat(auditModuleName).isEqualTo("OCCIFINE")
+        assertThat(nomisEventType).isEqualTo("OFFENDER_FINE_PAYMENTS-INSERTED")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_FINE_PAYMENTS-UPDATED is mapped`() {
+      withCallTransformer<FinePaymentEvent>(
+        Xtag(
+          eventType = "OFFENDER_FINE_PAYMENTS-UPDATED",
+          nomisTimestamp = fixedEventTime,
+          content = xtagContent,
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_FINE_PAYMENTS-UPDATED")
+        assertThat(nomisEventType).isEqualTo("OFFENDER_FINE_PAYMENTS-UPDATED")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_FINE_PAYMENTS-DELETED is mapped`() {
+      withCallTransformer<FinePaymentEvent>(
+        Xtag(
+          eventType = "OFFENDER_FINE_PAYMENTS-DELETED",
+          nomisTimestamp = fixedEventTime,
+          content = xtagContent,
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_FINE_PAYMENTS-DELETED")
+        assertThat(nomisEventType).isEqualTo("OFFENDER_FINE_PAYMENTS-DELETED")
       }
     }
   }

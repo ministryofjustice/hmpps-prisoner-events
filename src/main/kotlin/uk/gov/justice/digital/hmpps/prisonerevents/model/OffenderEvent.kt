@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.model
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -1120,6 +1121,29 @@ class MilitaryEvent(
   bookingId: Long?,
   offenderIdDisplay: String?,
   val militarySequence: Int,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class FinePaymentEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long?,
+  offenderIdDisplay: String?,
+  val paymentSequence: Int,
+  val paymentDate: LocalDateTime,
+  val paymentAmount: BigDecimal,
+  val comment: String?,
+  val weekEndDays: Int?,
+  val staffId: Long,
+  val paymentStatus: String?,
   val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
