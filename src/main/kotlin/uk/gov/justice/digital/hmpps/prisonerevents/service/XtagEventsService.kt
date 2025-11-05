@@ -22,10 +22,12 @@ class XtagEventsService(
   @Transactional
   fun addAdditionalEventData(oe: OffenderEvent?): OffenderEvent? {
     when (oe?.eventType) {
-      "OFFENDER_DETAILS-CHANGED", "OFFENDER_ALIAS-CHANGED", "OFFENDER-UPDATED" ->
+      "OFFENDER_DETAILS-CHANGED", "OFFENDER_ALIAS-CHANGED", "OFFENDER-UPDATED",
+      "ADDRESSES_OFFENDER-INSERTED", "ADDRESSES_OFFENDER-UPDATED", "ADDRESSES_OFFENDER-DELETED",
+      ->
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.offenderId!!).firstOrNull()
 
-      "OFFENDER_ADDRESS-DELETED" ->
+      "OFFENDER_ADDRESS-DELETED", "OFFENDER_ADDRESS-INSERTED", "OFFENDER_ADDRESS-UPDATED" ->
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender((oe as GenericOffenderEvent).ownerId!!).firstOrNull()
 
       "BED_ASSIGNMENT_HISTORY-INSERTED", "OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION",
@@ -64,11 +66,6 @@ class XtagEventsService(
         oe.previousOffenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.previousOffenderId).firstOrNull()
         oe.bookingStartDateTime = exposeRepository.getBookingStartDateForOffenderBooking(oe.bookingId!!)
         oe.lastAdmissionDate = exposeRepository.getLastAdmissionDateForOffenderBooking(oe.bookingId!!)
-      }
-
-      "OFFENDER_ADDRESS-INSERTED", "OFFENDER_ADDRESS-UPDATED" -> {
-        oe as GenericOffenderEvent
-        oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.ownerId!!).firstOrNull()
       }
 
       "OFFENDER_CONTACT-INSERTED" -> {

@@ -4,6 +4,7 @@ import oracle.jakarta.jms.AQjmsMapMessage
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
@@ -35,6 +36,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.MilitaryEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationMultiEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
@@ -316,7 +318,9 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "PERSON_EMPLOYMENTS-INSERTED", "PERSON_EMPLOYMENTS-UPDATED", "PERSON_EMPLOYMENTS-DELETED" -> personEmploymentEventOf(xtag)
         "PERSON_IDENTIFIERS-INSERTED", "PERSON_IDENTIFIERS-UPDATED", "PERSON_IDENTIFIERS-DELETED" -> personIdentifierEventOf(xtag)
         "PHONES_CORPORATE-INSERTED", "PHONES_CORPORATE-UPDATED", "PHONES_CORPORATE-DELETED" -> corporatePhoneEventOf(xtag)
+        "ADDRESSES_AGENCY-INSERTED", "ADDRESSES_AGENCY-UPDATED", "ADDRESSES_AGENCY-DELETED" -> agencyAddressEventOf(xtag)
         "ADDRESSES_CORPORATE-INSERTED", "ADDRESSES_CORPORATE-UPDATED", "ADDRESSES_CORPORATE-DELETED" -> corporateAddressEventOf(xtag)
+        "ADDRESSES_OFFENDER-INSERTED", "ADDRESSES_OFFENDER-UPDATED", "ADDRESSES_OFFENDER-DELETED" -> offenderAddressEventOf(xtag)
         "INTERNET_ADDRESSES_CORPORATE-INSERTED", "INTERNET_ADDRESSES_CORPORATE-UPDATED", "INTERNET_ADDRESSES_CORPORATE-DELETED" -> corporateInternetAddressEventOf(xtag)
         "CORPORATE-INSERTED", "CORPORATE-UPDATED", "CORPORATE-DELETED" -> corporateEventOf(xtag)
         "OFFENDER_IMAGES-UPDATED", "OFFENDER_IMAGES-DELETED" -> offenderImageEventOf(xtag)
@@ -1544,10 +1548,28 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     addressId = xtag.content.p_address_id?.toLong(),
   )
 
+  private fun agencyAddressEventOf(xtag: Xtag) = AgencyAddressEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    agencyCode = xtag.content.p_agency_code!!,
+    addressId = xtag.content.p_address_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
+
   private fun corporateAddressEventOf(xtag: Xtag) = CorporateAddressEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
     corporateId = xtag.content.p_corporate_id!!.toLong(),
+    addressId = xtag.content.p_address_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
+
+  private fun offenderAddressEventOf(xtag: Xtag) = OffenderAddressEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    offenderId = xtag.content.p_offender_id!!.toLong(),
     addressId = xtag.content.p_address_id!!.toLong(),
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,

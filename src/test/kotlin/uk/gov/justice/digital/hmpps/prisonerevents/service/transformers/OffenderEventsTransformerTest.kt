@@ -6,6 +6,7 @@ import oracle.jakarta.jms.AQjmsMapMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
@@ -37,6 +38,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.MilitaryEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationMultiEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
@@ -6144,6 +6146,85 @@ class OffenderEventsTransformerTest {
   }
 
   @Nested
+  inner class AgencyAddressEvents {
+
+    @Test
+    fun `ADDRESSES_AGENCY-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyAddressEvent>(
+        Xtag(
+          eventType = "ADDRESSES_AGENCY-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agency_code" to "LEEDMC",
+              "p_address_id" to "5623860",
+              "p_audit_module_name" to "OCDOAPOP",
+              "p_owner_class" to "AGY",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("ADDRESSES_AGENCY-INSERTED")
+        assertThat(agencyCode).isEqualTo("LEEDMC")
+        assertThat(addressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("ADDRESSES_AGENCY-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OCDOAPOP")
+      }
+    }
+
+    @Test
+    fun `ADDRESSES_AGENCY-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyAddressEvent>(
+        Xtag(
+          eventType = "ADDRESSES_AGENCY-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agency_code" to "LEEDMC",
+              "p_address_id" to "5623860",
+              "p_audit_module_name" to "OCDOAPOP",
+              "p_owner_class" to "AGY",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("ADDRESSES_AGENCY-UPDATED")
+        assertThat(agencyCode).isEqualTo("LEEDMC")
+        assertThat(addressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("ADDRESSES_AGENCY-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OCDOAPOP")
+      }
+    }
+
+    @Test
+    fun `ADDRESSES_AGENCY-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyAddressEvent>(
+        Xtag(
+          eventType = "ADDRESSES_AGENCY-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agency_code" to "LEEDMC",
+              "p_address_id" to "5623860",
+              "p_audit_module_name" to "DataGrip",
+              "p_owner_class" to "AGY",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("ADDRESSES_AGENCY-DELETED")
+        assertThat(agencyCode).isEqualTo("LEEDMC")
+        assertThat(addressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("ADDRESSES_AGENCY-DELETED")
+        assertThat(auditModuleName).isEqualTo("DataGrip")
+      }
+    }
+  }
+
+  @Nested
   inner class CorporateAddressEvents {
 
     @Test
@@ -6217,6 +6298,85 @@ class OffenderEventsTransformerTest {
         assertThat(corporateId).isEqualTo(4730074L)
         assertThat(addressId).isEqualTo(5623860L)
         assertThat(nomisEventType).isEqualTo("ADDRESSES_CORPORATE-DELETED")
+        assertThat(auditModuleName).isEqualTo("DataGrip")
+      }
+    }
+  }
+
+  @Nested
+  inner class OffenderAddressEvents {
+
+    @Test
+    fun `ADDRESSES_OFFENDER-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<OffenderAddressEvent>(
+        Xtag(
+          eventType = "ADDRESSES_OFFENDER-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id" to "432733",
+              "p_address_id" to "5623860",
+              "p_audit_module_name" to "OCDOAPOP",
+              "p_owner_class" to "OFF",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("ADDRESSES_OFFENDER-INSERTED")
+        assertThat(offenderId).isEqualTo(432733)
+        assertThat(addressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("ADDRESSES_OFFENDER-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OCDOAPOP")
+      }
+    }
+
+    @Test
+    fun `ADDRESSES_OFFENDER-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<OffenderAddressEvent>(
+        Xtag(
+          eventType = "ADDRESSES_OFFENDER-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id" to "432733",
+              "p_address_id" to "5623860",
+              "p_audit_module_name" to "OCDOAPOP",
+              "p_owner_class" to "OFF",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("ADDRESSES_OFFENDER-UPDATED")
+        assertThat(offenderId).isEqualTo(432733)
+        assertThat(addressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("ADDRESSES_OFFENDER-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OCDOAPOP")
+      }
+    }
+
+    @Test
+    fun `ADDRESSES_OFFENDER-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<OffenderAddressEvent>(
+        Xtag(
+          eventType = "ADDRESSES_OFFENDER-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_id" to "432733",
+              "p_address_id" to "5623860",
+              "p_audit_module_name" to "DataGrip",
+              "p_owner_class" to "OFF",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("ADDRESSES_OFFENDER-DELETED")
+        assertThat(offenderId).isEqualTo(432733)
+        assertThat(addressId).isEqualTo(5623860L)
+        assertThat(nomisEventType).isEqualTo("ADDRESSES_OFFENDER-DELETED")
         assertThat(auditModuleName).isEqualTo("DataGrip")
       }
     }
