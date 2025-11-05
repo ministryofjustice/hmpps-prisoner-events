@@ -841,6 +841,20 @@ class CorporatePhoneEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class AgencyAddressEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val auditModuleName: String,
+  val agencyCode: String,
+  val addressId: Long,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class CorporateAddressEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
@@ -852,6 +866,21 @@ class CorporateAddressEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
   nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderAddressEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderId: Long,
+  val auditModuleName: String,
+  val addressId: Long,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderId = offenderId,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

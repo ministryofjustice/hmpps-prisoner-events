@@ -24,14 +24,12 @@ class XtagEventsServiceTest {
   private val exposeRepository: ExposeRepository = mock()
   private val service: XtagEventsService = XtagEventsService(repository, exposeRepository)
 
-  @Test
-  fun shouldAddNomsIdToOffenderAliasEvent() {
-    assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId("OFFENDER_ALIAS-CHANGED")
-  }
-
-  @Test
-  fun shouldAddNomsIdToOffenderDetailsChangedEvent() {
-    assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId("OFFENDER_DETAILS-CHANGED")
+  @ParameterizedTest
+  @ValueSource(
+    strings = ["OFFENDER_DETAILS-CHANGED", "OFFENDER_ALIAS-CHANGED", "OFFENDER-UPDATED", "ADDRESSES_OFFENDER-INSERTED", "ADDRESSES_OFFENDER-UPDATED", "ADDRESSES_OFFENDER-DELETED"],
+  )
+  fun shouldAddNomsIdUsingOffenderId(eventType: String) {
+    assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId(eventType)
   }
 
   @Test
@@ -161,11 +159,6 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.recordInserted).isNull()
     assertThat(offenderEvent?.recordDeleted).isNull()
     assertThat(offenderEvent?.auditModuleName).isNull()
-  }
-
-  @Test
-  fun shouldDecorateOffenderUpdatedWithOffenderDisplayNo() {
-    assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId("OFFENDER-UPDATED")
   }
 
   @ParameterizedTest
