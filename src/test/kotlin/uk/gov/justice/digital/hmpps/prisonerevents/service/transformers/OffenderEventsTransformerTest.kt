@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitSlotEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitTimesEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPAttendeeOffenderEvent
@@ -730,6 +732,171 @@ class OffenderEventsTransformerTest {
         assertThat(visitId).isEqualTo(10314507L)
         assertThat(offenderIdDisplay).isEqualTo("A7764EC")
         assertThat(auditModuleName).isEqualTo("OIDUVISI")
+      }
+    }
+  }
+
+  @Nested
+  inner class OfficialVisitsConfiguration {
+    @Test
+    fun `AGENCY_VISIT_TIMES-INSERTED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyVisitTimesEvent>(
+        Xtag(
+          eventType = "AGENCY_VISIT_TIMES-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_week_day" to "MON",
+              "p_agy_loc_id" to "LEI",
+              "p_audit_module_name" to "OIMVDTSL",
+              "p_time_slot_seq" to "99",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGENCY_VISIT_TIMES-INSERTED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyLocationId).isEqualTo("LEI")
+        assertThat(weekDay).isEqualTo("MON")
+        assertThat(timeslotSequence).isEqualTo(99)
+        assertThat(auditModuleName).isEqualTo("OIMVDTSL")
+      }
+    }
+
+    @Test
+    fun `AGENCY_VISIT_TIMES-UPDATED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyVisitTimesEvent>(
+        Xtag(
+          eventType = "AGENCY_VISIT_TIMES-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_week_day" to "MON",
+              "p_agy_loc_id" to "LEI",
+              "p_audit_module_name" to "OIMVDTSL",
+              "p_time_slot_seq" to "99",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGENCY_VISIT_TIMES-UPDATED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyLocationId).isEqualTo("LEI")
+        assertThat(weekDay).isEqualTo("MON")
+        assertThat(timeslotSequence).isEqualTo(99)
+        assertThat(auditModuleName).isEqualTo("OIMVDTSL")
+      }
+    }
+
+    @Test
+    fun `AGENCY_VISIT_TIMES-DELETED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyVisitTimesEvent>(
+        Xtag(
+          eventType = "AGENCY_VISIT_TIMES-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_week_day" to "MON",
+              "p_agy_loc_id" to "LEI",
+              "p_audit_module_name" to "OIMVDTSL",
+              "p_time_slot_seq" to "99",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGENCY_VISIT_TIMES-DELETED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyLocationId).isEqualTo("LEI")
+        assertThat(weekDay).isEqualTo("MON")
+        assertThat(timeslotSequence).isEqualTo(99)
+        assertThat(auditModuleName).isEqualTo("OIMVDTSL")
+      }
+    }
+
+    @Test
+    fun `AGENCY_VISIT_SLOTS-INSERTED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyVisitSlotEvent>(
+        Xtag(
+          eventType = "AGENCY_VISIT_SLOTS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agency_visit_slot_id" to "2377348",
+              "p_week_day" to "MON",
+              "p_agy_loc_id" to "LEI",
+              "p_audit_module_name" to "OIMVDTSL",
+              "p_time_slot_seq" to "99",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGENCY_VISIT_SLOTS-INSERTED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyVisitSlotId).isEqualTo(2377348)
+        assertThat(agencyLocationId).isEqualTo("LEI")
+        assertThat(weekDay).isEqualTo("MON")
+        assertThat(timeslotSequence).isEqualTo(99)
+        assertThat(auditModuleName).isEqualTo("OIMVDTSL")
+      }
+    }
+
+    @Test
+    fun `AGENCY_VISIT_SLOTS-UPDATED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyVisitSlotEvent>(
+        Xtag(
+          eventType = "AGENCY_VISIT_SLOTS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agency_visit_slot_id" to "2377348",
+              "p_week_day" to "MON",
+              "p_agy_loc_id" to "LEI",
+              "p_audit_module_name" to "OIMVDTSL",
+              "p_time_slot_seq" to "99",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGENCY_VISIT_SLOTS-UPDATED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyVisitSlotId).isEqualTo(2377348)
+        assertThat(agencyLocationId).isEqualTo("LEI")
+        assertThat(weekDay).isEqualTo("MON")
+        assertThat(timeslotSequence).isEqualTo(99)
+        assertThat(auditModuleName).isEqualTo("OIMVDTSL")
+      }
+    }
+
+    @Test
+    fun `AGENCY_VISIT_SLOTS-DELETED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<AgencyVisitSlotEvent>(
+        Xtag(
+          eventType = "AGENCY_VISIT_SLOTS-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_agency_visit_slot_id" to "2377348",
+              "p_week_day" to "MON",
+              "p_agy_loc_id" to "LEI",
+              "p_audit_module_name" to "OIMVDTSL",
+              "p_time_slot_seq" to "99",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("AGENCY_VISIT_SLOTS-DELETED")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(agencyVisitSlotId).isEqualTo(2377348)
+        assertThat(agencyLocationId).isEqualTo("LEI")
+        assertThat(weekDay).isEqualTo("MON")
+        assertThat(timeslotSequence).isEqualTo(99)
+        assertThat(auditModuleName).isEqualTo("OIMVDTSL")
       }
     }
   }

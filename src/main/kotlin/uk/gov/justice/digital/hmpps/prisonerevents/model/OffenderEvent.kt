@@ -1183,6 +1183,37 @@ class FinePaymentEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class AgencyVisitTimesEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val agencyLocationId: String,
+  val auditModuleName: String,
+  val timeslotSequence: Int,
+  val weekDay: String,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class AgencyVisitSlotEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val agencyVisitSlotId: Long,
+  val agencyLocationId: String,
+  val auditModuleName: String,
+  val timeslotSequence: Int,
+  val weekDay: String,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class GenericOffenderEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,

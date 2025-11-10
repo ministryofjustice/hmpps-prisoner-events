@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitSlotEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitTimesEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPAttendeeOffenderEvent
@@ -347,6 +349,9 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "OFFENDER_FINE_PAYMENTS-INSERTED", "OFFENDER_FINE_PAYMENTS-UPDATED", "OFFENDER_FINE_PAYMENTS-DELETED" ->
           finePaymentEventOf(xtag)
+
+        "AGENCY_VISIT_TIMES-INSERTED", "AGENCY_VISIT_TIMES-UPDATED", "AGENCY_VISIT_TIMES-DELETED" -> agencyVisitTimesEventOf(xtag)
+        "AGENCY_VISIT_SLOTS-INSERTED", "AGENCY_VISIT_SLOTS-UPDATED", "AGENCY_VISIT_SLOTS-DELETED" -> agencyVisitSlotsEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1763,6 +1768,27 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     staffId = xtag.content.p_staff_id!!.toLong(),
     paymentStatus = xtag.content.p_payment_status,
     auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
+  )
+
+  private fun agencyVisitTimesEventOf(xtag: Xtag) = AgencyVisitTimesEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    agencyLocationId = xtag.content.p_agy_loc_id!!,
+    auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
+    weekDay = xtag.content.p_week_day!!,
+    timeslotSequence = xtag.content.p_time_slot_seq!!.toInt(),
+  )
+
+  private fun agencyVisitSlotsEventOf(xtag: Xtag) = AgencyVisitSlotEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    agencyLocationId = xtag.content.p_agy_loc_id!!,
+    auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
+    weekDay = xtag.content.p_week_day!!,
+    timeslotSequence = xtag.content.p_time_slot_seq!!.toInt(),
+    agencyVisitSlotId = xtag.content.p_agency_visit_slot_id!!.toLong(),
   )
 
   companion object {
