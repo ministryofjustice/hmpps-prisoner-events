@@ -68,6 +68,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEven
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitVisitorEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.Xtag
 import uk.gov.justice.digital.hmpps.prisonerevents.service.xtag.XtagContent
@@ -228,6 +229,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "OFF_SENT_ADJ-UPDATED" -> sentenceAdjustmentUpdatedEventOf(xtag)
         "OFFENDER_VISIT-UPDATED" -> visitCancelledEventOf(xtag)
         "OFFENDER_OFFICIAL_VISIT-INSERTED", "OFFENDER_OFFICIAL_VISIT-UPDATED", "OFFENDER_OFFICIAL_VISIT-DELETED" -> officialVisitEventOf(xtag)
+        "OFFENDER_OFFICIAL_VISIT_VISTORS-INSERTED", "OFFENDER_OFFICIAL_VISIT_VISTORS-UPDATED", "OFFENDER_OFFICIAL_VISIT_VISTORS-DELETED" -> officialVisitVisitorEventOf(xtag)
 
         "OFFENDER_VISIT_BALANCE_ADJS-INSERTED",
         "OFFENDER_VISIT_BALANCE_ADJS-UPDATED",
@@ -1194,6 +1196,17 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
     visitId = xtag.content.p_offender_visit_id?.toLong(),
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+  )
+  private fun officialVisitVisitorEventOf(xtag: Xtag) = VisitVisitorEvent(
+    eventType = xtag.eventType!!.replace("VISTORS", "VISITORS"),
+    eventDatetime = xtag.nomisTimestamp,
+    visitVisitorId = xtag.content.p_offender_visit_visitor_id!!.toLong(),
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    nomisEventType = xtag.eventType,
+    visitId = xtag.content.p_offender_visit_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    personId = xtag.content.p_person_id?.toLong(),
   )
 
   private fun caseNotesEventOf(xtag: Xtag) = GenericOffenderEvent(
