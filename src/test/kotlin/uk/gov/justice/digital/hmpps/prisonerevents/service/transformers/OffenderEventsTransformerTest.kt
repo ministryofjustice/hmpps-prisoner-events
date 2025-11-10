@@ -70,6 +70,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEven
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitVisitorEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.externalMovementEventOf
 import uk.gov.justice.digital.hmpps.prisonerevents.service.transformers.OffenderEventsTransformer.Companion.localDateOf
@@ -730,6 +731,98 @@ class OffenderEventsTransformerTest {
         assertThat(eventDatetime).isEqualTo(now)
         assertThat(agencyLocationId).isEqualTo("MDI")
         assertThat(visitId).isEqualTo(10314507L)
+        assertThat(offenderIdDisplay).isEqualTo("A7764EC")
+        assertThat(auditModuleName).isEqualTo("OIDUVISI")
+      }
+    }
+  }
+
+  @Nested
+  inner class OfficialVisitVisitors {
+    @Test
+    fun `OFFENDER_OFFICIAL_VISIT_VISTORS-INSERTED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<VisitVisitorEvent>(
+        Xtag(
+          eventType = "OFFENDER_OFFICIAL_VISIT_VISTORS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_visit_visitor_id" to "32876004",
+              "p_offender_visit_id" to "10314507",
+              "p_offender_book_id" to "1231132",
+              "p_offender_id_display" to "A7764EC",
+              "p_person_id" to "4729590",
+              "p_audit_module_name" to "OIDUVISI",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_OFFICIAL_VISIT_VISITORS-INSERTED")
+        assertThat(bookingId).isEqualTo(1231132L)
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(visitVisitorId).isEqualTo(32876004L)
+        assertThat(visitId).isEqualTo(10314507L)
+        assertThat(personId).isEqualTo(4729590L)
+        assertThat(offenderIdDisplay).isEqualTo("A7764EC")
+        assertThat(auditModuleName).isEqualTo("OIDUVISI")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_OFFICIAL_VISIT_VISTORS-UPDATED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<VisitVisitorEvent>(
+        Xtag(
+          eventType = "OFFENDER_OFFICIAL_VISIT_VISTORS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_visit_visitor_id" to "32876004",
+              "p_offender_visit_id" to "10314507",
+              "p_offender_book_id" to "1231132",
+              "p_offender_id_display" to "A7764EC",
+              "p_audit_module_name" to "OIDUVISI",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_OFFICIAL_VISIT_VISITORS-UPDATED")
+        assertThat(bookingId).isEqualTo(1231132L)
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(visitVisitorId).isEqualTo(32876004L)
+        assertThat(visitId).isEqualTo(10314507L)
+        // personId is optional
+        assertThat(personId).isNull()
+        assertThat(offenderIdDisplay).isEqualTo("A7764EC")
+        assertThat(auditModuleName).isEqualTo("OIDUVISI")
+      }
+    }
+
+    @Test
+    fun `OFFENDER_OFFICIAL_VISIT_VISTORS-DELETED`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<VisitVisitorEvent>(
+        Xtag(
+          eventType = "OFFENDER_OFFICIAL_VISIT_VISTORS-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_offender_visit_visitor_id" to "32876004",
+              "p_offender_visit_id" to "10314507",
+              "p_offender_book_id" to "1231132",
+              "p_offender_id_display" to "A7764EC",
+              "p_audit_module_name" to "OIDUVISI",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_OFFICIAL_VISIT_VISITORS-DELETED")
+        assertThat(bookingId).isEqualTo(1231132L)
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(visitVisitorId).isEqualTo(32876004L)
+        assertThat(visitId).isEqualTo(10314507L)
+        assertThat(personId).isNull()
         assertThat(offenderIdDisplay).isEqualTo("A7764EC")
         assertThat(auditModuleName).isEqualTo("OIDUVISI")
       }
