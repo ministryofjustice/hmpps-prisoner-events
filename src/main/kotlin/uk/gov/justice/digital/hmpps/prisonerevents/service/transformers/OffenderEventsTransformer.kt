@@ -39,6 +39,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEven
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationMultiEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBeliefsEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
@@ -235,6 +236,11 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "OFFENDER_VISIT_BALANCE_ADJS-UPDATED",
         "OFFENDER_VISIT_BALANCE_ADJS-DELETED",
         -> visitBalanceAdjustmentEventOf(xtag)
+
+        "OFFENDER_BELIEFS-INSERTED",
+        "OFFENDER_BELIEFS-UPDATED",
+        "OFFENDER_BELIEFS-DELETED",
+        -> offenderBeliefsEventOf(xtag)
 
         "OFFENDER_CASE_NOTES-INSERTED",
         "OFFENDER_CASE_NOTES-UPDATED",
@@ -1142,6 +1148,23 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     visitBalanceAdjustmentId = xtag.content.p_offender_visit_balance_adj_id!!.toLong(),
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun offenderBeliefsEventOf(xtag: Xtag) = OffenderBeliefsEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id?.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    nomisEventType = xtag.eventType,
+    offenderBeliefId = xtag.content.p_belief_id!!.toLong(),
+    beliefCode = xtag.content.p_belief_code,
+    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name,
+    effectiveDate = localDateTimeOf(xtag.content.p_effective_date),
+    endDate = localDateTimeOf(xtag.content.p_end_date),
+    changeReason = xtag.content.p_change_reason,
+    comments = xtag.content.p_comments,
+    verifiedFlag = xtag.content.p_verified_flag?.equals("Y"),
   )
 
   private fun iepUpdatedEventOf(xtag: Xtag) = GenericOffenderEvent(

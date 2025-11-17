@@ -945,6 +945,31 @@ class OffenderIdentifyingMarksEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderBeliefsEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  offenderIdDisplay: String?,
+  bookingId: Long?,
+  val rootOffenderId: Long?,
+  val offenderBeliefId: Long,
+  val beliefCode: String?,
+  val auditModuleName: String?,
+
+  val effectiveDate: LocalDateTime?,
+  val endDate: LocalDateTime?,
+  val changeReason: String?,
+  val comments: String?,
+  val verifiedFlag: Boolean?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+  bookingId = bookingId,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class VisitBalanceAdjustmentEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,

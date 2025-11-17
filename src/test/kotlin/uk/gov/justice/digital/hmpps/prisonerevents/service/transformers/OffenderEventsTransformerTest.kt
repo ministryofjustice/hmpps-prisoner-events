@@ -41,6 +41,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEven
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationMultiEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBeliefsEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
@@ -733,6 +734,138 @@ class OffenderEventsTransformerTest {
         assertThat(visitId).isEqualTo(10314507L)
         assertThat(offenderIdDisplay).isEqualTo("A7764EC")
         assertThat(auditModuleName).isEqualTo("OIDUVISI")
+      }
+    }
+  }
+
+  @Nested
+  inner class OffenderBeliefsEvents {
+    @Test
+    fun offenderBeliefCreatedMappedCorrectly() {
+      val now = LocalDateTime.now()
+      withCallTransformer<OffenderBeliefsEvent>(
+        Xtag(
+          eventType = ("OFFENDER_BELIEFS-INSERTED"),
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "2323",
+              "p_event_date" to "2022-08-23",
+              "p_offender_book_id" to "434",
+              "p_offender_id_display" to "A1234BC",
+              "p_root_offender_id" to "34567",
+              "p_audit_module_name" to "offender_beliefs_screen",
+              "p_nomis_timestamp" to "20230509215740.443718000",
+              "p_belief_id" to "112233",
+              "p_belief_code" to "BAPT",
+              "p_effective_date" to "2012-10-09 15:21:59",
+              "p_end_date" to "2014-05-06 18:57:22",
+              "p_change_reason" to "new.change_reason",
+              "p_comments" to "This is a comment",
+              "p_verified_flag" to "N",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_BELIEFS-INSERTED")
+        assertThat(bookingId).isEqualTo(434L)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(rootOffenderId).isEqualTo(34567)
+        assertThat(auditModuleName).isEqualTo("offender_beliefs_screen")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(offenderBeliefId).isEqualTo(112233)
+        assertThat(beliefCode).isEqualTo("BAPT")
+        assertThat(effectiveDate).isEqualTo(LocalDateTime.parse("2012-10-09T15:21:59"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2014-05-06T18:57:22"))
+        assertThat(changeReason).isEqualTo("new.change_reason")
+        assertThat(comments).isEqualTo("This is a comment")
+        assertThat(verifiedFlag).isFalse()
+      }
+    }
+
+    @Test
+    fun offenderBeliefUpdatedMappedCorrectly() {
+      val now = LocalDateTime.now()
+      withCallTransformer<OffenderBeliefsEvent>(
+        Xtag(
+          eventType = ("OFFENDER_BELIEFS-UPDATED"),
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "2323",
+              "p_event_date" to "2022-08-23",
+              "p_offender_book_id" to "434",
+              "p_offender_id_display" to "A1234BC",
+              "p_root_offender_id" to "34567",
+              "p_audit_module_name" to "offender_beliefs_screen",
+              "p_nomis_timestamp" to "20230509215740.443718000",
+              "p_belief_id" to "112233",
+              "p_belief_code" to "BAPT",
+              "p_effective_date" to "2012-10-09 15:21:59",
+              "p_end_date" to "2014-05-06 18:57:22",
+              "p_change_reason" to "new.change_reason",
+              "p_comments" to "This is a comment",
+              "p_verified_flag" to "N",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_BELIEFS-UPDATED")
+        assertThat(bookingId).isEqualTo(434L)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(rootOffenderId).isEqualTo(34567)
+        assertThat(auditModuleName).isEqualTo("offender_beliefs_screen")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(offenderBeliefId).isEqualTo(112233)
+        assertThat(beliefCode).isEqualTo("BAPT")
+        assertThat(effectiveDate).isEqualTo(LocalDateTime.parse("2012-10-09T15:21:59"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2014-05-06T18:57:22"))
+        assertThat(changeReason).isEqualTo("new.change_reason")
+        assertThat(comments).isEqualTo("This is a comment")
+        assertThat(verifiedFlag).isFalse()
+      }
+    }
+
+    @Test
+    fun offenderBeliefDeletedMappedCorrectly() {
+      val now = LocalDateTime.now()
+      withCallTransformer<OffenderBeliefsEvent>(
+        Xtag(
+          eventType = ("OFFENDER_BELIEFS-DELETED"),
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "2323",
+              "p_event_date" to "2022-08-23",
+              "p_offender_book_id" to "434",
+              "p_offender_id_display" to "A1234BC",
+              "p_root_offender_id" to "34567",
+              "p_audit_module_name" to "offender_beliefs_screen",
+              "p_nomis_timestamp" to "20230509215740.443718000",
+              "p_belief_id" to "112233",
+              "p_belief_code" to "BAPT",
+              "p_effective_date" to "2012-10-09 15:21:59",
+              "p_end_date" to "2014-05-06 18:57:22",
+              "p_change_reason" to "new.change_reason",
+              "p_comments" to "This is a comment",
+              "p_verified_flag" to "N",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("OFFENDER_BELIEFS-DELETED")
+        assertThat(bookingId).isEqualTo(434L)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(rootOffenderId).isEqualTo(34567)
+        assertThat(auditModuleName).isEqualTo("offender_beliefs_screen")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(offenderBeliefId).isEqualTo(112233)
+        assertThat(beliefCode).isEqualTo("BAPT")
+        assertThat(effectiveDate).isEqualTo(LocalDateTime.parse("2012-10-09T15:21:59"))
+        assertThat(endDate).isEqualTo(LocalDateTime.parse("2014-05-06T18:57:22"))
+        assertThat(changeReason).isEqualTo("new.change_reason")
+        assertThat(comments).isEqualTo("This is a comment")
+        assertThat(verifiedFlag).isFalse()
       }
     }
   }
