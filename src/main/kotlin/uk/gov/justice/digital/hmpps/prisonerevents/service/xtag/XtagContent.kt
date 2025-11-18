@@ -90,6 +90,12 @@ class XtagContent(private val map: Map<String, String>) {
 
   val p_audit_module_name by m
 
+  val p_belief_id by m
+  val p_belief_code by m
+  val p_change_reason by m
+  val p_comments by m
+  val p_verified_flag by m
+
   val p_case_note_id by m
   val p_case_note_type by m
   val p_case_note_sub_type by m
