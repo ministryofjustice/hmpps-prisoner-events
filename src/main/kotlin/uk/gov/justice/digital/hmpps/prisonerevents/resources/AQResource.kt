@@ -28,6 +28,7 @@ class AQResource(private val aqService: AQService) {
   @Operation(
     summary = "Retry messages on the Oracle AQ exception queue",
     description = "Retrieve any messages on the Oracle AQ exception queue and move them back to the main queue to be retried.",
+    security = [SecurityRequirement(name = "queue-admin-role")],
     responses = [
       ApiResponse(
         responseCode = "200",
