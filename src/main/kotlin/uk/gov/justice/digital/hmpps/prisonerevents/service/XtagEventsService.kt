@@ -64,7 +64,9 @@ class XtagEventsService(
         oe as OffenderBookingReassignedEvent
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.offenderId!!).firstOrNull()
         oe.previousOffenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.previousOffenderId).firstOrNull()
-        oe.bookingStartDateTime = exposeRepository.getBookingStartDateForOffenderBooking(oe.bookingId!!)
+        val dates = exposeRepository.getBookingStartAndEndDateForOffenderBooking(oe.bookingId!!)
+        oe.bookingStartDateTime = dates?.first
+        oe.bookingEndDateTime = dates?.second
         oe.lastAdmissionDate = exposeRepository.getLastAdmissionDateForOffenderBooking(oe.bookingId!!)
       }
 

@@ -704,6 +704,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       private val oldOffenderNo = "A1234AA"
       private val oldOffenderId = 12345L
       private val bookingStartDateTime = LocalDateTime.parse("2024-08-23T12:20:30")
+      private val bookingEndDateTime = LocalDateTime.parse("2025-09-25T12:21:30")
       private val newOffenderId = 6789L
       private val newOffenderNo = "A5678BB"
       private lateinit var bookingMoved: OffenderBooking
@@ -730,7 +731,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
                 time = LocalDateTime.parse("2024-10-23T15:05:00")
               }
             }
-            bookingMoved = OffenderBooking.build(offender = it, beginDate = bookingStartDateTime).also { booking ->
+            bookingMoved = OffenderBooking.build(offender = it, beginDate = bookingStartDateTime, endDate = bookingEndDateTime).also { booking ->
               movement = OffenderExternalMovement.build(offenderBooking = booking, sequence = 3) {
                 direction = "IN"
                 type = "ADM"
@@ -778,6 +779,7 @@ class OracleToTopicIntTest : IntegrationTestBase() {
           assertJsonPath("offenderId", newOffenderId)
           assertJsonPath("bookingId", "${bookingMoved.bookingId.value}")
           assertJsonPath("bookingStartDateTime", "${bookingMoved.beginDate}")
+          assertJsonPath("bookingEndDateTime", "${bookingMoved.endDate}")
           assertJsonPath("lastAdmissionDate", "${movement.date}")
         }
       }
