@@ -1,13 +1,12 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.repository
 
-import org.jetbrains.exposed.v1.dao.CompositeEntity
-import org.jetbrains.exposed.v1.dao.CompositeEntityClass
 import org.jetbrains.exposed.v1.core.dao.id.CompositeID
 import org.jetbrains.exposed.v1.core.dao.id.CompositeIdTable
 import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.dao.CompositeEntity
+import org.jetbrains.exposed.v1.dao.CompositeEntityClass
 import org.jetbrains.exposed.v1.javatime.date
 import org.jetbrains.exposed.v1.javatime.datetime
-
 
 class OffenderExternalMovement(id: EntityID<CompositeID>) : CompositeEntity(id) {
   companion object : CompositeEntityClass<OffenderExternalMovement>(OffenderExternalMovements)
