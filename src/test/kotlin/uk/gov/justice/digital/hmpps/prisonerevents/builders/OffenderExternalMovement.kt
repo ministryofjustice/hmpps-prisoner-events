@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.builders
 
-import org.jetbrains.exposed.dao.id.CompositeID
+import org.jetbrains.exposed.v1.core.dao.id.CompositeID
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderBooking
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderExternalMovement
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.OffenderExternalMovements

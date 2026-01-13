@@ -29,8 +29,8 @@ dependencies {
   // where <version> is the version of application insights pulled in by hmpps-gradle-spring-boot
   // at https://github.com/ministryofjustice/hmpps-gradle-spring-boot/blob/main/src/main/kotlin/uk/gov/justice/digital/hmpps/gradle/configmanagers/AppInsightsConfigManager.kt#L7
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.19.0")
-  implementation("org.jetbrains.exposed:exposed-spring-boot-starter:0.61.0")
-  implementation("org.jetbrains.exposed:exposed-java-time:0.61.0")
+  implementation("org.jetbrains.exposed:exposed-spring-boot-starter:1.0.0-rc-4")
+  implementation("org.jetbrains.exposed:exposed-java-time:1.0.0-rc-4")
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:1.8.2")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
