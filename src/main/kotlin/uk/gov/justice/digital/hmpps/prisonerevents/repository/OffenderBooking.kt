@@ -1,11 +1,11 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.repository
 
-import org.jetbrains.exposed.dao.LongEntity
-import org.jetbrains.exposed.dao.LongEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.v1.dao.LongEntity
+import org.jetbrains.exposed.v1.dao.LongEntityClass
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.core.Column
+import org.jetbrains.exposed.v1.javatime.datetime
 import java.time.LocalDateTime
 
 class OffenderBooking(id: EntityID<Long>) : LongEntity(id) {

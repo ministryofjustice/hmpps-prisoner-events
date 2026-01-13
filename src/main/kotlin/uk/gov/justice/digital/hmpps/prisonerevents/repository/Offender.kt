@@ -1,12 +1,12 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.repository
 
-import org.jetbrains.exposed.dao.LongEntity
-import org.jetbrains.exposed.dao.LongEntityClass
-import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.dao.id.IdTable
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.javatime.date
-import org.jetbrains.exposed.sql.javatime.datetime
+import org.jetbrains.exposed.v1.dao.LongEntity
+import org.jetbrains.exposed.v1.dao.LongEntityClass
+import org.jetbrains.exposed.v1.core.dao.id.EntityID
+import org.jetbrains.exposed.v1.core.dao.id.IdTable
+import org.jetbrains.exposed.v1.core.Column
+import org.jetbrains.exposed.v1.javatime.date
+import org.jetbrains.exposed.v1.javatime.datetime
 import java.time.LocalDateTime
 
 class Offender(id: EntityID<Long>) : LongEntity(id) {
@@ -29,7 +29,7 @@ object Offenders : IdTable<Long>("OFFENDERS") {
   val idSource = varchar("ID_SOURCE_CODE", 12)
   val lastName = varchar("LAST_NAME", 35)
   val firstName = varchar("FIRST_NAME", 35).nullable()
-  val dateOfBirth = date("BIRTH_DATE").nullable()
+  val dateOfBirth = date("BIRTH_DATE")
   val sexCode = varchar("SEX_CODE", 12)
   val createDate = datetime("CREATE_DATE").default(LocalDateTime.now())
   val lastNameKey = varchar("LAST_NAME_KEY", 35)

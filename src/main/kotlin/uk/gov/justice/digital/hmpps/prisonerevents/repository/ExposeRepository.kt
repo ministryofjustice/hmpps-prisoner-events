@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.repository
 
-import org.jetbrains.exposed.sql.JoinType
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.v1.core.JoinType
+import org.jetbrains.exposed.v1.core.SortOrder
+import org.jetbrains.exposed.v1.core.eq
+import org.jetbrains.exposed.v1.core.and
+import org.jetbrains.exposed.v1.core.greater
+import org.jetbrains.exposed.v1.jdbc.select
 import org.springframework.stereotype.Repository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -16,7 +18,10 @@ class ExposeRepository {
     .singleOrNull()
     ?.get(Persons.id)?.value
 
-  fun getNomsIdFromContact(contactId: Long): String? = (OffenderContactPersons innerJoin OffenderBookings.join(Offenders, joinType = JoinType.INNER, onColumn = OffenderBookings.offender, otherColumn = Offenders.id))
+  fun getNomsIdFromContact(contactId: Long)=
+    (OffenderContactPersons innerJoin
+      OffenderBookings.join(Offenders, joinType = JoinType.INNER,
+        onColumn = OffenderBookings.offender, otherColumn = Offenders.id))
     .select(Offenders.offenderNo)
     .where(OffenderContactPersons.id eq contactId)
     .singleOrNull()
