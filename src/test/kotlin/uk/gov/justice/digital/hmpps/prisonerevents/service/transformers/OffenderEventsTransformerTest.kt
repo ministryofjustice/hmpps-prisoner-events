@@ -2329,6 +2329,7 @@ class OffenderEventsTransformerTest {
       assertThat(nomisEventType).isEqualTo("OFF_BKB_UPD")
       assertThat(offenderIdDisplay).isNull()
       assertThat(bookingStartDateTime).isNull() // null since xtagEventsService will add the booking start Date
+      assertThat(bookingEndDateTime).isNull() // null since xtagEventsService will add the booking end Date
       assertThat(lastAdmissionDate).isNull() // null since xtagEventsService will add the external movement Date
     }
   }

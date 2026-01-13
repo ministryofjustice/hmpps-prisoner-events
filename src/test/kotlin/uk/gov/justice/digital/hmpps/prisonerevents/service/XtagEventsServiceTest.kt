@@ -199,10 +199,11 @@ class XtagEventsServiceTest {
   @Test
   fun `should add offender id and previous offender id to booking updated event`() {
     val bookingBeginDate = LocalDateTime.parse("2024-10-25T21:57:40")
+    val bookingEndDate = LocalDateTime.parse("2025-11-26T22:58:50")
     val admMovementDate = LocalDate.parse("2024-09-26")
     whenever(repository.getNomsIdFromOffender(1234L)).thenReturn(listOf("A1234GB"))
     whenever(repository.getNomsIdFromOffender(2345L)).thenReturn(listOf("A2345GC"))
-    whenever(exposeRepository.getBookingStartDateForOffenderBooking(12)).thenReturn(bookingBeginDate)
+    whenever(exposeRepository.getBookingStartAndEndDateForOffenderBooking(12)).thenReturn(Pair(bookingBeginDate, bookingEndDate))
     whenever(exposeRepository.getLastAdmissionDateForOffenderBooking(12)).thenReturn(admMovementDate)
     val offenderEvent = service.addAdditionalEventData(
       OffenderBookingReassignedEvent(
@@ -217,6 +218,7 @@ class XtagEventsServiceTest {
     assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234GB")
     assertThat((offenderEvent as OffenderBookingReassignedEvent).previousOffenderIdDisplay).isEqualTo("A2345GC")
     assertThat((offenderEvent).bookingStartDateTime).isEqualTo(bookingBeginDate)
+    assertThat((offenderEvent).bookingEndDateTime).isEqualTo(bookingEndDate)
     assertThat((offenderEvent).lastAdmissionDate).isEqualTo(admMovementDate)
   }
 
