@@ -8,6 +8,7 @@ fun OffenderBooking.Companion.build(
   offender: Offender,
   rootOffender: Offender = offender,
   beginDate: LocalDateTime = LocalDateTime.now(),
+  endDate: LocalDateTime? = null,
   inOutStatus: String = "IN",
   youthAdultCode: String = "A",
   sequence: Int = 1,
@@ -16,6 +17,7 @@ fun OffenderBooking.Companion.build(
   this.offender = offender
   this.rootOffender = rootOffender
   this.beginDate = beginDate
+  this.endDate = endDate
   this.inOutStatus = inOutStatus
   this.youthAdultCode = youthAdultCode
   this.sequence = sequence

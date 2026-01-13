@@ -13,6 +13,7 @@ class OffenderBooking(id: EntityID<Long>) : LongEntity(id) {
 
   var bookingId by OffenderBookings.id
   var beginDate by OffenderBookings.beginDate
+  var endDate by OffenderBookings.endDate
   var offender by Offender referencedOn OffenderBookings.offender
 
   var rootOffender by Offender referencedOn OffenderBookings.rootOffender
@@ -24,6 +25,7 @@ class OffenderBooking(id: EntityID<Long>) : LongEntity(id) {
 object OffenderBookings : IdTable<Long>("OFFENDER_BOOKINGS") {
   override val id: Column<EntityID<Long>> = long("OFFENDER_BOOK_ID").autoIncrement("OFFENDER_BOOK_ID").entityId()
   val beginDate = datetime("BOOKING_BEGIN_DATE").default(LocalDateTime.now())
+  val endDate = datetime("BOOKING_END_DATE").nullable()
   val offender = reference("OFFENDER_ID", Offenders)
   val rootOffender = reference("ROOT_OFFENDER_ID", Offenders)
   val inOutStatus = varchar("IN_OUT_STATUS", 12)

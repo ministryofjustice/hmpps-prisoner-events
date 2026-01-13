@@ -38,11 +38,13 @@ class ExposeRepository {
     .orderBy(MergeTransactions.createDatetime to SortOrder.DESC)
     .firstOrNull()
 
-  fun getBookingStartDateForOffenderBooking(bookingId: Long): LocalDateTime? = OffenderBookings
-    .select(OffenderBookings.beginDate)
+  fun getBookingStartAndEndDateForOffenderBooking(bookingId: Long): Pair<LocalDateTime, LocalDateTime?>? = OffenderBookings
+    .select(OffenderBookings.beginDate, OffenderBookings.endDate)
     .where(OffenderBookings.id eq bookingId)
     .singleOrNull()
-    ?.get(OffenderBookings.beginDate)
+    ?.let {
+      it[OffenderBookings.beginDate] to it[OffenderBookings.endDate]
+    }
 
   fun getLastAdmissionDateForOffenderBooking(bookingId: Long): LocalDate? = OffenderBookings
     .join(OffenderExternalMovements, JoinType.INNER, additionalConstraint = {
