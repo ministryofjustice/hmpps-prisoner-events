@@ -9,7 +9,7 @@ fun Offender.Companion.build(
   idSource: String = "SEQ",
   lastName: String = "DAVIS",
   firstName: String = "BLODWYN",
-  dateOfBirth: LocalDate? = LocalDate.now().minusYears(23),
+  dateOfBirth: LocalDate = LocalDate.now().minusYears(23),
   sexCode: String = "F",
   init: Offender.() -> Unit = {},
 ) = Offender.new {
