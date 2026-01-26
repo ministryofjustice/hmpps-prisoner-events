@@ -6,9 +6,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.springframework.boot.actuate.health.Health
-import org.springframework.boot.actuate.health.Status
 import org.springframework.boot.actuate.info.Info
+import org.springframework.boot.health.contributor.Health
+import org.springframework.boot.health.contributor.Status
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.health.QueueHealthInfo
