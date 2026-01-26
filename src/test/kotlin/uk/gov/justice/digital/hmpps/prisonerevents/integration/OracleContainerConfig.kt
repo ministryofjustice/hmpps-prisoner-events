@@ -15,7 +15,7 @@ object OracleContainerConfig {
       return null
     }
     log.info("Creating an Oracle-XE database")
-    return OracleContainer("gvenzl/oracle-xe:18-slim").apply {
+    return OracleContainer("gvenzl/oracle-xe:21-slim").apply {
       withExposedPorts(1521)
       setWaitStrategy(Wait.forLogMessage(".*DATABASE IS READY TO USE.*", 1))
       withReuse(true)
