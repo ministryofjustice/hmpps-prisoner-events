@@ -13,7 +13,7 @@ on:
         required: false
       oracle-tag:
         type: string
-        default: '21-slim'
+        default: '18-slim'
         required: false
       oracle-password:
         type: string
