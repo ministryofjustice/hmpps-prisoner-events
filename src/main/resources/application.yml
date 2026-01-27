@@ -5,10 +5,13 @@ info.app:
 spring:
   application:
     name: hmpps-prisoner-events
-  codec:
-    max-in-memory-size: 10MB
+  http:
+    codecs:
+      max-in-memory-size: 10MB
 
   jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+  jackson2:
     date-format: "yyyy-MM-dd HH:mm:ss"
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
@@ -33,7 +36,7 @@ spring:
     enabled: false
 
   jpa:
-    database-platform: org.hibernate.community.dialect.Oracle10gDialect
+    database-platform: org.hibernate.community.dialect.OracleLegacyDialect
     open-in-view: false
     show-sql: false
     generate-ddl: false
@@ -49,8 +52,9 @@ spring:
       validationTimeout: 500
       maximum-pool-size: 10
       pool-name: "NOMIS-Read"
-
-
+  web:
+    error:
+      include-message: always
 
 server:
   port: 8080
@@ -63,8 +67,6 @@ server:
       protocol-header: x-forwarded-proto
       internal-proxies: 10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}|169\.254\.\d{1,3}\.\d{1,3}|127\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.1[6-9]{1}\.\d{1,3}\.\d{1,3}|172\.2[0-9]{1}\.\d{1,3}\.\d{1,3}|172\.3[0-1]{1}\.\d{1,3}\.\d{1,3}|0:0:0:0:0:0:0:1|::1|100\.6[4-9]\.\d{1,3}\.\d{1,3}|100\.[7-9][0-9]{1}\.\d{1,3}\.\d{1,3}|100\.1[0-1][0-9]{1}\.\d{1,3}\.\d{1,3}|100\.12[0-7]\.\d{1,3}\.\d{1,3}
   shutdown: graceful
-  error:
-    include-message: always
 
 management:
   endpoints:
@@ -95,3 +97,9 @@ aws:
   region: eu-west-2
 
 aq.timezone.daylightsavings: false
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

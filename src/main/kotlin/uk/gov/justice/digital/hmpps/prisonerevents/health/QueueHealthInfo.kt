@@ -3,10 +3,10 @@ package uk.gov.justice.digital.hmpps.prisonerevents.health
 import jakarta.servlet.http.HttpServletRequest
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.springframework.boot.actuate.health.Health
-import org.springframework.boot.actuate.health.Health.Builder
 import org.springframework.boot.actuate.info.Info
 import org.springframework.boot.actuate.info.InfoContributor
+import org.springframework.boot.health.contributor.Health
+import org.springframework.boot.health.contributor.Health.Builder
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME

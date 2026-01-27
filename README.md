@@ -32,7 +32,7 @@ Hint: If colima does not start, try shutdown Docker Desktop and trying again (Do
 brew install colima
 colima start --arch x86_64 --memory 4 --network-address
 export DOCKER_HOST="unix://${HOME}/.colima/docker.sock"
-docker-compose -f docker-compose-test.yml up
+docker compose -f docker-compose-test.yml up
 ```
 
 or if colima is already running
