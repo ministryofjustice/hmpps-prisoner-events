@@ -16,7 +16,7 @@ However this variation of the `/info` endpoint will show queue details: `/info?s
 
 The integration tests require a running instance of Oracle-XE and a running instance of AWS SQS localstack. Start these using:
 
-`docker-compose -f docker-compose-test.yml up`
+`docker compose -f docker-compose-test.yml up`
 
 ## When on an M1 Mac
 
