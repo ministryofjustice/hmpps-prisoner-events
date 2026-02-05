@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.microsoft.applicationinsights.TelemetryClient
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -21,11 +20,14 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.json.JsonTest
 import software.amazon.awssdk.http.SdkHttpResponse
 import software.amazon.awssdk.services.sns.SnsAsyncClient
 import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
 import software.amazon.awssdk.services.sns.model.ValidationException
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
@@ -37,8 +39,8 @@ import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
 @ExtendWith(MockitoExtension::class)
-class PrisonEventsEmitterTest {
-  private val objectMapper = ObjectMapper()
+@JsonTest
+class PrisonEventsEmitterTest(@Autowired private val jsonMapper: JsonMapper) {
   private lateinit var service: PrisonEventsEmitter
 
   @Mock
@@ -64,7 +66,7 @@ class PrisonEventsEmitterTest {
     whenever(prisonEventSnsClient.publish(any<PublishRequest>()))
       .thenReturn(CompletableFuture.completedFuture(publishResult))
 
-    service = PrisonEventsEmitter(hmppsQueueService, objectMapper, telemetryClient)
+    service = PrisonEventsEmitter(hmppsQueueService, jsonMapper, telemetryClient)
   }
 
   @Test
@@ -95,8 +97,8 @@ class PrisonEventsEmitterTest {
     verify(prisonEventSnsClient).publish(publishRequestCaptor.capture())
     val request = publishRequestCaptor.value
 
-    assertThat(objectMapper.readTree(request.message())).isEqualTo(
-      objectMapper.readTree(
+    assertThat(jsonMapper.readTree(request.message())).isEqualTo(
+      jsonMapper.readTree(
         """
       {
         "eventType":"my-event-type",

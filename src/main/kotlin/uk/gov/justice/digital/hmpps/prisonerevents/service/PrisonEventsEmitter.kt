@@ -1,7 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.service
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.convertValue
 import com.microsoft.applicationinsights.TelemetryClient
 import org.slf4j.LoggerFactory
 import org.springframework.retry.policy.NeverRetryPolicy
@@ -9,6 +7,8 @@ import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.sns.model.MessageAttributeValue
 import software.amazon.awssdk.services.sns.model.PublishResponse
 import software.amazon.awssdk.services.sns.model.ValidationException
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.convertValue
 import uk.gov.justice.digital.hmpps.prisonerevents.config.trackEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
@@ -24,7 +24,7 @@ import java.util.stream.Collectors
 @Service
 class PrisonEventsEmitter(
   hmppsQueueService: HmppsQueueService,
-  private val objectMapper: ObjectMapper,
+  private val jsonMapper: JsonMapper,
   private val telemetryClient: TelemetryClient,
 ) {
   private val prisonEventTopic by lazy {
@@ -35,7 +35,7 @@ class PrisonEventsEmitter(
     val publishResult: PublishResponse = try {
       prisonEventTopic.publish(
         eventType = payload.eventType!!,
-        event = objectMapper.writeValueAsString(payload),
+        event = jsonMapper.writeValueAsString(payload),
         attributes = metaData(payload),
         retryPolicy = NeverRetryPolicy(),
       )
@@ -60,7 +60,7 @@ class PrisonEventsEmitter(
       telemetryClient.trackEvent("${payload.eventType}_FAILED", asTelemetryMap(payload))
       throw RuntimeException("Attempt to publish message ${payload.eventType} resulted in an http $httpStatusCode error")
     }
-    telemetryClient.trackEvent(payload.eventType.toString(), asTelemetryMap(payload))
+    telemetryClient.trackEvent(payload.eventType, asTelemetryMap(payload))
   }
 
   private fun metaData(payload: OffenderEvent): Map<String, MessageAttributeValue> {
@@ -77,7 +77,7 @@ class PrisonEventsEmitter(
   }
 
   private fun asTelemetryMap(event: OffenderEvent): Map<String, String> {
-    val entries = objectMapper
+    val entries = jsonMapper
       .convertValue<Map<String, String>>(event)
       .entries
     return entries.stream().collect(

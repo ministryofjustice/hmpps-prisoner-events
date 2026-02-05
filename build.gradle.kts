@@ -8,7 +8,7 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework:spring-jms:7.0.3")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.0.0-beta2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.0.0")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   implementation("org.flywaydb:flyway-database-oracle")
@@ -17,7 +17,7 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.1")
 
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("com.oracle.database.jdbc:ojdbc11:23.26.0.0.0")
+  runtimeOnly("com.oracle.database.jdbc:ojdbc11:23.26.1.0.0")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.8.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.20.0")
