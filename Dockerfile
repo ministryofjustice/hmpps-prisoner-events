@@ -22,4 +22,4 @@ COPY --from=builder --chown=appuser:appgroup /builder/extracted/spring-boot-load
 COPY --from=builder --chown=appuser:appgroup /builder/extracted/snapshot-dependencies/ ./
 COPY --from=builder --chown=appuser:appgroup /builder/extracted/application/ ./
 
-ENTRYPOINT ["java", "-XX:+AlwaysActAsServerClassMachine", "-Doracle.jakarta.jms.useEmulatedXA=false", "-javaagent:agent.jar", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-XX:+ExitOnOutOfMemoryError", "-XX:+AlwaysActAsServerClassMachine", "-Doracle.jakarta.jms.useEmulatedXA=false", "-javaagent:agent.jar", "-jar", "app.jar"]

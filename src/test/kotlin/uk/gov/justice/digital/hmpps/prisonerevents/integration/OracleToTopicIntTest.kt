@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.integration
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import jakarta.jms.ConnectionFactory
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
@@ -34,6 +33,8 @@ import software.amazon.awssdk.services.sns.model.PublishRequest
 import software.amazon.awssdk.services.sns.model.PublishResponse
 import software.amazon.awssdk.services.sqs.model.PurgeQueueRequest
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest
+import tools.jackson.databind.json.JsonMapper
+import tools.jackson.module.kotlin.readValue
 import uk.gov.justice.digital.hmpps.prisonerevents.builders.build
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
@@ -57,6 +58,7 @@ import uk.gov.justice.hmpps.sqs.HmppsQueue
 import uk.gov.justice.hmpps.sqs.HmppsQueueService
 import uk.gov.justice.hmpps.sqs.HmppsSqsProperties
 import uk.gov.justice.hmpps.sqs.HmppsTopicFactory
+import uk.gov.justice.hmpps.sqs.SnsMessage
 import uk.gov.justice.hmpps.sqs.countAllMessagesOnQueue
 import java.net.SocketException
 import java.time.Duration
@@ -75,7 +77,7 @@ class SnsConfig(private val hmppsTopicFactory: HmppsTopicFactory) {
 }
 
 @Import(SnsConfig::class)
-class OracleToTopicIntTest : IntegrationTestBase() {
+class OracleToTopicIntTest(@Autowired private val jsonMapper: JsonMapper) : IntegrationTestBase() {
 
   @MockitoSpyBean
   @Qualifier("prisoneventtopic-sns-client")
@@ -83,9 +85,6 @@ class OracleToTopicIntTest : IntegrationTestBase() {
 
   @Autowired
   private lateinit var hmppsQueueService: HmppsQueueService
-
-  @Autowired
-  private lateinit var objectMapper: ObjectMapper
 
   @Autowired
   private lateinit var retryConnectionFactory: ConnectionFactory
@@ -1163,18 +1162,14 @@ class OracleToTopicIntTest : IntegrationTestBase() {
       ReceiveMessageRequest.builder().queueUrl(prisonEventQueueUrl).build(),
     ).get().messages().first().body()
 
-    val sqsMessage: SQSMessage = objectMapper.readValue(queueMessage, SQSMessage::class.java)
+    val sqsMessage: SnsMessage = jsonMapper.readValue(queueMessage)
     return PrisonerEventMessage(
-      message = sqsMessage.Message,
-      publishedAt = OffsetDateTime.parse(sqsMessage.MessageAttributes.publishedAt.Value),
-      eventType = sqsMessage.MessageAttributes.eventType.Value,
+      message = sqsMessage.message,
+      publishedAt = OffsetDateTime.parse(sqsMessage.messageAttributes["publishedAt"]?.value.toString()),
+      eventType = sqsMessage.messageAttributes.eventType!!,
     )
   }
 }
-
-internal data class SQSMessage(val Message: String, val MessageId: String, val MessageAttributes: MessageAttributes)
-internal data class MessageAttributes(val publishedAt: TypeValuePair, val eventType: TypeValuePair)
-internal data class TypeValuePair(val Value: String, val Type: String)
 
 data class PrisonerEventMessage(
   val message: String,
