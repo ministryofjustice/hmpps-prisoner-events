@@ -1,5 +1,5 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.1.0"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.1.1"
   kotlin("plugin.spring") version "2.3.20"
 }
 
@@ -8,11 +8,11 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework:spring-jms:7.0.6")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.2.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.0")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   implementation("org.flywaydb:flyway-database-oracle")
-  implementation("org.hibernate.orm:hibernate-community-dialects:7.2.7.Final")
+  implementation("org.hibernate.orm:hibernate-community-dialects")
 
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
 
