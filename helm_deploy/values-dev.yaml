@@ -5,6 +5,7 @@ generic-service:
 
   ingress:
     host: prisoner-events-dev.prison.service.justice.gov.uk
+    className: "default-non-prod"
 
   scheduledDowntime:
     enabled: true
