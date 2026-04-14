@@ -61,17 +61,6 @@
         "percentage": 10
       },
       {
-        "telemetryType": "request",
-        "attributes": [
-          {
-            "key": "messaging.system",
-            "value": "jms",
-            "matchType": "strict"
-          }
-        ],
-        "percentage": 1
-      },
-      {
         "telemetryType": "exception",
         "attributes": [
           {
