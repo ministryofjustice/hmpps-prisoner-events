@@ -14,10 +14,7 @@ dependencies {
   implementation("org.flywaydb:flyway-database-oracle")
   implementation("org.hibernate.orm:hibernate-community-dialects")
 
-  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2")
-  constraints {
-    implementation("org.webjars:swagger-ui:5.32.2")
-  }
+  implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
 
   runtimeOnly("com.zaxxer:HikariCP")
   runtimeOnly("com.oracle.database.jdbc:ojdbc11:23.26.1.0.0")
