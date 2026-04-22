@@ -39,7 +39,6 @@ dependencies {
   testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37") {
     exclude(group = "io.swagger.core.v3")
   }
-  testImplementation("io.swagger.core.v3:swagger-core-jakarta:2.2.41")
   testImplementation("org.springframework.security:spring-security-test")
   testImplementation("org.testcontainers:localstack:1.21.4")
   testImplementation("org.testcontainers:oracle-xe:1.21.4")
