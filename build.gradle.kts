@@ -28,6 +28,10 @@ dependencies {
   implementation("org.jetbrains.exposed:exposed-spring-boot4-starter:1.2.0")
   implementation("org.jetbrains.exposed:exposed-java-time:1.2.0")
 
+  val appinsightsCore = "core:2.6.4"
+  implementation("io.micrometer:micrometer-registry-azure-monitor:1.16.5")
+  implementation("com.microsoft.azure:applicationinsights-$appinsightsCore")
+
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.1.1")
   testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
   testImplementation("org.springframework.boot:spring-boot-starter-jdbc-test")
