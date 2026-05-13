@@ -17,7 +17,9 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
 
   runtimeOnly("com.zaxxer:HikariCP")
-  runtimeOnly("com.oracle.database.jdbc:ojdbc11:23.26.2.0.0")
+  // Ensure that the oracle version doesn't automatically get updated
+  val oracleVersion = ":23.26.1.0.0"
+  runtimeOnly("com.oracle.database.jdbc:ojdbc11$oracleVersion")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.9.0.0")
 
   implementation("org.apache.commons:commons-lang3:3.20.0")
