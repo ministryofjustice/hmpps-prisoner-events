@@ -436,6 +436,7 @@ class CourtAppearanceEvent(
   val eventId: Long?,
   val caseId: Long?,
   val isBreachHearing: Boolean,
+  val directionCode: String?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,

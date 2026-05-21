@@ -1345,6 +1345,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
     isBreachHearing = xtag.content.p_court_event_type == "BREACH",
+    directionCode = xtag.content.p_direction_code,
   )
 
   private fun courtEventChargeEventOf(xtag: Xtag) = CourtEventChargeEvent(
