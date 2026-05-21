@@ -4143,6 +4143,7 @@ class OffenderEventsTransformerTest {
             "p_event_id" to "65432",
             "p_case_id" to "55555",
             "p_audit_module_name" to "DPS_AUDIT",
+            "p_direction_code" to "OUT",
           ),
         ),
       ),
@@ -4156,6 +4157,7 @@ class OffenderEventsTransformerTest {
       assertThat(caseId).isEqualTo(55555)
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
       assertThat(isBreachHearing).isEqualTo(false)
+      assertThat(directionCode).isEqualTo("OUT")
     }
   }
 
