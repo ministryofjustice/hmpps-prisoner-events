@@ -1,14 +1,15 @@
 package uk.gov.justice.digital.hmpps.prisonerevents.integration.health
 
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.info.BuildProperties
 import uk.gov.justice.digital.hmpps.prisonerevents.config.EXCEPTION_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.integration.IntegrationTestBase
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
-class InfoTest : IntegrationTestBase() {
+class InfoTest(
+  @Autowired private val buildProperties: BuildProperties,
+) : IntegrationTestBase() {
 
   @Test
   fun `Info page is accessible`() {
@@ -25,9 +26,7 @@ class InfoTest : IntegrationTestBase() {
     webTestClient.get().uri("/info")
       .exchange()
       .expectStatus().isOk
-      .expectBody().jsonPath("build.version").value<String> {
-        assertThat(it).startsWith(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE))
-      }
+      .expectBody().jsonPath("build.version").isEqualTo(buildProperties.version)
   }
 
   @Test
