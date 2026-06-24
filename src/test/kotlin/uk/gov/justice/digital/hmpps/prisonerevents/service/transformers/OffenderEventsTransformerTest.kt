@@ -1240,6 +1240,7 @@ class OffenderEventsTransformerTest {
             "p_case_note_id" to "456789",
             "p_case_note_type" to "CHAP",
             "p_case_note_sub_type" to "FAITH",
+            "p_audit_module_name" to "MODULE",
           ),
         ),
       ),
@@ -1250,6 +1251,7 @@ class OffenderEventsTransformerTest {
       assertThat(caseNoteId).isEqualTo(456789L)
       assertThat(caseNoteType).isEqualTo("CHAP")
       assertThat(caseNoteSubType).isEqualTo("FAITH")
+      assertThat(auditModuleName).isEqualTo("MODULE")
     }
   }
 
