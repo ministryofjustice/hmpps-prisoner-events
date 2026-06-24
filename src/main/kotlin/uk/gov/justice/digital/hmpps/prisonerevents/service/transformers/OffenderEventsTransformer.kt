@@ -1240,6 +1240,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     caseNoteType = xtag.content.p_case_note_type,
     caseNoteSubType = xtag.content.p_case_note_sub_type,
     recordDeleted = "Y" == xtag.content.p_delete_flag,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun nonAssociationDetailsEventOf(xtag: Xtag) = NonAssociationDetailsOffenderEvent(
