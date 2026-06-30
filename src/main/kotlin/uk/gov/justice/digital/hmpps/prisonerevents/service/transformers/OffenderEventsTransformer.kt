@@ -184,7 +184,8 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
           null
         }
 
-        "OFFENDER_ASSESSMENTS-UPDATED" -> assessmentUpdatedEventOf(xtag)
+        "OFFENDER_ASSESSMENTS-UPDATED", "ASSESSMENT-INSERTED", "ASSESSMENT-UPDATED", "ASSESSMENT-DELETED",
+        -> assessmentUpdatedEventOf(xtag)
 
         "OFF_ALERT_INSERT" -> alertInsertedEventOf(xtag)
         "OFF_ALERT_UPDATE" -> alertUpdatedEventOf(xtag)
@@ -704,6 +705,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     evaluationResultCode = null,
     reviewLevelSupType = null,
     offenderIdDisplay = null,
+    auditModuleName = null,
     nomisEventType = xtag.eventType,
   )
 
@@ -716,6 +718,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     reviewLevelSupType = xtag.content.p_review_level_sup_type,
     evaluationResultCode = xtag.content.p_evaluation_result_code,
     assessmentType = xtag.content.p_assessment_type,
+    auditModuleName = xtag.content.p_audit_module_name,
     nomisEventType = xtag.eventType,
   )
 

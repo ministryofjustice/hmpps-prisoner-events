@@ -379,6 +379,7 @@ class AssessmentUpdateEvent(
   val assessmentType: String?,
   val evaluationResultCode: String?,
   val reviewLevelSupType: String?,
+  val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
