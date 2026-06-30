@@ -6,6 +6,8 @@ import oracle.jakarta.jms.AQjmsMapMessage
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.ValueSource
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitSlotEvent
@@ -2609,12 +2611,15 @@ class OffenderEventsTransformerTest {
     }
   }
 
-  @Test
-  fun `assessment changed mapped correctly`() {
+  @ParameterizedTest
+  @ValueSource(
+    strings = ["OFFENDER_ASSESSMENTS-UPDATED", "ASSESSMENT-INSERTED", "ASSESSMENT-UPDATED", "ASSESSMENT-DELETED"],
+  )
+  fun `assessment changed mapped correctly`(eventType: String) {
     val now = LocalDateTime.now()
     withCallTransformer<AssessmentUpdateEvent>(
       Xtag(
-        eventType = "OFFENDER_ASSESSMENTS-UPDATED",
+        eventType = eventType,
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
@@ -2624,19 +2629,21 @@ class OffenderEventsTransformerTest {
             "p_assessment_type" to "CSR",
             "p_evaluation_result_code" to "APP",
             "p_review_level_sup_type" to "STANDARD",
+            "p_audit_module_name" to "MYMODULE",
             "p_nomis_timestamp" to "20230509215740.443718000",
           ),
         ),
       ),
     ) {
-      assertThat(eventType).isEqualTo("ASSESSMENT-UPDATED")
+      assertThat(this.eventType).isEqualTo("ASSESSMENT-UPDATED")
       assertThat(bookingId).isEqualTo(456L)
       assertThat(assessmentSeq).isEqualTo(123L)
       assertThat(assessmentType).isEqualTo("CSR")
       assertThat(evaluationResultCode).isEqualTo("APP")
       assertThat(reviewLevelSupType).isEqualTo("STANDARD")
       assertThat(offenderIdDisplay).isEqualTo("A1234AA")
-      assertThat(nomisEventType).isEqualTo("OFFENDER_ASSESSMENTS-UPDATED")
+      assertThat(nomisEventType).isEqualTo(eventType)
+      assertThat(auditModuleName).isEqualTo("MYMODULE")
       assertThat(eventDatetime).isEqualTo(LocalDateTime.parse("2023-05-09T21:57:40.443718"))
     }
   }
