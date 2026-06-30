@@ -2613,7 +2613,7 @@ class OffenderEventsTransformerTest {
 
   @ParameterizedTest
   @ValueSource(
-    strings = ["OFFENDER_ASSESSMENTS-UPDATED","ASSESSMENT-INSERTED", "ASSESSMENT-UPDATED", "ASSESSMENT-DELETED"],
+    strings = ["OFFENDER_ASSESSMENTS-UPDATED", "ASSESSMENT-INSERTED", "ASSESSMENT-UPDATED", "ASSESSMENT-DELETED"],
   )
   fun `assessment changed mapped correctly`(eventType: String) {
     val now = LocalDateTime.now()
