@@ -363,7 +363,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "AGENCY_VISIT_TIMES-INSERTED", "AGENCY_VISIT_TIMES-UPDATED", "AGENCY_VISIT_TIMES-DELETED" -> agencyVisitTimesEventOf(xtag)
         "AGENCY_VISIT_SLOTS-INSERTED", "AGENCY_VISIT_SLOTS-UPDATED", "AGENCY_VISIT_SLOTS-DELETED" -> agencyVisitSlotsEventOf(xtag)
 
-        "STAFF-INSERTED", "STAFF-UPDATED", "STAFF-DELETED" -> staffEventOf(xtag)
+        "STAFF_MEMBERS-INSERTED", "STAFF_MEMBERS-UPDATED", "STAFF_MEMBERS-DELETED" -> staffEventOf(xtag)
         "USER_ACCESSIBLE_CASELOADS-INSERTED", "USER_ACCESSIBLE_CASELOADS-DELETED" -> userAccessibleCaseloadEventOf(xtag)
 
         else -> OffenderEvent(
