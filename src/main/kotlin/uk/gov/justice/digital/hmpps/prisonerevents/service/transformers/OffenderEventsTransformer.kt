@@ -67,6 +67,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateE
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitVisitorEvent
@@ -127,8 +128,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "A3_RESULT" -> offenderSanctionEventOf(xtag)
         "P1_RESULT", "BOOK_UPD_OASYS" -> bookingNumberEventOf(xtag)
 
-        "GL_TRANSACTIONS-INSERTED", "GL_TRANSACTIONS-UPDATED", "GL_TRANSACTIONS-DELETED",
-        -> gLTransactionEventOf(xtag)
+        "GL_TRANSACTIONS-INSERTED", "GL_TRANSACTIONS-UPDATED", "GL_TRANSACTIONS-DELETED" -> gLTransactionEventOf(xtag)
         "OFFENDER_TRANSACTIONS-INSERTED", "OFFENDER_TRANSACTIONS-UPDATED", "OFFENDER_TRANSACTIONS-DELETED",
         -> offenderTransactionEventOf(xtag)
 
@@ -360,6 +360,8 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "AGENCY_VISIT_TIMES-INSERTED", "AGENCY_VISIT_TIMES-UPDATED", "AGENCY_VISIT_TIMES-DELETED" -> agencyVisitTimesEventOf(xtag)
         "AGENCY_VISIT_SLOTS-INSERTED", "AGENCY_VISIT_SLOTS-UPDATED", "AGENCY_VISIT_SLOTS-DELETED" -> agencyVisitSlotsEventOf(xtag)
+
+        "STAFF-INSERTED", "STAFF-UPDATED", "STAFF-DELETED" -> staffEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1655,6 +1657,14 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     "PERSON" -> personImageEventOf(xtag)
     else -> null
   }
+
+  private fun staffEventOf(xtag: Xtag) = StaffEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    staffId = xtag.content.p_staff_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
 
   /*
    * When an offender marks image is uploaded to NOMIS the following happens:
