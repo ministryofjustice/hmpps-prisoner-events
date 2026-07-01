@@ -6954,7 +6954,7 @@ class OffenderEventsTransformerTest {
   inner class StaffEvents {
 
     @ParameterizedTest
-    @ValueSource(strings = ["STAFF-INSERTED", "STAFF-UPDATED", "STAFF-DELETED"])
+    @ValueSource(strings = ["STAFF_MEMBERS-INSERTED", "STAFF_MEMBERS-UPDATED", "STAFF_MEMBERS-DELETED"])
     fun `staff events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<StaffEvent>(
