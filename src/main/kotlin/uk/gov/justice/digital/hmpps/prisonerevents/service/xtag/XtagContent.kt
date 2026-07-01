@@ -216,6 +216,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_payment_amount by m
   val p_weekend_days by m
   val p_staff_id by m
+  val p_username by m
   val p_payment_status by m
   val p_agency_code by m
   val p_week_day by m
