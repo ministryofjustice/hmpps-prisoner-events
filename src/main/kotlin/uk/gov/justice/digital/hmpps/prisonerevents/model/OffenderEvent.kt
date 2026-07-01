@@ -916,6 +916,19 @@ class CorporateTypeEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+open class StaffEvent(
+  eventType: String? = null,
+  eventDatetime: LocalDateTime? = null,
+  nomisEventType: String? = null,
+  val auditModuleName: String,
+  val staffId: Long,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class OffenderFixedTermRecallEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
