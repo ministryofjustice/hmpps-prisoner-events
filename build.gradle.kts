@@ -1,6 +1,6 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.3.1"
-  kotlin("plugin.spring") version "2.3.21"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.5.2"
+  kotlin("plugin.spring") version "2.4.0"
 }
 
 dependencyCheck {
@@ -8,11 +8,11 @@ dependencyCheck {
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.2.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:2.5.0")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-  implementation("org.springframework:spring-jms:7.0.7")
-  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.3.2")
+  implementation("org.springframework:spring-jms:7.0.8")
+  implementation("uk.gov.justice.service.hmpps:hmpps-sqs-spring-boot-starter:7.4.0")
   implementation("org.springframework.boot:spring-boot-starter-flyway")
 
   implementation("org.flywaydb:flyway-database-oracle")
@@ -31,22 +31,20 @@ dependencies {
   // where <version> is the version of application insights pulled in by hmpps-gradle-spring-boot
   // at https://github.com/ministryofjustice/hmpps-gradle-spring-boot/blob/main/src/main/kotlin/uk/gov/justice/digital/hmpps/gradle/configmanagers/AppInsightsConfigManager.kt#L7
   implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.26.1")
-  implementation("org.jetbrains.exposed:exposed-spring-boot4-starter:1.2.0")
-  implementation("org.jetbrains.exposed:exposed-java-time:1.2.0")
+  implementation("org.jetbrains.exposed:exposed-spring-boot4-starter:1.3.0")
+  implementation("org.jetbrains.exposed:exposed-java-time:1.3.0")
 
   val appinsightsCore = "core:2.6.4"
-  implementation("io.micrometer:micrometer-registry-azure-monitor:1.16.5")
+  implementation("io.micrometer:micrometer-registry-azure-monitor:1.17.0")
   implementation("com.microsoft.azure:applicationinsights-$appinsightsCore")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.2.0")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.5.0")
   testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
   testImplementation("org.springframework.boot:spring-boot-starter-jdbc-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
 
-  testImplementation("org.mockito:mockito-inline:5.2.0")
-
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.37") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.42") {
     exclude(group = "io.swagger.core.v3")
   }
   testImplementation("org.springframework.security:spring-security-test")
@@ -56,9 +54,6 @@ dependencies {
 
 kotlin {
   jvmToolchain(25)
-  compilerOptions {
-    freeCompilerArgs.addAll("-Xannotation-default-target=param-property")
-  }
 }
 
 tasks {
