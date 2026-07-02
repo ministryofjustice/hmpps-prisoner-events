@@ -7,7 +7,8 @@ generic-service:
     host: prisoner-events-preprod.prison.service.justice.gov.uk
 
   scheduledDowntime:
-    enabled: true
+    # Temporarily set to false to enable prisoner transaction reconciliation testing in preprod
+    enabled: false
     startup: '16 6 * * 1-5' # Start at 6.16am UTC Monday-Friday
     shutdown: '48 21 * * 1-5' # Stop at 9.48pm UTC Monday-Friday
 
