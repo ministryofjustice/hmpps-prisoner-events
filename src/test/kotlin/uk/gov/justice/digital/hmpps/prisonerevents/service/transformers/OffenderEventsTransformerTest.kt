@@ -8021,7 +8021,7 @@ class OffenderEventsTransformerTest {
     )
 
     @ParameterizedTest
-    @ValueSource(strings = ["PRISONER_PROPERTY-INSERTED","PRISONER_PROPERTY-UPDATED","PRISONER_PROPERTY-DELETED"])
+    @ValueSource(strings = ["PRISONER_PROPERTY-INSERTED", "PRISONER_PROPERTY-UPDATED", "PRISONER_PROPERTY-DELETED"])
     fun `Property events are mapped`(eventType: String) {
       withCallTransformer<PropertyEvent>(
         Xtag(
@@ -8039,23 +8039,5 @@ class OffenderEventsTransformerTest {
         assertThat(nomisEventType).isEqualTo(eventType)
       }
     }
-    /* NOTE more columns are available if required, the full set is:
-     xtag.xtag_params('p_offender_book_id', :new.offender_book_id),
-     xtag.xtag_params('p_offender_id_display', get_offender_id_display(:new.offender_book_id)),
-     xtag.xtag_params('p_property_only_flag', :new.property_only_flag),
-     xtag.xtag_params('p_property_container_id', :new.property_container_id),
-     xtag.xtag_params('p_agy_loc_id', :new.agy_loc_id),
-     xtag.xtag_params('p_active_flag', :new.active_flag),
-     xtag.xtag_params('p_proposed_disposal_date', to_char(:new.proposed_disposal_date, 'YYYY-MM-DD HH24:MI')),
-     xtag.xtag_params('p_comment_text', :new.comment_text),
-     xtag.xtag_params('p_internal_location_id', :new.internal_location_id),
-     xtag.xtag_params('p_container_code', :new.container_code),
-     xtag.xtag_params('p_expiry_date', to_char(:new.expiry_date, 'YYYY-MM-DD HH24:MI')),
-     xtag.xtag_params('p_seal_mark', :new.seal_mark),
-     xtag.xtag_params('p_trn_from_agy_loc_id', :new.trn_from_agy_loc_id),
-     xtag.xtag_params('p_trn_to_agy_loc_id', :new.trn_to_agy_loc_id),
-     xtag.xtag_params('p_audit_module_name', :new.audit_module_name),
-     xtag.xtag_params('p_nomis_timestamp', to_char(:new.audit_timestamp, 'YYYYMMDDHH24MISS.FF9'))
-     */
   }
 }
