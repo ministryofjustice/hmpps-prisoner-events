@@ -65,6 +65,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PropertyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffEvent
@@ -365,6 +366,8 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "STAFF_MEMBERS-INSERTED", "STAFF_MEMBERS-UPDATED", "STAFF_MEMBERS-DELETED" -> staffEventOf(xtag)
         "USER_ACCESSIBLE_CASELOADS-INSERTED", "USER_ACCESSIBLE_CASELOADS-DELETED" -> userAccessibleCaseloadEventOf(xtag)
+
+        "PRISONER_PROPERTY-INSERTED", "PRISONER_PROPERTY-UPDATED", "PRISONER_PROPERTY-DELETED" -> propertyEventOf(xtag)
 
         else -> OffenderEvent(
           eventType = xtag.eventType,
@@ -1851,6 +1854,16 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     weekDay = xtag.content.p_week_day!!,
     timeslotSequence = xtag.content.p_time_slot_seq!!.toInt(),
     agencyVisitSlotId = xtag.content.p_agency_visit_slot_id!!.toLong(),
+  )
+
+  private fun propertyEventOf(xtag: Xtag) = PropertyEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    propertyContainerId = xtag.content.p_property_container_id!!.toLong(),
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display!!,
+    auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
   )
 
   companion object {
