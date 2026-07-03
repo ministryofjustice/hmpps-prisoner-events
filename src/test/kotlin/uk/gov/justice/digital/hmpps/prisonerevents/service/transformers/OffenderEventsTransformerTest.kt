@@ -69,6 +69,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PropertyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffEvent
@@ -8005,19 +8006,56 @@ class OffenderEventsTransformerTest {
         assertThat(nomisEventType).isEqualTo("OFFENDER_FINE_PAYMENTS-UPDATED")
       }
     }
+  }
 
-    @Test
-    fun `OFFENDER_FINE_PAYMENTS-DELETED is mapped`() {
-      withCallTransformer<FinePaymentEvent>(
+  @Nested
+  inner class Property {
+    val xtagContent = XtagContent(
+      mapOf(
+        "p_offender_book_id" to "3222111",
+        "p_offender_id_display" to "A1234AA",
+        "p_property_container_id" to "9876543210",
+        "p_audit_module_name" to "OCCIPROP",
+        "p_nomis_timestamp" to "20250529140515.415786000",
+      ),
+    )
+
+    @ParameterizedTest
+    @ValueSource(strings = ["PRISONER_PROPERTY-INSERTED","PRISONER_PROPERTY-UPDATED","PRISONER_PROPERTY-DELETED"])
+    fun `Property events are mapped`(eventType: String) {
+      withCallTransformer<PropertyEvent>(
         Xtag(
-          eventType = "OFFENDER_FINE_PAYMENTS-DELETED",
+          eventType = eventType,
           nomisTimestamp = fixedEventTime,
           content = xtagContent,
         ),
       ) {
-        assertThat(eventType).isEqualTo("OFFENDER_FINE_PAYMENTS-DELETED")
-        assertThat(nomisEventType).isEqualTo("OFFENDER_FINE_PAYMENTS-DELETED")
+        assertThat(this.eventType).isEqualTo(eventType)
+        assertThat(eventDatetime).isEqualTo(fixedEventTime)
+        assertThat(propertyContainerId).isEqualTo(9876543210)
+        assertThat(bookingId).isEqualTo(3222111)
+        assertThat(offenderIdDisplay).isEqualTo("A1234AA")
+        assertThat(auditModuleName).isEqualTo("OCCIPROP")
+        assertThat(nomisEventType).isEqualTo(eventType)
       }
     }
+    /* NOTE more columns are available if required, the full set is:
+     xtag.xtag_params('p_offender_book_id', :new.offender_book_id),
+     xtag.xtag_params('p_offender_id_display', get_offender_id_display(:new.offender_book_id)),
+     xtag.xtag_params('p_property_only_flag', :new.property_only_flag),
+     xtag.xtag_params('p_property_container_id', :new.property_container_id),
+     xtag.xtag_params('p_agy_loc_id', :new.agy_loc_id),
+     xtag.xtag_params('p_active_flag', :new.active_flag),
+     xtag.xtag_params('p_proposed_disposal_date', to_char(:new.proposed_disposal_date, 'YYYY-MM-DD HH24:MI')),
+     xtag.xtag_params('p_comment_text', :new.comment_text),
+     xtag.xtag_params('p_internal_location_id', :new.internal_location_id),
+     xtag.xtag_params('p_container_code', :new.container_code),
+     xtag.xtag_params('p_expiry_date', to_char(:new.expiry_date, 'YYYY-MM-DD HH24:MI')),
+     xtag.xtag_params('p_seal_mark', :new.seal_mark),
+     xtag.xtag_params('p_trn_from_agy_loc_id', :new.trn_from_agy_loc_id),
+     xtag.xtag_params('p_trn_to_agy_loc_id', :new.trn_to_agy_loc_id),
+     xtag.xtag_params('p_audit_module_name', :new.audit_module_name),
+     xtag.xtag_params('p_nomis_timestamp', to_char(:new.audit_timestamp, 'YYYYMMDDHH24MISS.FF9'))
+     */
   }
 }
