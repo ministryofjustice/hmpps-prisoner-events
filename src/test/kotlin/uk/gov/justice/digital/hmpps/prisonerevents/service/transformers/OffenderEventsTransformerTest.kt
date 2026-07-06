@@ -7074,7 +7074,7 @@ class OffenderEventsTransformerTest {
 
     @ParameterizedTest
     @ValueSource(strings = ["USER_CASELOAD_ROLES-INSERTED", "USER_CASELOAD_ROLES-DELETED"])
-    fun `staff events mapped correctly`(eventType: String) {
+    fun `events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<UserCaseloadRoleEvent>(
         Xtag(
