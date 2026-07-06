@@ -69,6 +69,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PropertyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserAccessibleCaseloadEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
@@ -365,6 +366,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "AGENCY_VISIT_SLOTS-INSERTED", "AGENCY_VISIT_SLOTS-UPDATED", "AGENCY_VISIT_SLOTS-DELETED" -> agencyVisitSlotsEventOf(xtag)
 
         "STAFF_MEMBERS-INSERTED", "STAFF_MEMBERS-UPDATED", "STAFF_MEMBERS-DELETED" -> staffEventOf(xtag)
+        "INTERNET_ADDRESSES_STAFF-INSERTED", "INTERNET_ADDRESSES_STAFF-UPDATED", "INTERNET_ADDRESSES_STAFF-DELETED" -> staffInternetAddressEventOf(xtag)
         "USER_ACCESSIBLE_CASELOADS-INSERTED", "USER_ACCESSIBLE_CASELOADS-DELETED" -> userAccessibleCaseloadEventOf(xtag)
 
         "PRISONER_PROPERTY-INSERTED", "PRISONER_PROPERTY-UPDATED", "PRISONER_PROPERTY-DELETED" -> propertyEventOf(xtag)
@@ -1674,7 +1676,14 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )
-
+  private fun staffInternetAddressEventOf(xtag: Xtag) = StaffInternetAddressEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    staffId = xtag.content.p_staff_id!!.toLong(),
+    internetAddressId = xtag.content.p_internet_address_id!!.toLong(),
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
   private fun userAccessibleCaseloadEventOf(xtag: Xtag) = UserAccessibleCaseloadEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
