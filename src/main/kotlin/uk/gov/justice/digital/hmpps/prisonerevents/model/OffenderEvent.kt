@@ -929,6 +929,22 @@ open class StaffEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class StaffUserAccountEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  auditModuleName: String,
+  staffId: Long,
+  val username: String,
+) : StaffEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  staffId = staffId,
+  auditModuleName = auditModuleName,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class StaffInternetAddressEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,

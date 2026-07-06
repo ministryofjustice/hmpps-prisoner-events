@@ -74,6 +74,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEven
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffInternetAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffUserAccountEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserAccessibleCaseloadEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
@@ -6976,6 +6977,32 @@ class OffenderEventsTransformerTest {
         assertThat(nomisEventType).isEqualTo(eventType)
         assertThat(auditModuleName).isEqualTo("module_name")
       }
+    }
+  }
+
+  @ParameterizedTest
+  @ValueSource(strings = ["STAFF_USER_ACCOUNTS-INSERTED", "STAFF_USER_ACCOUNTS-UPDATED", "STAFF_USER_ACCOUNTS-DELETED"])
+  fun `staff events mapped correctly`(eventType: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<StaffUserAccountEvent>(
+      Xtag(
+        eventType = eventType,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_staff_id" to "4730074",
+            "p_username" to "JIMSMITH_ADM",
+            "p_owner_class" to "STF",
+            "p_audit_module_name" to "module_name",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventType)
+      assertThat(staffId).isEqualTo(4730074L)
+      assertThat(username).isEqualTo("JIMSMITH_ADM")
+      assertThat(nomisEventType).isEqualTo(eventType)
+      assertThat(auditModuleName).isEqualTo("module_name")
     }
   }
 
