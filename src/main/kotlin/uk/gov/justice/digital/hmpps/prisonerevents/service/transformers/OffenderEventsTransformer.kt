@@ -73,6 +73,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffInternetAddressEve
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffUserAccountEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserAccessibleCaseloadEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.UserCaseloadRoleEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitVisitorEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
@@ -370,6 +371,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "STAFF_USER_ACCOUNTS-INSERTED", "STAFF_USER_ACCOUNTS-UPDATED", "STAFF_USER_ACCOUNTS-DELETED" -> staffUserAccountEventOf(xtag)
         "INTERNET_ADDRESSES_STAFF-INSERTED", "INTERNET_ADDRESSES_STAFF-UPDATED", "INTERNET_ADDRESSES_STAFF-DELETED" -> staffInternetAddressEventOf(xtag)
         "USER_ACCESSIBLE_CASELOADS-INSERTED", "USER_ACCESSIBLE_CASELOADS-DELETED" -> userAccessibleCaseloadEventOf(xtag)
+        "USER_CASELOAD_ROLES-INSERTED", "USER_CASELOAD_ROLES-DELETED" -> userCaseloadRoleEventOf(xtag)
 
         "PRISONER_PROPERTY-INSERTED", "PRISONER_PROPERTY-UPDATED", "PRISONER_PROPERTY-DELETED" -> propertyEventOf(xtag)
 
@@ -1699,6 +1701,15 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     username = xtag.content.p_username!!,
     caseloadId = xtag.content.p_caseload_id!!,
+    auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
+    nomisEventType = xtag.eventType,
+  )
+  private fun userCaseloadRoleEventOf(xtag: Xtag) = UserCaseloadRoleEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    username = xtag.content.p_username!!,
+    caseloadId = xtag.content.p_caseload_id!!,
+    roleCode = xtag.content.p_role_code!!,
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )
