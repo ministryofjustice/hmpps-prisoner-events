@@ -73,6 +73,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PropertyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.RestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ScheduledExternalMovementEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserAccessibleCaseloadEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
@@ -6972,6 +6973,36 @@ class OffenderEventsTransformerTest {
       ) {
         assertThat(eventType).isEqualTo(eventType)
         assertThat(staffId).isEqualTo(4730074L)
+        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(auditModuleName).isEqualTo("module_name")
+      }
+    }
+  }
+
+  @Nested
+  inner class StaffInternetAddressEvents {
+
+    @ParameterizedTest
+    @ValueSource(strings = ["INTERNET_ADDRESSES_STAFF-INSERTED", "INTERNET_ADDRESSES_STAFF-UPDATED", "INTERNET_ADDRESSES_STAFF-DELETED"])
+    fun `staff events mapped correctly`(eventType: String) {
+      val now = LocalDateTime.now()
+      withCallTransformer<StaffInternetAddressEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_staff_id" to "4730074",
+              "p_internet_address_id" to "5623860",
+              "p_owner_class" to "STF",
+              "p_audit_module_name" to "module_name",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(staffId).isEqualTo(4730074L)
+        assertThat(internetAddressId).isEqualTo(5623860L)
         assertThat(nomisEventType).isEqualTo(eventType)
         assertThat(auditModuleName).isEqualTo("module_name")
       }
