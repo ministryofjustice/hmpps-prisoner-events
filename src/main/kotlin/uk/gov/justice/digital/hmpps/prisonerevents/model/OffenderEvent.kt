@@ -975,6 +975,24 @@ open class UserAccessibleCaseloadEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class UserCaseloadRoleEvent(
+  eventType: String? = null,
+  eventDatetime: LocalDateTime? = null,
+  nomisEventType: String? = null,
+  auditModuleName: String,
+  username: String,
+  caseloadId: String,
+  val roleCode: String,
+) : UserAccessibleCaseloadEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  username = username,
+  caseloadId = caseloadId,
+  auditModuleName = auditModuleName,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class OffenderFixedTermRecallEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,

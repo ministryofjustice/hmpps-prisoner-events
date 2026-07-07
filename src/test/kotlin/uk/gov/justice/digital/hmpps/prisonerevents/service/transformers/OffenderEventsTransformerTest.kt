@@ -77,6 +77,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffInternetAddressEve
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffUserAccountEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserAccessibleCaseloadEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.UserCaseloadRoleEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitVisitorEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitorRestrictionOffenderEvent
@@ -6958,7 +6959,7 @@ class OffenderEventsTransformerTest {
 
     @ParameterizedTest
     @ValueSource(strings = ["STAFF_MEMBERS-INSERTED", "STAFF_MEMBERS-UPDATED", "STAFF_MEMBERS-DELETED"])
-    fun `staff events mapped correctly`(eventType: String) {
+    fun `events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<StaffEvent>(
         Xtag(
@@ -6980,29 +6981,32 @@ class OffenderEventsTransformerTest {
     }
   }
 
-  @ParameterizedTest
-  @ValueSource(strings = ["STAFF_USER_ACCOUNTS-INSERTED", "STAFF_USER_ACCOUNTS-UPDATED", "STAFF_USER_ACCOUNTS-DELETED"])
-  fun `staff events mapped correctly`(eventType: String) {
-    val now = LocalDateTime.now()
-    withCallTransformer<StaffUserAccountEvent>(
-      Xtag(
-        eventType = eventType,
-        nomisTimestamp = now,
-        content = XtagContent(
-          mapOf(
-            "p_staff_id" to "4730074",
-            "p_username" to "JIMSMITH_ADM",
-            "p_owner_class" to "STF",
-            "p_audit_module_name" to "module_name",
+  @Nested
+  inner class StaffUserAccountsEvents {
+    @ParameterizedTest
+    @ValueSource(strings = ["STAFF_USER_ACCOUNTS-INSERTED", "STAFF_USER_ACCOUNTS-UPDATED", "STAFF_USER_ACCOUNTS-DELETED"])
+    fun `events mapped correctly`(eventType: String) {
+      val now = LocalDateTime.now()
+      withCallTransformer<StaffUserAccountEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_staff_id" to "4730074",
+              "p_username" to "JIMSMITH_ADM",
+              "p_owner_class" to "STF",
+              "p_audit_module_name" to "module_name",
+            ),
           ),
         ),
-      ),
-    ) {
-      assertThat(eventType).isEqualTo(eventType)
-      assertThat(staffId).isEqualTo(4730074L)
-      assertThat(username).isEqualTo("JIMSMITH_ADM")
-      assertThat(nomisEventType).isEqualTo(eventType)
-      assertThat(auditModuleName).isEqualTo("module_name")
+      ) {
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(staffId).isEqualTo(4730074L)
+        assertThat(username).isEqualTo("JIMSMITH_ADM")
+        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(auditModuleName).isEqualTo("module_name")
+      }
     }
   }
 
@@ -7011,7 +7015,7 @@ class OffenderEventsTransformerTest {
 
     @ParameterizedTest
     @ValueSource(strings = ["INTERNET_ADDRESSES_STAFF-INSERTED", "INTERNET_ADDRESSES_STAFF-UPDATED", "INTERNET_ADDRESSES_STAFF-DELETED"])
-    fun `staff events mapped correctly`(eventType: String) {
+    fun `events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<StaffInternetAddressEvent>(
         Xtag(
@@ -7041,7 +7045,7 @@ class OffenderEventsTransformerTest {
 
     @ParameterizedTest
     @ValueSource(strings = ["USER_ACCESSIBLE_CASELOADS-INSERTED", "USER_ACCESSIBLE_CASELOADS-DELETED"])
-    fun `staff events mapped correctly`(eventType: String) {
+    fun `events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<UserAccessibleCaseloadEvent>(
         Xtag(
@@ -7059,6 +7063,37 @@ class OffenderEventsTransformerTest {
         assertThat(eventType).isEqualTo(eventType)
         assertThat(username).isEqualTo("FRED_ADM")
         assertThat(caseloadId).isEqualTo("ASI")
+        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(auditModuleName).isEqualTo("module_name")
+      }
+    }
+  }
+
+  @Nested
+  inner class UserCaseloadRolesEvents {
+
+    @ParameterizedTest
+    @ValueSource(strings = ["USER_CASELOAD_ROLES-INSERTED", "USER_CASELOAD_ROLES-DELETED"])
+    fun `events mapped correctly`(eventType: String) {
+      val now = LocalDateTime.now()
+      withCallTransformer<UserCaseloadRoleEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_username" to "FRED_ADM",
+              "p_caseload_id" to "ASI",
+              "p_role_code" to "ROLE_ADD_USERS",
+              "p_audit_module_name" to "module_name",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(username).isEqualTo("FRED_ADM")
+        assertThat(caseloadId).isEqualTo("ASI")
+        assertThat(roleCode).isEqualTo("ROLE_ADD_USERS")
         assertThat(nomisEventType).isEqualTo(eventType)
         assertThat(auditModuleName).isEqualTo("module_name")
       }
