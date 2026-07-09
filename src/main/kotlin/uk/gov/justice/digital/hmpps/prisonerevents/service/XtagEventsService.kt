@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonerevents.model.BookingNumberChangedType
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
-import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
@@ -26,9 +25,6 @@ class XtagEventsService(
       "ADDRESSES_OFFENDER-INSERTED", "ADDRESSES_OFFENDER-UPDATED", "ADDRESSES_OFFENDER-DELETED",
       ->
         oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender(oe.offenderId!!).firstOrNull()
-
-      "OFFENDER_ADDRESS-DELETED", "OFFENDER_ADDRESS-INSERTED", "OFFENDER_ADDRESS-UPDATED" ->
-        oe.offenderIdDisplay = sqlRepository.getNomsIdFromOffender((oe as GenericOffenderEvent).ownerId!!).firstOrNull()
 
       "BED_ASSIGNMENT_HISTORY-INSERTED", "OFFENDER_MOVEMENT-DISCHARGE", "OFFENDER_MOVEMENT-RECEPTION",
       "CONFIRMED_RELEASE_DATE-CHANGED", "SENTENCE_DATES-CHANGED",
