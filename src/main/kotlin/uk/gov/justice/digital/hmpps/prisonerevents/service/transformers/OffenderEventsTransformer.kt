@@ -217,8 +217,6 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "OFF_EMPLOYMENTS_DEL" -> offenderEmploymentDeletedEventOf(xtag)
         "D5_RESULT" -> hdcConditionChanged(xtag)
         "D4_RESULT" -> hdcFineInserted(xtag)
-        "ADDR_INS" -> addressInserted(xtag)
-        "ADDR_UPD" -> addressUpdatedOrDeleted(xtag)
 
         "OFF_SENT_OASYS" -> sentenceCalculationDateChangedEventOf(xtag)
         "IEDT_OUT" -> offenderTransferOutOfLidsEventOf(xtag)
@@ -414,122 +412,6 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
   )
-
-  private fun personAddressUpdatedEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "PERSON_ADDRESS-UPDATED",
-    addressId = xtag.content.p_address_id?.toLong(),
-    ownerId = xtag.content.p_owner_id?.toLong(),
-    ownerClass = xtag.content.p_owner_class,
-    addressEndDate = localDateOf(xtag.content.p_address_end_date),
-    primaryAddressFlag = xtag.content.p_primary_addr_flag,
-    mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = xtag.content.p_person_id?.toLong(),
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-  )
-
-  private fun offenderAddressUpdatedEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "OFFENDER_ADDRESS-UPDATED",
-    addressId = xtag.content.p_address_id?.toLong(),
-    ownerId = xtag.content.p_owner_id?.toLong(),
-    ownerClass = xtag.content.p_owner_class,
-    addressEndDate = localDateOf(xtag.content.p_address_end_date),
-    primaryAddressFlag = xtag.content.p_primary_addr_flag,
-    mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = xtag.content.p_person_id?.toLong(),
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-  )
-
-  private fun addressUpdatedEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "ADDRESS-UPDATED",
-    addressId = xtag.content.p_address_id?.toLong(),
-    ownerId = xtag.content.p_owner_id?.toLong(),
-    ownerClass = xtag.content.p_owner_class,
-    addressEndDate = localDateOf(xtag.content.p_address_end_date),
-    primaryAddressFlag = xtag.content.p_primary_addr_flag,
-    mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = xtag.content.p_person_id?.toLong(),
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-  )
-
-  private fun personAddressDeletedEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "PERSON_ADDRESS-DELETED",
-    addressId = xtag.content.p_address_id?.toLong(),
-    ownerId = xtag.content.p_owner_id?.toLong(),
-    ownerClass = xtag.content.p_owner_class,
-    addressEndDate = localDateOf(xtag.content.p_address_end_date),
-    primaryAddressFlag = xtag.content.p_primary_addr_flag,
-    mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = xtag.content.p_person_id?.toLong(),
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-  )
-
-  private fun offenderAddressDeletedEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "OFFENDER_ADDRESS-DELETED",
-    addressId = xtag.content.p_address_id?.toLong(),
-    ownerId = xtag.content.p_owner_id?.toLong(),
-    ownerClass = xtag.content.p_owner_class,
-    addressEndDate = localDateOf(xtag.content.p_address_end_date),
-    primaryAddressFlag = xtag.content.p_primary_addr_flag,
-    mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = xtag.content.p_person_id?.toLong(),
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-  )
-
-  private fun addressDeletedEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "ADDRESS-DELETED",
-    addressId = xtag.content.p_address_id?.toLong(),
-    ownerId = xtag.content.p_owner_id?.toLong(),
-    ownerClass = xtag.content.p_owner_class,
-    addressEndDate = localDateOf(xtag.content.p_address_end_date),
-    primaryAddressFlag = xtag.content.p_primary_addr_flag,
-    mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = xtag.content.p_person_id?.toLong(),
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-  )
-
-  private fun addressInserted(xtag: Xtag) = GenericOffenderEvent(
-    eventType = when (xtag.content.p_owner_class) {
-      "PER" -> "PERSON_ADDRESS-INSERTED"
-      "OFF" -> "OFFENDER_ADDRESS-INSERTED"
-      else -> "ADDRESS-INSERTED"
-    },
-    rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
-    addressId = xtag.content.p_address_id?.toLong(),
-    ownerId = xtag.content.p_owner_id?.toLong(),
-    ownerClass = xtag.content.p_owner_class,
-    addressEndDate = localDateOf(xtag.content.p_address_end_date),
-    primaryAddressFlag = xtag.content.p_primary_addr_flag,
-    mailAddressFlag = xtag.content.p_mail_addr_flag,
-    personId = xtag.content.p_person_id?.toLong(),
-    eventDatetime = xtag.nomisTimestamp,
-    nomisEventType = xtag.eventType,
-  )
-
-  private fun addressUpdatedOrDeleted(xtag: Xtag) = if (xtag.content.p_owner_class == "PER") {
-    if (xtag.content.p_address_deleted == "N") {
-      personAddressUpdatedEventOf(xtag)
-    } else {
-      personAddressDeletedEventOf(
-        xtag,
-      )
-    }
-  } else if (xtag.content.p_owner_class == "OFF") {
-    if (xtag.content.p_address_deleted == "N") {
-      offenderAddressUpdatedEventOf(xtag)
-    } else {
-      offenderAddressDeletedEventOf(
-        xtag,
-      )
-    }
-  } else {
-    if (xtag.content.p_address_deleted == "N") addressUpdatedEventOf(xtag) else addressDeletedEventOf(xtag)
-  }
 
   private fun hdcFineInserted(xtag: Xtag) = GenericOffenderEvent(
     eventType = "HDC_FINE-INSERTED",
