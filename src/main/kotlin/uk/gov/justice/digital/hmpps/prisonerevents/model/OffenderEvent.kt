@@ -990,7 +990,7 @@ class UserCaseloadRoleEvent(
   nomisEventType = nomisEventType,
   staffId = staffId,
   auditModuleName = auditModuleName,
-  )
+)
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class OffenderFixedTermRecallEvent(
