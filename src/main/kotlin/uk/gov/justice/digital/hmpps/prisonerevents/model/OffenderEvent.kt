@@ -980,17 +980,17 @@ class UserCaseloadRoleEvent(
   eventDatetime: LocalDateTime? = null,
   nomisEventType: String? = null,
   auditModuleName: String,
-  username: String,
-  caseloadId: String,
-  val roleCode: String,
-) : UserAccessibleCaseloadEvent(
+  staffId: Long,
+  val username: String,
+  val caseloadId: String,
+  val roleId: Long,
+) : StaffEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
   nomisEventType = nomisEventType,
-  username = username,
-  caseloadId = caseloadId,
+  staffId = staffId,
   auditModuleName = auditModuleName,
-)
+  )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class OffenderFixedTermRecallEvent(

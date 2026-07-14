@@ -6808,18 +6808,20 @@ class OffenderEventsTransformerTest {
           nomisTimestamp = now,
           content = XtagContent(
             mapOf(
+              "p_staff_id" to "4730074",
               "p_username" to "FRED_ADM",
               "p_caseload_id" to "ASI",
-              "p_role_code" to "ROLE_ADD_USERS",
+              "p_role_id" to "123",
               "p_audit_module_name" to "module_name",
             ),
           ),
         ),
       ) {
         assertThat(eventType).isEqualTo(eventType)
+        assertThat(staffId).isEqualTo(4730074)
         assertThat(username).isEqualTo("FRED_ADM")
         assertThat(caseloadId).isEqualTo("ASI")
-        assertThat(roleCode).isEqualTo("ROLE_ADD_USERS")
+        assertThat(roleId).isEqualTo(123)
         assertThat(nomisEventType).isEqualTo(eventType)
         assertThat(auditModuleName).isEqualTo("module_name")
       }
