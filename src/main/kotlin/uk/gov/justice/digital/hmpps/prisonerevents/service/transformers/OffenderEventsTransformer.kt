@@ -1589,9 +1589,10 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
   private fun userCaseloadRoleEventOf(xtag: Xtag) = UserCaseloadRoleEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
+    staffId = xtag.content.p_staff_id!!.toLong(),
     username = xtag.content.p_username!!,
     caseloadId = xtag.content.p_caseload_id!!,
-    roleCode = xtag.content.p_role_code!!,
+    roleId = xtag.content.p_role_id!!.toLong(),
     auditModuleName = xtag.content.p_audit_module_name ?: EMPTY_AUDIT_MODULE,
     nomisEventType = xtag.eventType,
   )
