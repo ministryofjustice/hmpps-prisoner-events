@@ -965,13 +965,16 @@ open class UserAccessibleCaseloadEvent(
   eventType: String? = null,
   eventDatetime: LocalDateTime? = null,
   nomisEventType: String? = null,
-  val auditModuleName: String,
+  auditModuleName: String,
+  staffId: Long,
   val username: String,
   val caseloadId: String,
-) : OffenderEvent(
+) : StaffEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
   nomisEventType = nomisEventType,
+  staffId = staffId,
+  auditModuleName = auditModuleName,
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
