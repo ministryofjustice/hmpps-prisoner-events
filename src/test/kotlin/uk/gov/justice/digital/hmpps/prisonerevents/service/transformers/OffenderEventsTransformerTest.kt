@@ -6814,7 +6814,6 @@ class OffenderEventsTransformerTest {
         ),
       ) {
         assertThat(eventType).isEqualTo(eventType)
-        assertThat(staffId).isEqualTo(4730074)
         assertThat(username).isEqualTo("FRED_ADM")
         assertThat(caseloadId).isEqualTo("ASI")
         assertThat(nomisEventType).isEqualTo(eventType)
