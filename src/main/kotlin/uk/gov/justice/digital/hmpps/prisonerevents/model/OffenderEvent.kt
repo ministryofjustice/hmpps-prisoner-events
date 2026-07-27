@@ -921,7 +921,7 @@ open class StaffEvent(
   eventDatetime: LocalDateTime? = null,
   nomisEventType: String? = null,
   val auditModuleName: String,
-  val staffId: Long,
+  val staffId: Long? = null,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
@@ -966,7 +966,7 @@ open class UserAccessibleCaseloadEvent(
   eventDatetime: LocalDateTime? = null,
   nomisEventType: String? = null,
   auditModuleName: String,
-  staffId: Long,
+  staffId: Long? = null,
   val username: String,
   val caseloadId: String,
 ) : StaffEvent(

@@ -6795,6 +6795,32 @@ class OffenderEventsTransformerTest {
         assertThat(auditModuleName).isEqualTo("module_name")
       }
     }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["USER_ACCESSIBLE_CASELOADS-INSERTED", "USER_ACCESSIBLE_CASELOADS-DELETED"])
+    fun `events mapped correctly when staff_id is null`(eventType: String) {
+      val now = LocalDateTime.now()
+      withCallTransformer<UserAccessibleCaseloadEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_username" to "FRED_ADM",
+              "p_caseload_id" to "ASI",
+              "p_audit_module_name" to "module_name",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(staffId).isEqualTo(4730074)
+        assertThat(username).isEqualTo("FRED_ADM")
+        assertThat(caseloadId).isEqualTo("ASI")
+        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(auditModuleName).isEqualTo("module_name")
+      }
+    }
   }
 
   @Nested
