@@ -1580,7 +1580,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
   )
   private fun userAccessibleCaseloadEventOf(xtag: Xtag) = UserAccessibleCaseloadEvent(
     eventType = xtag.eventType,
-    staffId = xtag.content.p_staff_id?.toLong(),
+    staffId = xtag.content.p_staff_id!!.toLong(),
     eventDatetime = xtag.nomisTimestamp,
     username = xtag.content.p_username!!,
     caseloadId = xtag.content.p_caseload_id!!,

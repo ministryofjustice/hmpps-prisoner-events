@@ -966,7 +966,7 @@ open class UserAccessibleCaseloadEvent(
   eventDatetime: LocalDateTime? = null,
   nomisEventType: String? = null,
   auditModuleName: String,
-  staffId: Long? = null,
+  staffId: Long,
   val username: String,
   val caseloadId: String,
 ) : StaffEvent(
