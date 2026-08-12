@@ -76,6 +76,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffUserAccountEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.TransferWaitlistEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserAccessibleCaseloadEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserCaseloadRoleEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
@@ -7709,6 +7710,84 @@ class OffenderEventsTransformerTest {
         assertThat(eventMovementType).isEqualTo("TAP")
         assertThat(offenderIdDisplay).isEqualTo("A1234BC")
         assertThat(directionCode).isEqualTo("OUT")
+      }
+    }
+
+    @Test
+    fun `TRANSFER_WAITLIST-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<TransferWaitlistEvent>(
+        Xtag(
+          eventType = "TRANSFER_WAITLIST-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "751662102",
+              "p_audit_module_name" to "OIDSTWJU",
+              "p_offender_book_id" to "3119752",
+              "p_nomis_timestamp" to "20260812153329.307247000",
+              "p_offender_id_display" to "A1234BC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("TRANSFER_WAITLIST-INSERTED")
+        assertThat(eventId).isEqualTo(751662102)
+        assertThat(auditModuleName).isEqualTo("OIDSTWJU")
+        assertThat(bookingId).isEqualTo(3119752)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+      }
+    }
+
+    @Test
+    fun `TRANSFER_WAITLIST-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<TransferWaitlistEvent>(
+        Xtag(
+          eventType = "TRANSFER_WAITLIST-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "751662102",
+              "p_audit_module_name" to "OIDSTWJU",
+              "p_offender_book_id" to "3119752",
+              "p_nomis_timestamp" to "20260812153329.307247000",
+              "p_offender_id_display" to "A1234BC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("TRANSFER_WAITLIST-UPDATED")
+        assertThat(eventId).isEqualTo(751662102)
+        assertThat(auditModuleName).isEqualTo("OIDSTWJU")
+        assertThat(bookingId).isEqualTo(3119752)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+      }
+    }
+
+    @Test
+    fun `TRANSFER_WAITLIST-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<TransferWaitlistEvent>(
+        Xtag(
+          eventType = "TRANSFER_WAITLIST-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_event_id" to "751662102",
+              "p_audit_module_name" to "OIDSTWJU",
+              "p_offender_book_id" to "3119752",
+              "p_nomis_timestamp" to "20260812153329.307247000",
+              "p_offender_id_display" to "A1234BC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("TRANSFER_WAITLIST-DELETED")
+        assertThat(eventId).isEqualTo(751662102)
+        assertThat(auditModuleName).isEqualTo("OIDSTWJU")
+        assertThat(bookingId).isEqualTo(3119752)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
       }
     }
   }

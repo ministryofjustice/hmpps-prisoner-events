@@ -1251,6 +1251,23 @@ class ScheduledExternalMovementEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class TransferWaitlistEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  bookingId: Long?,
+  offenderIdDisplay: String?,
+  val eventId: Long,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  bookingId = bookingId,
+  offenderIdDisplay = offenderIdDisplay,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class MilitaryEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,

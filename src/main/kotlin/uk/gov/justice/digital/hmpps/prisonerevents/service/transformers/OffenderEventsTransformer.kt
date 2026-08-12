@@ -72,6 +72,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.StaffUserAccountEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.TransactionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.TransferWaitlistEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserAccessibleCaseloadEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.UserCaseloadRoleEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.VisitBalanceAdjustmentEvent
@@ -355,6 +356,9 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "SCHEDULED_EXT_MOVE-INSERTED", "SCHEDULED_EXT_MOVE-UPDATED", "SCHEDULED_EXT_MOVE-DELETED" ->
           scheduledExternalMovementEventOf(xtag)
+
+        "TRANSFER_WAITLIST-INSERTED", "TRANSFER_WAITLIST-UPDATED", "TRANSFER_WAITLIST-DELETED" ->
+          transferWaitlistEventOf(xtag)
 
         "OFF_MILITARY_REC-INSERTED", "OFF_MILITARY_REC-UPDATED", "OFF_MILITARY_REC-DELETED" ->
           militaryEventOf(xtag)
@@ -1721,6 +1725,16 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventId = xtag.content.p_event_id!!.toLong(),
     eventMovementType = xtag.content.p_event_type!!,
     directionCode = xtag.content.p_direction_code!!,
+  )
+
+  private fun transferWaitlistEventOf(xtag: Xtag) = TransferWaitlistEvent(
+    eventType = xtag.eventType,
+    nomisEventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    bookingId = xtag.content.p_offender_book_id!!.toLong(),
+    offenderIdDisplay = xtag.content.p_offender_id_display!!,
+    auditModuleName = xtag.content.p_audit_module_name ?: "UNKNOWN_MODULE",
+    eventId = xtag.content.p_event_id!!.toLong(),
   )
 
   private fun militaryEventOf(xtag: Xtag) = MilitaryEvent(
