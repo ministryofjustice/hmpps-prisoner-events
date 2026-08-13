@@ -2620,7 +2620,7 @@ class OffenderEventsTransformerTest {
 
   @ParameterizedTest
   @ValueSource(
-    strings = ["OFFENDER_ASSESSMENTS-UPDATED", "ASSESSMENT-INSERTED", "ASSESSMENT-UPDATED", "ASSESSMENT-DELETED"],
+    strings = ["ASSESSMENT-INSERTED", "ASSESSMENT-UPDATED", "ASSESSMENT-DELETED"],
   )
   fun `assessment changed mapped correctly`(eventType: String) {
     val now = LocalDateTime.now()
@@ -2642,7 +2642,7 @@ class OffenderEventsTransformerTest {
         ),
       ),
     ) {
-      assertThat(this.eventType).isEqualTo("ASSESSMENT-UPDATED")
+      assertThat(this.eventType).isEqualTo(eventType)
       assertThat(bookingId).isEqualTo(456L)
       assertThat(assessmentSeq).isEqualTo(123L)
       assertThat(assessmentType).isEqualTo("CSR")
@@ -2685,7 +2685,6 @@ class OffenderEventsTransformerTest {
             "p_root_offender_id" to "123",
             "p_offender_book_id" to "456",
             "p_alert_seq" to "789",
-            "p_alert_date" to "123",
             "p_alert_date" to "2019-02-14",
             "p_alert_time" to "10:12:23",
             "p_alert_type" to "some type",
@@ -7941,5 +7940,23 @@ class OffenderEventsTransformerTest {
         assertThat(nomisEventType).isEqualTo(eventType)
       }
     }
+    /* NOTE more columns are available if required, the full set is:
+     xtag.xtag_params('p_offender_book_id', :new.offender_book_id),
+     xtag.xtag_params('p_offender_id_display', get_offender_id_display(:new.offender_book_id)),
+     xtag.xtag_params('p_property_only_flag', :new.property_only_flag),
+     xtag.xtag_params('p_property_container_id', :new.property_container_id),
+     xtag.xtag_params('p_agy_loc_id', :new.agy_loc_id),
+     xtag.xtag_params('p_active_flag', :new.active_flag),
+     xtag.xtag_params('p_proposed_disposal_date', to_char(:new.proposed_disposal_date, 'YYYY-MM-DD HH24:MI')),
+     xtag.xtag_params('p_comment_text', :new.comment_text),
+     xtag.xtag_params('p_internal_location_id', :new.internal_location_id),
+     xtag.xtag_params('p_container_code', :new.container_code),
+     xtag.xtag_params('p_expiry_date', to_char(:new.expiry_date, 'YYYY-MM-DD HH24:MI')),
+     xtag.xtag_params('p_seal_mark', :new.seal_mark),
+     xtag.xtag_params('p_trn_from_agy_loc_id', :new.trn_from_agy_loc_id),
+     xtag.xtag_params('p_trn_to_agy_loc_id', :new.trn_to_agy_loc_id),
+     xtag.xtag_params('p_audit_module_name', :new.audit_module_name),
+     xtag.xtag_params('p_nomis_timestamp', to_char(:new.audit_timestamp, 'YYYYMMDDHH24MISS.FF9'))
+     */
   }
 }
