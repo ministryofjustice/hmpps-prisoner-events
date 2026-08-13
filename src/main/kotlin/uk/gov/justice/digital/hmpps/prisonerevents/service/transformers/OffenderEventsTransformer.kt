@@ -190,7 +190,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
           null
         }
 
-        "OFFENDER_ASSESSMENTS-UPDATED", "ASSESSMENT-INSERTED", "ASSESSMENT-UPDATED", "ASSESSMENT-DELETED",
+        "ASSESSMENT-INSERTED", "ASSESSMENT-UPDATED", "ASSESSMENT-DELETED",
         -> assessmentUpdatedEventOf(xtag)
 
         "OFF_ALERT_INSERT" -> alertInsertedEventOf(xtag)
@@ -609,7 +609,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
   )
 
   private fun assessmentUpdatedEventOf(xtag: Xtag) = AssessmentUpdateEvent(
-    eventType = "ASSESSMENT-UPDATED",
+    eventType = xtag.eventType,
     eventDatetime = localDateTimeOf(xtag.content.p_nomis_timestamp),
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     assessmentSeq = xtag.content.p_assessment_seq?.toLong(),
