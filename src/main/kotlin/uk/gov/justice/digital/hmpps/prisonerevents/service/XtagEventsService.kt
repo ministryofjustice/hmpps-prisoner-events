@@ -48,6 +48,14 @@ class XtagEventsService(
               if (this.movementTime != null && this.movementDate != null) this.movementTime.atDate(this.movementDate) else null
             oe.movementType = this.movementType
           }
+        // For deleted movements, there is no record to retrieve but we can still find the prisoner number
+        if (oe.eventType == "EXTERNAL_MOVEMENT-CHANGED" && oe.recordDeleted!!) {
+          oe.offenderIdDisplay = sqlRepository.getNomsIdFromBooking(oe.bookingId!!)
+            .firstOrNull()
+            .also {
+              oe.offenderIdDisplay = it
+            }
+        }
       }
 
       "PERSON_RESTRICTION-UPSERTED", "PERSON_RESTRICTION-DELETED" -> {
