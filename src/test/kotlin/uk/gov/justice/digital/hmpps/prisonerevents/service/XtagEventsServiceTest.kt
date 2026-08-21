@@ -78,6 +78,34 @@ class XtagEventsServiceTest {
   }
 
   @Test
+  fun shouldDecorateDeletedExternalMovementWithPrisonerNumber() {
+    whenever(repository.getMovement(1L, 2)).thenReturn(listOf())
+    whenever(repository.getNomsIdFromBooking(1L)).thenReturn(listOf("A1234AA"))
+
+    val offenderEvent = service.addAdditionalEventData(
+      ExternalMovementOffenderEvent(
+        bookingId = 1L,
+        movementSeq = 2L,
+        eventType = "EXTERNAL_MOVEMENT-CHANGED",
+        recordInserted = false,
+        recordDeleted = true,
+        auditModuleName = "OUMEEMOV",
+        movementDateTime = null,
+        movementType = null,
+        movementReasonCode = null,
+        directionCode = null,
+        escortCode = null,
+        fromAgencyLocationId = null,
+        toAgencyLocationId = null,
+      ),
+    ) as ExternalMovementOffenderEvent?
+
+    assertThat(offenderEvent?.offenderIdDisplay).isEqualTo("A1234AA")
+    assertThat(offenderEvent?.recordDeleted).isTrue
+    assertThat(offenderEvent?.auditModuleName).isEqualTo("OUMEEMOV")
+  }
+
+  @Test
   fun shouldDecorateWithExternalMovementDataHandlesNullableFields() {
     whenever(repository.getMovement(1L, 2)).thenReturn(
       listOf(Movement(offenderNo = ("A2345GB"))),
