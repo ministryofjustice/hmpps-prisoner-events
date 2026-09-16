@@ -10,6 +10,9 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyLocationAuthorityEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyLocationEstablishmentEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyLocationEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitSlotEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitTimesEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
@@ -37,6 +40,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GLTransactionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.InternetAddressAgencyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.LanguageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MilitaryEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEvent
@@ -67,6 +71,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PhoneAgencyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PropertyEvent
@@ -3926,6 +3931,221 @@ class OffenderEventsTransformerTest {
       assertThat(bookingId).isEqualTo(12345)
       assertThat(eventId).isEqualTo(65432)
       assertThat(caseId).isNull()
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `phone agency update event mapped correctly`() {
+    phoneAgencyEventMappedCorrectly(eventName = "PHONES_AGENCY-UPDATED")
+  }
+
+  @Test
+  fun `phone agency inserted event mapped correctly`() {
+    phoneAgencyEventMappedCorrectly(eventName = "PHONES_AGENCY-INSERTED")
+  }
+
+  @Test
+  fun `phone agency deleted event mapped correctly`() {
+    phoneAgencyEventMappedCorrectly(eventName = "PHONES_AGENCY-DELETED")
+  }
+
+  private fun phoneAgencyEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<PhoneAgencyEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_agy_loc_id" to "LEI",
+            "p_phone_id" to "98765",
+            "p_agency_location_type" to "INST",
+            "p_audit_module_name" to "DPS_AUDIT",
+            "p_address_id" to "11223",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(phoneId).isEqualTo(98765)
+      assertThat(agencyLocationType).isEqualTo("INST")
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+      assertThat(addressId).isEqualTo(11223)
+    }
+  }
+
+  @Test
+  fun `phone agency event with no address id mapped correctly`() {
+    val now = LocalDateTime.now()
+    withCallTransformer<PhoneAgencyEvent>(
+      Xtag(
+        eventType = "PHONES_AGENCY-UPDATED",
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_agy_loc_id" to "LEI",
+            "p_phone_id" to "98765",
+            "p_agency_location_type" to "INST",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(addressId).isNull()
+    }
+  }
+
+  @Test
+  fun `internet address agency update event mapped correctly`() {
+    internetAddressAgencyEventMappedCorrectly(eventName = "INTERNET_ADDRESSES_AGENCY-UPDATED")
+  }
+
+  @Test
+  fun `internet address agency inserted event mapped correctly`() {
+    internetAddressAgencyEventMappedCorrectly(eventName = "INTERNET_ADDRESSES_AGENCY-INSERTED")
+  }
+
+  @Test
+  fun `internet address agency deleted event mapped correctly`() {
+    internetAddressAgencyEventMappedCorrectly(eventName = "INTERNET_ADDRESSES_AGENCY-DELETED")
+  }
+
+  private fun internetAddressAgencyEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<InternetAddressAgencyEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_agy_loc_id" to "LEI",
+            "p_internet_address_id" to "45678",
+            "p_agency_location_type" to "INST",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(internetAddressId).isEqualTo(45678)
+      assertThat(agencyLocationType).isEqualTo("INST")
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `agency location establishment update event mapped correctly`() {
+    agencyLocationEstablishmentEventMappedCorrectly(eventName = "AGY_LOC_ESTABLISHMENTS-UPDATED")
+  }
+
+  @Test
+  fun `agency location establishment inserted event mapped correctly`() {
+    agencyLocationEstablishmentEventMappedCorrectly(eventName = "AGY_LOC_ESTABLISHMENTS-INSERTED")
+  }
+
+  @Test
+  fun `agency location establishment deleted event mapped correctly`() {
+    agencyLocationEstablishmentEventMappedCorrectly(eventName = "AGY_LOC_ESTABLISHMENTS-DELETED")
+  }
+
+  private fun agencyLocationEstablishmentEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<AgencyLocationEstablishmentEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_agy_loc_id" to "LEI",
+            "p_establishment_type" to "HMP",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(establishmentType).isEqualTo("HMP")
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `agency location update event mapped correctly`() {
+    agencyLocationEventMappedCorrectly(eventName = "AGENCY_LOCATIONS-UPDATED")
+  }
+
+  @Test
+  fun `agency location inserted event mapped correctly`() {
+    agencyLocationEventMappedCorrectly(eventName = "AGENCY_LOCATIONS-INSERTED")
+  }
+
+  @Test
+  fun `agency location deleted event mapped correctly`() {
+    agencyLocationEventMappedCorrectly(eventName = "AGENCY_LOCATIONS-DELETED")
+  }
+
+  private fun agencyLocationEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<AgencyLocationEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_agy_loc_id" to "LEI",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+    }
+  }
+
+  @Test
+  fun `agency location authority update event mapped correctly`() {
+    agencyLocationAuthorityEventMappedCorrectly(eventName = "AGENCY_LOCATION_AUTHORITIES-UPDATED")
+  }
+
+  @Test
+  fun `agency location authority inserted event mapped correctly`() {
+    agencyLocationAuthorityEventMappedCorrectly(eventName = "AGENCY_LOCATION_AUTHORITIES-INSERTED")
+  }
+
+  @Test
+  fun `agency location authority deleted event mapped correctly`() {
+    agencyLocationAuthorityEventMappedCorrectly(eventName = "AGENCY_LOCATION_AUTHORITIES-DELETED")
+  }
+
+  private fun agencyLocationAuthorityEventMappedCorrectly(eventName: String) {
+    val now = LocalDateTime.now()
+    withCallTransformer<AgencyLocationAuthorityEvent>(
+      Xtag(
+        eventType = eventName,
+        nomisTimestamp = now,
+        content = XtagContent(
+          mapOf(
+            "p_agy_loc_id" to "LEI",
+            "p_local_authority_code" to "LEEDS",
+            "p_audit_module_name" to "DPS_AUDIT",
+          ),
+        ),
+      ),
+    ) {
+      assertThat(eventType).isEqualTo(eventName)
+      assertThat(nomisEventType).isEqualTo(eventName)
+      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(localAuthorityCode).isEqualTo("LEEDS")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }

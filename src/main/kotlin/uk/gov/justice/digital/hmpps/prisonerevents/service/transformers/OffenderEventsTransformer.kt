@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyLocationAuthorityEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyLocationEstablishmentEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyLocationEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitSlotEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitTimesEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
@@ -33,6 +36,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.GLTransactionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.InternetAddressAgencyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.LanguageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MilitaryEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEvent
@@ -63,6 +67,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonInternetAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonPhoneEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.PhoneAgencyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerActivityUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PrisonerAppointmentUpdateEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PropertyEvent
@@ -265,6 +270,21 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "COURT_EVENT-UPDATED", "COURT_EVENT-INSERTED", "COURT_EVENT-DELETED",
         -> courtAppearanceEventOf(xtag)
+
+        "PHONES_AGENCY-UPDATED", "PHONES_AGENCY-INSERTED", "PHONES_AGENCY-DELETED",
+        -> phoneAgencyEventOf(xtag)
+
+        "INTERNET_ADDRESSES_AGENCY-UPDATED", "INTERNET_ADDRESSES_AGENCY-INSERTED", "INTERNET_ADDRESSES_AGENCY-DELETED",
+        -> internetAddressAgencyEventOf(xtag)
+
+        "AGY_LOC_ESTABLISHMENTS-UPDATED", "AGY_LOC_ESTABLISHMENTS-INSERTED", "AGY_LOC_ESTABLISHMENTS-DELETED",
+        -> agencyLocationEstablishmentEventOf(xtag)
+
+        "AGENCY_LOCATIONS-UPDATED", "AGENCY_LOCATIONS-INSERTED", "AGENCY_LOCATIONS-DELETED",
+        -> agencyLocationEventOf(xtag)
+
+        "AGENCY_LOCATION_AUTHORITIES-UPDATED", "AGENCY_LOCATION_AUTHORITIES-INSERTED", "AGENCY_LOCATION_AUTHORITIES-DELETED",
+        -> agencyLocationAuthorityEventOf(xtag)
 
         "COURT_EVENT_CHARGES-INSERTED", "COURT_EVENT_CHARGES-DELETED", "COURT_EVENT_CHARGES-UPDATED" ->
           courtEventChargeEventOf(xtag)
@@ -1249,6 +1269,53 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     auditModuleName = xtag.content.p_audit_module_name,
     isBreachHearing = xtag.content.p_court_event_type == "BREACH",
     directionCode = xtag.content.p_direction_code,
+  )
+
+  private fun phoneAgencyEventOf(xtag: Xtag) = PhoneAgencyEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    agencyLocationId = xtag.content.p_agy_loc_id,
+    phoneId = xtag.content.p_phone_id?.toLong(),
+    agencyLocationType = xtag.content.p_agency_location_type,
+    auditModuleName = xtag.content.p_audit_module_name,
+    addressId = xtag.content.p_address_id?.toLong(),
+  )
+
+  private fun internetAddressAgencyEventOf(xtag: Xtag) = InternetAddressAgencyEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    agencyLocationId = xtag.content.p_agy_loc_id,
+    internetAddressId = xtag.content.p_internet_address_id?.toLong(),
+    agencyLocationType = xtag.content.p_agency_location_type,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun agencyLocationEstablishmentEventOf(xtag: Xtag) = AgencyLocationEstablishmentEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    agencyLocationId = xtag.content.p_agy_loc_id,
+    establishmentType = xtag.content.p_establishment_type,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun agencyLocationEventOf(xtag: Xtag) = AgencyLocationEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    agencyLocationId = xtag.content.p_agy_loc_id,
+    auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun agencyLocationAuthorityEventOf(xtag: Xtag) = AgencyLocationAuthorityEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    nomisEventType = xtag.eventType,
+    agencyLocationId = xtag.content.p_agy_loc_id,
+    localAuthorityCode = xtag.content.p_local_authority_code,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun courtEventChargeEventOf(xtag: Xtag) = CourtEventChargeEvent(
