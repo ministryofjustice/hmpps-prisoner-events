@@ -615,6 +615,78 @@ class AgencyInternalLocationUpdatedEvent(
 )
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
+class PhoneAgencyEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val agencyLocationId: String?,
+  val phoneId: Long?,
+  val agencyLocationType: String?,
+  val auditModuleName: String?,
+  val addressId: Long? = null,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class InternetAddressAgencyEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val agencyLocationId: String?,
+  val internetAddressId: Long?,
+  val agencyLocationType: String?,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class AgencyLocationEstablishmentEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val agencyLocationId: String?,
+  val establishmentType: String?,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class AgencyLocationEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val agencyLocationId: String?,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class AgencyLocationAuthorityEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val agencyLocationId: String?,
+  val localAuthorityCode: String?,
+  val auditModuleName: String?,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 class OffenderBookingReassignedEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
