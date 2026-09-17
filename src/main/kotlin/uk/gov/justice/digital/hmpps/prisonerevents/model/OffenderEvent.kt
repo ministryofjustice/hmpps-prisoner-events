@@ -665,6 +665,7 @@ class AgencyLocationEvent(
   eventDatetime: LocalDateTime?,
   nomisEventType: String?,
   val agencyCode: String?,
+  val agencyLocationType: String?,
   val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
@@ -679,6 +680,7 @@ class AgencyLocationAuthorityEvent(
   nomisEventType: String?,
   val agencyCode: String?,
   val localAuthorityCode: String?,
+  val agencyLocationType: String?,
   val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,

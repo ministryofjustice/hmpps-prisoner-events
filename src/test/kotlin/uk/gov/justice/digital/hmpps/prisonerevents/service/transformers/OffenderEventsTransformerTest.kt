@@ -4101,6 +4101,7 @@ class OffenderEventsTransformerTest {
           mapOf(
             "p_agy_loc_id" to "LEI",
             "p_audit_module_name" to "DPS_AUDIT",
+            "p_agency_location_type" to "INST",
           ),
         ),
       ),
@@ -4109,6 +4110,7 @@ class OffenderEventsTransformerTest {
       assertThat(nomisEventType).isEqualTo(eventName)
       assertThat(agencyCode).isEqualTo("LEI")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+      assertThat(agencyLocationType).isEqualTo("INST")
     }
   }
 
@@ -4138,6 +4140,7 @@ class OffenderEventsTransformerTest {
             "p_agy_loc_id" to "LEI",
             "p_local_authority_code" to "LEEDS",
             "p_audit_module_name" to "DPS_AUDIT",
+            "p_agency_location_type" to "INST",
           ),
         ),
       ),
@@ -4147,6 +4150,7 @@ class OffenderEventsTransformerTest {
       assertThat(agencyCode).isEqualTo("LEI")
       assertThat(localAuthorityCode).isEqualTo("LEEDS")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
+      assertThat(agencyLocationType).isEqualTo("INST")
     }
   }
 

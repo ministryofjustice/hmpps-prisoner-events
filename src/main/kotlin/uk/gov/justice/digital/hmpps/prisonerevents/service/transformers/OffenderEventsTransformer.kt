@@ -1306,6 +1306,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     nomisEventType = xtag.eventType,
     agencyCode = xtag.content.p_agy_loc_id,
+    agencyLocationType = xtag.content.p_agency_location_type,
     auditModuleName = xtag.content.p_audit_module_name,
   )
 
@@ -1316,6 +1317,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     agencyCode = xtag.content.p_agy_loc_id,
     localAuthorityCode = xtag.content.p_local_authority_code,
     auditModuleName = xtag.content.p_audit_module_name,
+    agencyLocationType = xtag.content.p_agency_location_type,
   )
 
   private fun courtEventChargeEventOf(xtag: Xtag) = CourtEventChargeEvent(
