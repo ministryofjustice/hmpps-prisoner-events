@@ -3969,7 +3969,7 @@ class OffenderEventsTransformerTest {
     ) {
       assertThat(eventType).isEqualTo(eventName)
       assertThat(nomisEventType).isEqualTo(eventName)
-      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(agencyCode).isEqualTo("LEI")
       assertThat(phoneId).isEqualTo(98765)
       assertThat(agencyLocationType).isEqualTo("INST")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
@@ -4031,7 +4031,7 @@ class OffenderEventsTransformerTest {
     ) {
       assertThat(eventType).isEqualTo(eventName)
       assertThat(nomisEventType).isEqualTo(eventName)
-      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(agencyCode).isEqualTo("LEI")
       assertThat(internetAddressId).isEqualTo(45678)
       assertThat(agencyLocationType).isEqualTo("INST")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
@@ -4070,7 +4070,7 @@ class OffenderEventsTransformerTest {
     ) {
       assertThat(eventType).isEqualTo(eventName)
       assertThat(nomisEventType).isEqualTo(eventName)
-      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(agencyCode).isEqualTo("LEI")
       assertThat(establishmentType).isEqualTo("HMP")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
@@ -4107,7 +4107,7 @@ class OffenderEventsTransformerTest {
     ) {
       assertThat(eventType).isEqualTo(eventName)
       assertThat(nomisEventType).isEqualTo(eventName)
-      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(agencyCode).isEqualTo("LEI")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
   }
@@ -4144,7 +4144,7 @@ class OffenderEventsTransformerTest {
     ) {
       assertThat(eventType).isEqualTo(eventName)
       assertThat(nomisEventType).isEqualTo(eventName)
-      assertThat(agencyLocationId).isEqualTo("LEI")
+      assertThat(agencyCode).isEqualTo("LEI")
       assertThat(localAuthorityCode).isEqualTo("LEEDS")
       assertThat(auditModuleName).isEqualTo("DPS_AUDIT")
     }
