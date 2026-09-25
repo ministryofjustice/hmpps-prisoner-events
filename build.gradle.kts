@@ -1,10 +1,10 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.9"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.10"
   kotlin("plugin.spring") version "2.4.20"
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.1")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.2")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework:spring-jms:7.0.9")
@@ -26,17 +26,17 @@ dependencies {
   // Needs to match this version https://github.com/microsoft/ApplicationInsights-Java/blob/<version>/dependencyManagement/build.gradle.kts#L16
   // where <version> is the version of application insights pulled in by hmpps-gradle-spring-boot
   // at https://github.com/ministryofjustice/hmpps-gradle-spring-boot/blob/main/src/main/kotlin/uk/gov/justice/digital/hmpps/gradle/configmanagers/AppInsightsConfigManager.kt#L7
-  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.28.1")
+  implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-annotations:2.31.1")
   implementation("org.jetbrains.exposed:exposed-spring-boot4-starter:1.5.0")
   implementation("org.jetbrains.exposed:exposed-java-time:1.5.0")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.1")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.2")
   testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
   testImplementation("org.springframework.boot:spring-boot-starter-jdbc-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
   testImplementation("org.awaitility:awaitility-kotlin:4.3.0")
 
-  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.47") {
+  testImplementation("io.swagger.parser.v3:swagger-parser:2.1.48") {
     exclude(group = "io.swagger.core.v3")
   }
   testImplementation("org.springframework.security:spring-security-test")
