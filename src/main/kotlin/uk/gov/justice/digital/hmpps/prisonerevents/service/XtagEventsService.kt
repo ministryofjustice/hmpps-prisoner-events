@@ -9,6 +9,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberCh
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.PersonRestrictionOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.ExposeRepository
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
@@ -108,6 +109,11 @@ class XtagEventsService(
             oe.type = BookingNumberChangedType.BOOK_NUMBER_CHANGE_DUPLICATE
           }
         }
+      }
+
+      "OFFENDER_ADDRESS_PHONE-INSERTED", "OFFENDER_ADDRESS_PHONE-UPDATED", "OFFENDER_ADDRESS_PHONE-DELETED" -> {
+        oe as OffenderPhoneNumberEvent
+        oe.offenderId = exposeRepository.getRootOffenderByPrisonNumber(oe.offenderIdDisplay!!)
       }
     }
     return oe

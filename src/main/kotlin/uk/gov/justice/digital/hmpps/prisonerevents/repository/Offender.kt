@@ -13,6 +13,7 @@ class Offender(id: EntityID<Long>) : LongEntity(id) {
   companion object : LongEntityClass<Offender>(Offenders)
 
   var offenderId by Offenders.id
+  var rootOffenderId by Offenders.rootOffenderId
   var offenderNo by Offenders.offenderNo
   var idSource by Offenders.idSource
   var lastName by Offenders.lastName
@@ -26,6 +27,7 @@ class Offender(id: EntityID<Long>) : LongEntity(id) {
 object Offenders : IdTable<Long>("OFFENDERS") {
   override val id: Column<EntityID<Long>> = long("OFFENDER_ID").autoIncrement("OFFENDER_ID").entityId()
   val offenderNo = varchar("OFFENDER_ID_DISPLAY", 10)
+  val rootOffenderId = long("ROOT_OFFENDER_ID")
   val idSource = varchar("ID_SOURCE_CODE", 12)
   val lastName = varchar("LAST_NAME", 35)
   val firstName = varchar("FIRST_NAME", 35).nullable()

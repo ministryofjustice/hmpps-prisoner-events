@@ -9,6 +9,7 @@ import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.ExposeRepository
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Movement
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.SqlRepository
@@ -236,6 +237,29 @@ class XtagEventsServiceTest {
     assertThat((offenderEvent).bookingStartDateTime).isEqualTo(bookingBeginDate)
     assertThat((offenderEvent).bookingEndDateTime).isEqualTo(bookingEndDate)
     assertThat((offenderEvent).lastAdmissionDate).isEqualTo(admMovementDate)
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+    strings = ["OFFENDER_ADDRESS_PHONE-INSERTED", "OFFENDER_ADDRESS_PHONE-UPDATED", "OFFENDER_ADDRESS_PHONE-DELETED"],
+  )
+  fun `should add root offender id to event`(eventType: String) {
+    whenever(exposeRepository.getRootOffenderByPrisonNumber("A1234AA")).thenReturn(123L)
+
+    val offenderEvent = service.addAdditionalEventData(
+      OffenderPhoneNumberEvent(
+        eventType = eventType,
+        eventDatetime = null,
+        nomisEventType = "OFFENDER_ADDRESS_PHONE",
+        offenderIdDisplay = "A1234AA",
+        offenderId = 456L,
+        phoneId = 789L,
+        phoneType = "MOB",
+        auditModuleName = "OUMANPHO",
+      ),
+    ) as OffenderPhoneNumberEvent
+
+    assertThat(offenderEvent.offenderId).isEqualTo(123L)
   }
 
   private fun assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId(eventName: String) {
