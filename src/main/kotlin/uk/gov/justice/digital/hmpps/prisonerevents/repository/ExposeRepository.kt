@@ -59,6 +59,11 @@ class ExposeRepository {
 
   fun getOffenderById(offenderId: Long): Offender? = Offender.findById(offenderId)
 
+  fun getRootOffenderByPrisonNumber(prisonNumber: String): Long = Offenders
+    .select(Offenders.rootOffenderId)
+    .where(Offenders.offenderNo eq prisonNumber)
+    .first()[Offenders.rootOffenderId]
+
   fun getBookingIdFromChargeId(offenderChargeId: Long): Long? = OffenderCharges
     .select(OffenderCharges.offenderBooking)
     .where(OffenderCharges.id eq offenderChargeId)

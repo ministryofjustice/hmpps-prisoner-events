@@ -101,7 +101,8 @@ class SqlRepositoryTest : IntegrationTestBase() {
           SEX_CODE,
           CREATE_DATE,
           LAST_NAME_KEY,
-          OFFENDER_ID_DISPLAY
+          OFFENDER_ID_DISPLAY,
+          ROOT_OFFENDER_ID
         ) values (
           12, 
           'source',
@@ -109,7 +110,8 @@ class SqlRepositoryTest : IntegrationTestBase() {
           'M',
           SYSDATE,
           'key',
-          'A1234AA'
+          'A1234AA',
+          12
           )""",
     )
   }
