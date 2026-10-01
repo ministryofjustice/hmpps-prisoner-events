@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import org.junit.jupiter.params.provider.ValueSource
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyAddressEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyInternalLocationUpdatedEvent
@@ -1970,11 +1971,15 @@ class OffenderEventsTransformerTest {
   inner class OffenderAdvanceEvents {
 
     @ParameterizedTest
-    @ValueSource(strings = ["OFFENDER_PAYMENT_PROFILES-INSERTED", "OFFENDER_PAYMENT_PROFILES-UPDATED", "OFFENDER_PAYMENT_PROFILES-DELETED"])
-    fun `events mapped correctly`(eventType: String) {
+    @CsvSource(
+      "OFFENDER_PAYMENT_PROFILES-INSERTED, OFFENDER_ADVANCES-INSERTED",
+      "OFFENDER_PAYMENT_PROFILES-UPDATED, OFFENDER_ADVANCES-UPDATED",
+      "OFFENDER_PAYMENT_PROFILES-DELETED, OFFENDER_ADVANCES-DELETED",
+    )
+    fun `events mapped correctly`(sourceEventType: String, expectedEventType: String) {
       withCallTransformer<OffenderAdvanceEvent>(
         Xtag(
-          eventType = eventType,
+          eventType = sourceEventType,
           nomisTimestamp = fixedEventTime,
           content = XtagContent(
             mapOf(
@@ -1987,10 +1992,10 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ) {
-        assertThat(eventType).isEqualTo(eventType)
+        assertThat(eventType).isEqualTo(expectedEventType)
         assertThat(offenderAdvanceId).isEqualTo(4730074L)
         assertThat(offenderIdDisplay).isEqualTo("A2435CD")
-        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(nomisEventType).isEqualTo(sourceEventType)
         assertThat(auditModuleName).isEqualTo("module_name")
         assertThat(eventDatetime).isEqualTo(fixedEventTime)
       }
@@ -2001,11 +2006,15 @@ class OffenderEventsTransformerTest {
   inner class OffenderScheduledPaymentsEvents {
 
     @ParameterizedTest
-    @ValueSource(strings = ["OFFENDER_PAYMENT_PROFILES-INSERTED", "OFFENDER_PAYMENT_PROFILES-UPDATED", "OFFENDER_PAYMENT_PROFILES-DELETED"])
-    fun `events mapped correctly`(eventType: String) {
+    @CsvSource(
+      "OFFENDER_PAYMENT_PROFILES-INSERTED, OFFENDER_SCHEDULED_PAYMENTS-INSERTED",
+      "OFFENDER_PAYMENT_PROFILES-UPDATED, OFFENDER_SCHEDULED_PAYMENTS-UPDATED",
+      "OFFENDER_PAYMENT_PROFILES-DELETED, OFFENDER_SCHEDULED_PAYMENTS-DELETED",
+    )
+    fun `events mapped correctly`(sourceEventType: String, expectedEventType: String) {
       withCallTransformer<OffenderScheduledPaymentEvent>(
         Xtag(
-          eventType = eventType,
+          eventType = sourceEventType,
           nomisTimestamp = fixedEventTime,
           content = XtagContent(
             mapOf(
@@ -2018,10 +2027,10 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ) {
-        assertThat(eventType).isEqualTo(eventType)
+        assertThat(eventType).isEqualTo(expectedEventType)
         assertThat(offenderScheduledPaymentId).isEqualTo(4730074L)
         assertThat(offenderIdDisplay).isEqualTo("A2435CD")
-        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(nomisEventType).isEqualTo(sourceEventType)
         assertThat(auditModuleName).isEqualTo("module_name")
         assertThat(eventDatetime).isEqualTo(fixedEventTime)
       }

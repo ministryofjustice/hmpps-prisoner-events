@@ -1084,7 +1084,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
   )
 
   private fun offenderAdvanceEventOf(xtag: Xtag) = OffenderAdvanceEvent(
-    eventType = xtag.eventType,
+    eventType = xtag.eventType!!.replace("PAYMENT_PROFILES", "ADVANCES"),
     eventDatetime = xtag.nomisTimestamp,
     offenderIdDisplay = xtag.content.p_offender_id_display,
     nomisEventType = xtag.eventType,
@@ -1092,7 +1092,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     offenderAdvanceId = xtag.content.p_offender_payment_profile_id!!.toLong(),
   )
   private fun offenderScheduledPaymentEventOf(xtag: Xtag) = OffenderScheduledPaymentEvent(
-    eventType = xtag.eventType,
+    eventType = xtag.eventType!!.replace("PAYMENT_PROFILES", "SCHEDULED_PAYMENTS"),
     eventDatetime = xtag.nomisTimestamp,
     offenderIdDisplay = xtag.content.p_offender_id_display,
     nomisEventType = xtag.eventType,
