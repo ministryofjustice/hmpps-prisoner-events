@@ -43,6 +43,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEven
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationMultiEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderAdvanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBeliefsEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
@@ -55,6 +56,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdat
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMarksEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderScheduledPaymentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEvent
@@ -246,6 +248,15 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "OFFENDER_VISIT_BALANCE_ADJS-UPDATED",
         "OFFENDER_VISIT_BALANCE_ADJS-DELETED",
         -> visitBalanceAdjustmentEventOf(xtag)
+
+        "OFFENDER_PAYMENT_PROFILES-INSERTED",
+        "OFFENDER_PAYMENT_PROFILES-UPDATED",
+        "OFFENDER_PAYMENT_PROFILES-DELETED",
+        -> if (xtag.content.p_payment_mode == "ADVANCE") {
+          offenderAdvanceEventOf(xtag)
+        } else {
+          offenderScheduledPaymentEventOf(xtag)
+        }
 
         "OFFENDER_BELIEFS-INSERTED",
         "OFFENDER_BELIEFS-UPDATED",
@@ -1070,6 +1081,23 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     visitBalanceAdjustmentId = xtag.content.p_offender_visit_balance_adj_id!!.toLong(),
     rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
     auditModuleName = xtag.content.p_audit_module_name,
+  )
+
+  private fun offenderAdvanceEventOf(xtag: Xtag) = OffenderAdvanceEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+    offenderAdvanceId = xtag.content.p_offender_payment_profile_id!!.toLong(),
+  )
+  private fun offenderScheduledPaymentEventOf(xtag: Xtag) = OffenderScheduledPaymentEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+    offenderScheduledPaymentId = xtag.content.p_offender_payment_profile_id!!.toLong(),
   )
 
   private fun offenderBeliefsEventOf(xtag: Xtag) = OffenderBeliefsEvent(
