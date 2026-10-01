@@ -47,6 +47,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEven
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationMultiEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.NonAssociationDetailsOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderAddressEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderAdvanceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBeliefsEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
@@ -59,6 +60,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifierUpdat
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMarksEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderScheduledPaymentEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEvent
@@ -1960,6 +1962,68 @@ class OffenderEventsTransformerTest {
         assertThat(entrySequence).isEqualTo(5)
         assertThat(caseload).isEqualTo("RMI")
         assertThat(auditModuleName).isEqualTo("MODULE")
+      }
+    }
+  }
+
+  @Nested
+  inner class OffenderAdvanceEvents {
+
+    @ParameterizedTest
+    @ValueSource(strings = ["OFFENDER_PAYMENT_PROFILES-INSERTED", "OFFENDER_PAYMENT_PROFILES-UPDATED", "OFFENDER_PAYMENT_PROFILES-DELETED"])
+    fun `events mapped correctly`(eventType: String) {
+      withCallTransformer<OffenderAdvanceEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_payment_mode" to "ADVANCE",
+              "p_offender_payment_profile_id" to "4730074",
+              "p_audit_module_name" to "module_name",
+              "p_offender_id_display" to "A2435CD",
+
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(offenderAdvanceId).isEqualTo(4730074L)
+        assertThat(offenderIdDisplay).isEqualTo("A2435CD")
+        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(auditModuleName).isEqualTo("module_name")
+        assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      }
+    }
+  }
+
+  @Nested
+  inner class OffenderScheduledPaymentsEvents {
+
+    @ParameterizedTest
+    @ValueSource(strings = ["OFFENDER_PAYMENT_PROFILES-INSERTED", "OFFENDER_PAYMENT_PROFILES-UPDATED", "OFFENDER_PAYMENT_PROFILES-DELETED"])
+    fun `events mapped correctly`(eventType: String) {
+      withCallTransformer<OffenderScheduledPaymentEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_payment_mode" to "SCHEDPAY",
+              "p_offender_payment_profile_id" to "4730074",
+              "p_audit_module_name" to "module_name",
+              "p_offender_id_display" to "A2435CD",
+
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(offenderScheduledPaymentId).isEqualTo(4730074L)
+        assertThat(offenderIdDisplay).isEqualTo("A2435CD")
+        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(auditModuleName).isEqualTo("module_name")
+        assertThat(eventDatetime).isEqualTo(fixedEventTime)
       }
     }
   }
