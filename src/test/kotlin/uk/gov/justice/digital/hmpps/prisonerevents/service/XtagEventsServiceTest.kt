@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.whenever
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
@@ -260,6 +261,50 @@ class XtagEventsServiceTest {
     ) as OffenderPhoneNumberEvent
 
     assertThat(offenderEvent.offenderId).isEqualTo(123L)
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+    strings = ["ADDRESS_USAGE-INSERTED", "ADDRESS_USAGE-UPDATED", "ADDRESS_USAGE-DELETED"],
+  )
+  fun `should republish address usage event as offender address usage event when address belongs to an offender`(eventType: String) {
+    whenever(exposeRepository.getRootOffenderIdAndPrisonNumberFromAddressId(789L)).thenReturn(123L to "A1234AA")
+
+    val offenderEvent = service.addAdditionalEventData(
+      GenericOffenderEvent(
+        eventType = eventType,
+        eventDatetime = null,
+        nomisEventType = "ADDR_USG_INS",
+        addressId = 789L,
+        addressUsage = "HOME",
+      ),
+    ) as GenericOffenderEvent
+
+    assertThat(offenderEvent.eventType).isEqualTo(eventType.replace("ADDRESS_USAGE", "OFFENDER_ADDRESS_USAGE"))
+    assertThat(offenderEvent.offenderId).isEqualTo(123L)
+    assertThat(offenderEvent.offenderIdDisplay).isEqualTo("A1234AA")
+    assertThat(offenderEvent.addressId).isEqualTo(789L)
+    assertThat(offenderEvent.addressUsage).isEqualTo("HOME")
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+    strings = ["ADDRESS_USAGE-INSERTED", "ADDRESS_USAGE-UPDATED", "ADDRESS_USAGE-DELETED"],
+  )
+  fun `should discard address usage event when address does not belong to an offender`(eventType: String) {
+    whenever(exposeRepository.getRootOffenderIdAndPrisonNumberFromAddressId(789L)).thenReturn(null)
+
+    val offenderEvent = service.addAdditionalEventData(
+      GenericOffenderEvent(
+        eventType = eventType,
+        eventDatetime = null,
+        nomisEventType = "ADDR_USG_INS",
+        addressId = 789L,
+        addressUsage = "HOME",
+      ),
+    )
+
+    assertThat(offenderEvent).isNull()
   }
 
   private fun assertEventIsDecoratedWithOffenderDisplayNoUsingOffenderId(eventName: String) {
