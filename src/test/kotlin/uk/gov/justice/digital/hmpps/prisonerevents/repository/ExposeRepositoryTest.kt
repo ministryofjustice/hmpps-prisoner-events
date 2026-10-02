@@ -70,7 +70,7 @@ class ExposeRepositoryTest @Autowired constructor(
   fun `get root offender id and prison number from address id returns the first match when multiple offenders share a root offender id`() {
     transaction {
       val rootOffender = Offender.build(offenderNo = "A1234DD") {}
-      Offender.build(offenderNo = "A1234EE", rootOffenderId = rootOffender.offenderId.value) {}
+      Offender.build(offenderNo = "A1234DD", rootOffenderId = rootOffender.offenderId.value) {}
       val address = Address.build(ownerClass = "OFF", ownerId = rootOffender.offenderId.value) {}
 
       val result = repository.getRootOffenderIdAndPrisonNumberFromAddressId(address.addressId.value)

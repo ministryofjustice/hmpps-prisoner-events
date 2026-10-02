@@ -122,13 +122,13 @@ class XtagEventsService(
         // Only offender addresses are of interest - any other owner type (eg. agency, corporate, person) is discarded
         return exposeRepository.getRootOffenderIdAndPrisonNumberFromAddressId(oe.addressId!!)?.let { (offenderId, offenderIdDisplay) ->
           GenericOffenderEvent(
-            eventType = oe.eventType!!.replace("ADDRESS_USAGE", "OFFENDER_ADDRESS_USAGE"),
+            eventType = oe.eventType.replace("ADDRESS_USAGE", "OFFENDER_ADDRESS_USAGE"),
             eventDatetime = oe.eventDatetime,
             nomisEventType = oe.nomisEventType,
             offenderId = offenderId,
             offenderIdDisplay = offenderIdDisplay,
             addressId = oe.addressId,
-            addressUsage = oe.addressUsage,
+            addressUsage = if (oe.addressUsage == "DISC") "RELEASE" else oe.addressUsage,
           )
         }
       }
