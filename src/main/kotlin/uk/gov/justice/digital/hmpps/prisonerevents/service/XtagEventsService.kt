@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.prisonerevents.model.BookingNumberChangedType
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CourtEventChargeLinkingEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.ExternalMovementOffenderEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.GenericOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberChangeOrMergeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
@@ -114,6 +115,22 @@ class XtagEventsService(
       "OFFENDER_ADDRESS_PHONE-INSERTED", "OFFENDER_ADDRESS_PHONE-UPDATED", "OFFENDER_ADDRESS_PHONE-DELETED" -> {
         oe as OffenderPhoneNumberEvent
         oe.offenderId = exposeRepository.getRootOffenderByPrisonNumber(oe.offenderIdDisplay!!)
+      }
+
+      "ADDRESS_USAGE-INSERTED", "ADDRESS_USAGE-UPDATED", "ADDRESS_USAGE-DELETED" -> {
+        oe as GenericOffenderEvent
+        // Only offender addresses are of interest - any other owner type (eg. agency, corporate, person) is discarded
+        return exposeRepository.getRootOffenderIdAndPrisonNumberFromAddressId(oe.addressId!!)?.let { (offenderId, offenderIdDisplay) ->
+          GenericOffenderEvent(
+            eventType = oe.eventType!!.replace("ADDRESS_USAGE", "OFFENDER_ADDRESS_USAGE"),
+            eventDatetime = oe.eventDatetime,
+            nomisEventType = oe.nomisEventType,
+            offenderId = offenderId,
+            offenderIdDisplay = offenderIdDisplay,
+            addressId = oe.addressId,
+            addressUsage = oe.addressUsage,
+          )
+        }
       }
     }
     return oe

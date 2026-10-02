@@ -38,6 +38,8 @@ import tools.jackson.module.kotlin.readValue
 import uk.gov.justice.digital.hmpps.prisonerevents.builders.build
 import uk.gov.justice.digital.hmpps.prisonerevents.config.FULL_QUEUE_NAME
 import uk.gov.justice.digital.hmpps.prisonerevents.config.QUEUE_NAME
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.Address
+import uk.gov.justice.digital.hmpps.prisonerevents.repository.Addresses
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.MergeTransaction
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.MergeTransactions
 import uk.gov.justice.digital.hmpps.prisonerevents.repository.Offender
@@ -277,6 +279,7 @@ class OracleToTopicIntTest(@Autowired private val jsonMapper: JsonMapper) : Inte
         OffenderContactPersons.deleteAll()
         Persons.deleteAll()
         OffenderBookings.deleteAll()
+        Addresses.deleteAll()
         Offenders.deleteAll()
       }
     }
@@ -1087,6 +1090,49 @@ class OracleToTopicIntTest(@Autowired private val jsonMapper: JsonMapper) : Inte
       @Test
       fun `will map meta data for the event`() {
         assertThat(prisonerEvent.eventType).isEqualTo("COURT_EVENT_CHARGES-LINKED")
+        assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
+      }
+    }
+
+    @Nested
+    @DisplayName("ADDR_USG_INS -> OFFENDER_ADDRESS_USAGE-INSERTED")
+    inner class AddressUsageInserted {
+      private lateinit var prisonerEvent: PrisonerEventMessage
+      private val offenderNo = "A1234AA"
+      private lateinit var address: Address
+
+      @BeforeEach
+      fun setUp() {
+        transaction {
+          this.addLogger(StdOutSqlLogger)
+          val offender = Offender.build {
+            offenderNo = this@AddressUsageInserted.offenderNo
+          }
+          address = Address.build(ownerClass = "OFF", ownerId = offender.rootOffenderId)
+        }
+
+        simulateTrigger(
+          nomisEventType = "ADDR_USG_INS",
+          "p_address_id" to "${address.addressId.value}",
+          "p_address_usage" to "HOME",
+        )
+        prisonerEvent = awaitMessage()
+      }
+
+      @Test
+      fun `will map to OFFENDER_ADDRESS_USAGE-INSERTED with the offender's details`() {
+        with(prisonerEvent.message) {
+          assertJsonPath("nomisEventType", "ADDR_USG_INS")
+          assertJsonPath("eventType", "OFFENDER_ADDRESS_USAGE-INSERTED")
+          assertJsonPath("offenderIdDisplay", offenderNo)
+          assertJsonPath("addressId", "${address.addressId.value}")
+          assertJsonPath("addressUsage", "HOME")
+        }
+      }
+
+      @Test
+      fun `will map meta data for the event`() {
+        assertThat(prisonerEvent.eventType).isEqualTo("OFFENDER_ADDRESS_USAGE-INSERTED")
         assertThat(prisonerEvent.publishedAt).isCloseToUtcNow(within(10, ChronoUnit.SECONDS))
       }
     }

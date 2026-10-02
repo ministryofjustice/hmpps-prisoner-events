@@ -69,4 +69,16 @@ class ExposeRepository {
     .where(OffenderCharges.id eq offenderChargeId)
     .singleOrNull()
     ?.get(OffenderBookings.id)?.value
+
+  fun getRootOffenderIdAndPrisonNumberFromAddressId(addressId: Long): Pair<Long, String>? = Addresses
+    .join(
+      Offenders,
+      joinType = JoinType.INNER,
+      onColumn = Addresses.ownerId,
+      otherColumn = Offenders.rootOffenderId,
+    )
+    .select(Offenders.rootOffenderId, Offenders.offenderNo)
+    .where((Addresses.id eq addressId) and (Addresses.ownerClass eq "OFF"))
+    .firstOrNull()
+    ?.let { it[Offenders.rootOffenderId] to it[Offenders.offenderNo] }
 }
