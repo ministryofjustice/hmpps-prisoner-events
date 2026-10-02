@@ -291,6 +291,30 @@ class XtagEventsServiceTest {
   @ValueSource(
     strings = ["ADDRESS_USAGE-INSERTED", "ADDRESS_USAGE-UPDATED", "ADDRESS_USAGE-DELETED"],
   )
+  fun `should republish DISC address usage as RELEASE when address belongs to an offender`(eventType: String) {
+    whenever(exposeRepository.getRootOffenderIdAndPrisonNumberFromAddressId(789L)).thenReturn(123L to "A1234AA")
+
+    val offenderEvent = service.addAdditionalEventData(
+      GenericOffenderEvent(
+        eventType = eventType,
+        eventDatetime = null,
+        nomisEventType = "ADDR_USG_INS",
+        addressId = 789L,
+        addressUsage = "DISC",
+      ),
+    ) as GenericOffenderEvent
+
+    assertThat(offenderEvent.eventType).isEqualTo(eventType.replace("ADDRESS_USAGE", "OFFENDER_ADDRESS_USAGE"))
+    assertThat(offenderEvent.offenderId).isEqualTo(123L)
+    assertThat(offenderEvent.offenderIdDisplay).isEqualTo("A1234AA")
+    assertThat(offenderEvent.addressId).isEqualTo(789L)
+    assertThat(offenderEvent.addressUsage).isEqualTo("RELEASE")
+  }
+
+  @ParameterizedTest
+  @ValueSource(
+    strings = ["ADDRESS_USAGE-INSERTED", "ADDRESS_USAGE-UPDATED", "ADDRESS_USAGE-DELETED"],
+  )
   fun `should discard address usage event when address does not belong to an offender`(eventType: String) {
     whenever(exposeRepository.getRootOffenderIdAndPrisonNumberFromAddressId(789L)).thenReturn(null)
 
