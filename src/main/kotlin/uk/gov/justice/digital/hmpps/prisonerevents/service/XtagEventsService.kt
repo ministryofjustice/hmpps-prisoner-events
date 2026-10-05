@@ -119,6 +119,9 @@ class XtagEventsService(
 
       "ADDRESS_USAGE-INSERTED", "ADDRESS_USAGE-UPDATED", "ADDRESS_USAGE-DELETED" -> {
         oe as GenericOffenderEvent
+        // Ignore DISC dodgy data that doesn't have a related reference code
+        if (oe.addressUsage == "DISC") return null
+
         // Only offender addresses are of interest - any other owner type (eg. agency, corporate, person) is discarded
         return exposeRepository.getRootOffenderIdAndPrisonNumberFromAddressId(oe.addressId!!)?.let { (offenderId, offenderIdDisplay) ->
           GenericOffenderEvent(
@@ -128,7 +131,7 @@ class XtagEventsService(
             offenderId = offenderId,
             offenderIdDisplay = offenderIdDisplay,
             addressId = oe.addressId,
-            addressUsage = if (oe.addressUsage == "DISC") "RELEASE" else oe.addressUsage,
+            addressUsage = oe.addressUsage,
           )
         }
       }
