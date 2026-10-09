@@ -54,6 +54,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberCh
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderDeductionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderFixedTermRecallEvent
@@ -2031,6 +2032,38 @@ class OffenderEventsTransformerTest {
         assertThat(offenderScheduledPaymentId).isEqualTo(4730074L)
         assertThat(offenderIdDisplay).isEqualTo("A2435CD")
         assertThat(nomisEventType).isEqualTo(sourceEventType)
+        assertThat(auditModuleName).isEqualTo("module_name")
+        assertThat(eventDatetime).isEqualTo(fixedEventTime)
+      }
+    }
+  }
+
+
+  @Nested
+  inner class OffenderDeductionEvents {
+
+    @ParameterizedTest
+    @ValueSource(strings = ["OFFENDER_DEDUCTIONS-INSERTED", "OFFENDER_DEDUCTIONS-UPDATED"])
+    fun `events mapped correctly`(eventType: String) {
+      withCallTransformer<OffenderDeductionEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_offender_deductions_id" to "4730074",
+              "p_offender_payment_profile_id" to "1234",
+              "p_offender_id_display" to "A2435CD",
+              "p_audit_module_name" to "module_name",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(offenderDeductionId).isEqualTo(4730074L)
+        assertThat(offenderPaymentProfileId).isEqualTo(1234L)
+        assertThat(offenderIdDisplay).isEqualTo("A2435CD")
+        assertThat(nomisEventType).isEqualTo(eventType)
         assertThat(auditModuleName).isEqualTo("module_name")
         assertThat(eventDatetime).isEqualTo(fixedEventTime)
       }

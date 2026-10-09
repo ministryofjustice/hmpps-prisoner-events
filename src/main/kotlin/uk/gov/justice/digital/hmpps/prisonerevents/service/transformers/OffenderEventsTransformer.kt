@@ -57,6 +57,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMark
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderScheduledPaymentEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderDeductionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEvent
@@ -257,6 +258,10 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         } else {
           offenderScheduledPaymentEventOf(xtag)
         }
+
+        "OFFENDER_DEDUCTIONS-INSERTED",
+        "OFFENDER_DEDUCTIONS-UPDATED",
+          -> offenderDeductionsEventOf(xtag)
 
         "OFFENDER_BELIEFS-INSERTED",
         "OFFENDER_BELIEFS-UPDATED",
@@ -1098,6 +1103,15 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
     offenderScheduledPaymentId = xtag.content.p_offender_payment_profile_id!!.toLong(),
+  )
+  private fun offenderDeductionsEventOf(xtag: Xtag) = OffenderDeductionEvent(
+    eventType = xtag.eventType,
+    eventDatetime = xtag.nomisTimestamp,
+    offenderIdDisplay = xtag.content.p_offender_id_display,
+    nomisEventType = xtag.eventType,
+    auditModuleName = xtag.content.p_audit_module_name,
+    offenderPaymentProfileId = xtag.content.p_offender_payment_profile_id!!.toLong(),
+    offenderDeductionId = xtag.content.p_offender_deductions_id!!.toLong(),
   )
 
   private fun offenderBeliefsEventOf(xtag: Xtag) = OffenderBeliefsEvent(
