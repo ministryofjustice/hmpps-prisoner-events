@@ -1,10 +1,10 @@
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.11"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.12"
   kotlin("plugin.spring") version "2.4.20"
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.2")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.3")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-data-jpa")
   implementation("org.springframework:spring-jms:7.0.9")
@@ -22,7 +22,7 @@ dependencies {
   runtimeOnly("com.oracle.database.jdbc:ojdbc11$oracleVersion")
   implementation("com.oracle.database.messaging:aqapi-jakarta:23.9.0.0")
 
-  implementation("org.apache.commons:commons-lang3:3.20.0")
+  implementation("org.apache.commons:commons-lang3:3.21.0")
   // Needs to match this version https://github.com/microsoft/ApplicationInsights-Java/blob/<version>/dependencyManagement/build.gradle.kts#L16
   // where <version> is the version of application insights pulled in by hmpps-gradle-spring-boot
   // at https://github.com/ministryofjustice/hmpps-gradle-spring-boot/blob/main/src/main/kotlin/uk/gov/justice/digital/hmpps/gradle/configmanagers/AppInsightsConfigManager.kt#L7
@@ -30,7 +30,7 @@ dependencies {
   implementation("org.jetbrains.exposed:exposed-spring-boot4-starter:1.5.0")
   implementation("org.jetbrains.exposed:exposed-java-time:1.5.0")
 
-  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.2")
+  testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:3.0.3")
   testImplementation("org.springframework.boot:spring-boot-test-autoconfigure")
   testImplementation("org.springframework.boot:spring-boot-starter-jdbc-test")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
