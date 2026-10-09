@@ -49,6 +49,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingNumberCh
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderBookingReassignedEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderContactEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderDeductionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEmailEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderFixedTermRecallEvent
@@ -57,7 +58,6 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderIdentifyingMark
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderImageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderPhoneNumberEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderScheduledPaymentEvent
-import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderDeductionEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceChargeEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.OffenderSentenceTermEvent
@@ -261,7 +261,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "OFFENDER_DEDUCTIONS-INSERTED",
         "OFFENDER_DEDUCTIONS-UPDATED",
-          -> offenderDeductionsEventOf(xtag)
+        -> offenderDeductionsEventOf(xtag)
 
         "OFFENDER_BELIEFS-INSERTED",
         "OFFENDER_BELIEFS-UPDATED",

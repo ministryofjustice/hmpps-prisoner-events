@@ -2038,7 +2038,6 @@ class OffenderEventsTransformerTest {
     }
   }
 
-
   @Nested
   inner class OffenderDeductionEvents {
 
