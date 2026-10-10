@@ -1176,6 +1176,22 @@ class OffenderScheduledPaymentEvent(
   offenderIdDisplay = offenderIdDisplay,
 )
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class OffenderDeductionEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  offenderIdDisplay: String?,
+  nomisEventType: String?,
+  val auditModuleName: String?,
+  val offenderPaymentProfileId: Long,
+  val offenderDeductionId: Long,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+  offenderIdDisplay = offenderIdDisplay,
+)
+
 enum class BookingNumberChangedType {
   MERGE,
   BOOK_NUMBER_CHANGE,
