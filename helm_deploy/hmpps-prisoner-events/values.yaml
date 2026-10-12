@@ -62,7 +62,6 @@ generic-service:
 
 generic-prometheus-alerts:
   targetApplication: hmpps-prisoner-events
-  alertSeverity: syscon
 
 cron:
   housekeeping_schedule: "*/10 * * * *"

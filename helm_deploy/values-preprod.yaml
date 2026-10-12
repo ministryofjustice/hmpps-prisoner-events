@@ -18,7 +18,6 @@ generic-service:
 
 generic-prometheus-alerts:
   businessHoursOnly: true
-  alertSeverity: syscon-nonprod
 
 cron:
   housekeeping_schedule: "*/10 7-20 * * 1-5"
