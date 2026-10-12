@@ -1180,15 +1180,17 @@ class OffenderScheduledPaymentEvent(
 class OffenderDeductionEvent(
   eventType: String?,
   eventDatetime: LocalDateTime?,
+  offenderId: Long?,
   offenderIdDisplay: String?,
   nomisEventType: String?,
   val auditModuleName: String?,
-  val offenderPaymentProfileId: Long,
-  val offenderDeductionId: Long?,
+  val offenderPaymentProfileId: Long?,
+  val offenderDeductionId: Long,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
   nomisEventType = nomisEventType,
+  offenderId = offenderId,
   offenderIdDisplay = offenderIdDisplay,
 )
 

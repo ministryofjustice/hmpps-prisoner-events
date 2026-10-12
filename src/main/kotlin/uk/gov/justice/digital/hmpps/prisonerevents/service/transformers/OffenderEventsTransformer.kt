@@ -1107,11 +1107,12 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
   private fun offenderDeductionsEventOf(xtag: Xtag) = OffenderDeductionEvent(
     eventType = xtag.eventType,
     eventDatetime = xtag.nomisTimestamp,
+    offenderId = xtag.content.p_offender_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
     nomisEventType = xtag.eventType,
     auditModuleName = xtag.content.p_audit_module_name,
-    offenderPaymentProfileId = xtag.content.p_offender_payment_profile_id!!.toLong(),
-    offenderDeductionId = xtag.content.p_offender_deduction_id?.toLong(),
+    offenderPaymentProfileId = xtag.content.p_offender_payment_profile_id?.toLong(),
+    offenderDeductionId = xtag.content.p_offender_deduction_id!!.toLong(),
   )
 
   private fun offenderBeliefsEventOf(xtag: Xtag) = OffenderBeliefsEvent(
