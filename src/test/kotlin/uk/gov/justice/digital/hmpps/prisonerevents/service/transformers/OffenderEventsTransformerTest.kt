@@ -2050,7 +2050,7 @@ class OffenderEventsTransformerTest {
           nomisTimestamp = fixedEventTime,
           content = XtagContent(
             mapOf(
-              "p_offender_deductions_id" to "4730074",
+              "p_offender_deduction_id" to "4730074",
               "p_offender_payment_profile_id" to "1234",
               "p_offender_id_display" to "A2435CD",
               "p_audit_module_name" to "module_name",
