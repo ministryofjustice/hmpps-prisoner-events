@@ -2052,6 +2052,7 @@ class OffenderEventsTransformerTest {
             mapOf(
               "p_offender_deduction_id" to "4730074",
               "p_offender_payment_profile_id" to "1234",
+              "p_offender_id" to "2345",
               "p_offender_id_display" to "A2435CD",
               "p_audit_module_name" to "module_name",
             ),
@@ -2061,6 +2062,7 @@ class OffenderEventsTransformerTest {
         assertThat(eventType).isEqualTo(eventType)
         assertThat(offenderDeductionId).isEqualTo(4730074L)
         assertThat(offenderPaymentProfileId).isEqualTo(1234L)
+        assertThat(offenderId).isEqualTo(2345L)
         assertThat(offenderIdDisplay).isEqualTo("A2435CD")
         assertThat(nomisEventType).isEqualTo(eventType)
         assertThat(auditModuleName).isEqualTo("module_name")
