@@ -159,11 +159,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         }
 
         "ADDR_USG_INS" -> addressUsageInsertedEventOf(xtag)
-        "ADDR_USG_UPD" -> if (xtag.content.p_address_deleted == "Y") {
-          addressUsageDeletedEventOf(xtag)
-        } else {
-          addressUsageUpdatedEventOf(xtag)
-        }
+        "ADDR_USG_UPD" -> addressUsageUpdatedEventOf(xtag)
 
         "P4_RESULT" -> offenderAliasChangedEventOf(xtag)
         "P2_RESULT" -> offenderUpdatedEventOf(xtag)

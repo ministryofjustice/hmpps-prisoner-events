@@ -2285,7 +2285,7 @@ class OffenderEventsTransformerTest {
   }
 
   @Test
-  fun `address usage deleted mapped correctly`() {
+  fun `address usage updated with deleted flag mapped correctly`() {
     val now = LocalDateTime.now()
     withCallTransformer<GenericOffenderEvent>(
       Xtag(
@@ -2300,7 +2300,7 @@ class OffenderEventsTransformerTest {
         ),
       ),
     ) {
-      assertThat(eventType).isEqualTo("ADDRESS_USAGE-DELETED")
+      assertThat(eventType).isEqualTo("ADDRESS_USAGE-UPDATED")
       assertThat(addressId).isEqualTo(123L)
       assertThat(addressUsage).isEqualTo("usage")
       assertThat(nomisEventType).isEqualTo("ADDR_USG_UPD")
