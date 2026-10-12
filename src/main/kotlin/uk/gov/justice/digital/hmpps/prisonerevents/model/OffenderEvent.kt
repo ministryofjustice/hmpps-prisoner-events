@@ -1184,7 +1184,7 @@ class OffenderDeductionEvent(
   nomisEventType: String?,
   val auditModuleName: String?,
   val offenderPaymentProfileId: Long,
-  val offenderDeductionId: Long,
+  val offenderDeductionId: Long?,
 ) : OffenderEvent(
   eventType = eventType,
   eventDatetime = eventDatetime,
