@@ -160,7 +160,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "ADDR_USG_INS" -> addressUsageInsertedEventOf(xtag)
         "ADDR_USG_UPD" -> addressUsageUpdatedEventOf(xtag)
-
+        "OFFENDER_ADDRESS_USAGES-INSERTED", "OFFENDER_ADDRESS_USAGES-UPDATED", "OFFENDER_ADDRESS_USAGES-DELETED" -> offenderAddressUsageEventOf(xtag)
         "P4_RESULT" -> offenderAliasChangedEventOf(xtag)
         "P2_RESULT" -> offenderUpdatedEventOf(xtag)
         "OFF_BKB_INS" -> offenderBookingInsertedEventOf(xtag)
@@ -884,13 +884,20 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     nomisEventType = xtag.eventType,
   )
 
-  private fun addressUsageDeletedEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "ADDRESS_USAGE-DELETED",
-    eventDatetime = xtag.nomisTimestamp,
-    addressId = xtag.content.p_address_id?.toLong(),
-    addressUsage = xtag.content.p_address_usage,
-    nomisEventType = xtag.eventType,
-  )
+  private fun offenderAddressUsageEventOf(xtag: Xtag) = if (xtag.content.p_address_usage == "DISC") {
+    null
+  } else {
+    GenericOffenderEvent(
+      eventType = xtag.eventType,
+      eventDatetime = xtag.nomisTimestamp,
+      addressId = xtag.content.p_address_id?.toLong(),
+      addressUsage = xtag.content.p_address_usage,
+      auditModuleName = xtag.content.p_audit_module_name,
+      rootOffenderId = xtag.content.p_root_offender_id?.toLong(),
+      offenderIdDisplay = xtag.content.p_offender_id_display,
+      nomisEventType = xtag.eventType,
+    )
+  }
 
   private fun offenderDetailsChangedEventOf(xtag: Xtag) = GenericOffenderEvent(
     eventType = "OFFENDER_DETAILS-CHANGED",

@@ -2329,6 +2329,59 @@ class OffenderEventsTransformerTest {
     }
   }
 
+  @Nested
+  inner class OffenderAddressUsages {
+    @ParameterizedTest
+    @ValueSource(strings = ["OFFENDER_ADDRESS_USAGES-INSERTED", "OFFENDER_ADDRESS_USAGES-UPDATED", "OFFENDER_ADDRESS_USAGES-DELETED"])
+    fun `events mapped correctly`(eventType: String) {
+      withCallTransformer<GenericOffenderEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = fixedEventTime,
+          content = XtagContent(
+            mapOf(
+              "p_address_id" to "123",
+              "p_address_usage" to "HOME",
+              "p_audit_module_name" to "OCDOAPOP",
+              "p_root_offender_id" to "456",
+              "p_offender_id_display" to "A1234BC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(this.eventType).isEqualTo(eventType)
+        assertThat(eventDatetime).isEqualTo(fixedEventTime)
+        assertThat(addressId).isEqualTo(123L)
+        assertThat(addressUsage).isEqualTo("HOME")
+        assertThat(auditModuleName).isEqualTo("OCDOAPOP")
+        assertThat(rootOffenderId).isEqualTo(456L)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(nomisEventType).isEqualTo(eventType)
+      }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = ["OFFENDER_ADDRESS_USAGES-INSERTED", "OFFENDER_ADDRESS_USAGES-UPDATED", "OFFENDER_ADDRESS_USAGES-DELETED"])
+    fun `DISC address usage is ignored`(eventType: String) {
+      assertThat(
+        offenderEventsTransformer.offenderEventOf(
+          Xtag(
+            eventType = eventType,
+            nomisTimestamp = fixedEventTime,
+            content = XtagContent(
+              mapOf(
+                "p_address_id" to "123",
+                "p_address_usage" to "DISC",
+                "p_root_offender_id" to "456",
+                "p_offender_id_display" to "A1234BC",
+              ),
+            ),
+          ),
+        ),
+      ).isNull()
+    }
+  }
+
   @Test
   fun `offender alias changed mapped correctly`() {
     val now = LocalDateTime.now()
