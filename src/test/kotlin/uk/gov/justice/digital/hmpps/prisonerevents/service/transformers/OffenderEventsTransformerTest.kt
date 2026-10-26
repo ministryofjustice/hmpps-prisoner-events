@@ -1854,7 +1854,7 @@ class OffenderEventsTransformerTest {
               "p_account_period_id" to "xxxxx",
               "p_account_code" to "xxxxx",
               "p_txn_entry_date" to "YYYY-MM-DD HH24:MI",
-              "p_txn_type" to "xxxxx",
+              "p_txn_type" to "DED",
               "p_txn_post_usage" to "xxxxx",
               "p_txn_entry_amount" to "xxxxx",
               "p_txn_entry_desc" to "xxxxx",
@@ -1889,6 +1889,7 @@ class OffenderEventsTransformerTest {
         assertThat(bookingId).isEqualTo(434L)
         assertThat(offenderIdDisplay).isEqualTo("A2468ZZ")
         assertThat(transactionId).isEqualTo(1234567890123L)
+        assertThat(transactionType).isEqualTo("DED")
         assertThat(entrySequence).isEqualTo(5)
         assertThat(gLEntrySequence).isEqualTo(17)
         assertThat(caseload).isEqualTo("RMI")
@@ -1914,7 +1915,7 @@ class OffenderEventsTransformerTest {
               "p_offender_book_id" to "434",
               "p_offender_id_display" to "A2468ZZ",
               "p_txn_posting_type" to "xxxxx",
-              "p_txn_type" to "xxxxx",
+              "p_txn_type" to "DED",
               "p_txn_entry_desc" to "xxxxx",
               "p_txn_entry_amount" to "xxxxx",
               "p_txn_entry_date" to "YYYY-MM-DD HH24:MI",
@@ -1964,6 +1965,7 @@ class OffenderEventsTransformerTest {
         assertThat(transactionId).isEqualTo(123456789L)
         assertThat(entrySequence).isEqualTo(5)
         assertThat(caseload).isEqualTo("RMI")
+        assertThat(transactionType).isEqualTo("DED")
         assertThat(auditModuleName).isEqualTo("MODULE")
       }
     }
