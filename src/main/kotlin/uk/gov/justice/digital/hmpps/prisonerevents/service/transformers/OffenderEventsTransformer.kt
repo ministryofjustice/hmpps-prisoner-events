@@ -999,6 +999,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     entrySequence = xtag.content.p_txn_entry_seq?.toInt(),
     gLEntrySequence = xtag.content.p_gl_entry_seq?.toInt(),
     caseload = xtag.content.p_caseload_id!!,
+    deductionId = xtag.content.p_deduction_id?.toLong(),
     auditModuleName = xtag.content.p_audit_module_name,
   )
 
