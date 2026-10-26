@@ -985,6 +985,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     offenderIdDisplay = xtag.content.p_offender_id_display!!,
     transactionId = xtag.content.p_txn_id!!.toLong(),
     entrySequence = xtag.content.p_txn_entry_seq!!.toInt(),
+    transactionType = xtag.content.p_txn_type!!,
     caseload = xtag.content.p_caseload_id!!,
     auditModuleName = xtag.content.p_audit_module_name,
   )
@@ -998,6 +999,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     transactionId = xtag.content.p_txn_id!!.toLong(),
     entrySequence = xtag.content.p_txn_entry_seq?.toInt(),
     gLEntrySequence = xtag.content.p_gl_entry_seq?.toInt(),
+    transactionType = xtag.content.p_txn_type!!,
     caseload = xtag.content.p_caseload_id!!,
     deductionId = xtag.content.p_deduction_id?.toLong(),
     auditModuleName = xtag.content.p_audit_module_name,

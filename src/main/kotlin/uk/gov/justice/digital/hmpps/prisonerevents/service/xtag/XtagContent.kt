@@ -203,6 +203,7 @@ class XtagContent(private val map: Map<String, String>) {
   val p_txn_id by m
   val p_txn_entry_seq by m
   val p_gl_entry_seq by m
+  val p_txn_type by m
   val p_caseload_id by m
   val p_role_id by m
   val p_offender_payment_profile_id by m
