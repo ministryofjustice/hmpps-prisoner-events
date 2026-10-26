@@ -1873,7 +1873,7 @@ class OffenderEventsTransformerTest {
               "p_txn_object_id" to "xxxxx",
               "p_create_date" to "YYYY-MM-DD HH24:MI",
               "p_info_number" to "xxxxx",
-              "p_deduction_id" to "xxxxx",
+              "p_deduction_id" to "9876",
               "p_txn_entry_time" to "YYYY-MM-DD HH24:MI",
               "p_receipt_number" to "xxxxx",
               "p_reversal_reason_code" to "xxxxx",
@@ -1892,6 +1892,7 @@ class OffenderEventsTransformerTest {
         assertThat(entrySequence).isEqualTo(5)
         assertThat(gLEntrySequence).isEqualTo(17)
         assertThat(caseload).isEqualTo("RMI")
+        assertThat(deductionId).isEqualTo(9876L)
         assertThat(auditModuleName).isEqualTo("MODULE")
       }
     }

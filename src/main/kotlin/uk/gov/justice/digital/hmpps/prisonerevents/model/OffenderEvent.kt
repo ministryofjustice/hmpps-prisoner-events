@@ -1293,6 +1293,7 @@ class GLTransactionEvent(
   val entrySequence: Int?,
   val gLEntrySequence: Int?,
   val caseload: String,
+  val deductionId: Long?,
   val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
