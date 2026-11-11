@@ -18,6 +18,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitSlotEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AgencyVisitTimesEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AlertOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.AssessmentUpdateEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.BookingStatusEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPAttendeeOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPFactorOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.CSIPInterviewOffenderEvent
@@ -8278,5 +8279,93 @@ class OffenderEventsTransformerTest {
      xtag.xtag_params('p_audit_module_name', :new.audit_module_name),
      xtag.xtag_params('p_nomis_timestamp', to_char(:new.audit_timestamp, 'YYYYMMDDHH24MISS.FF9'))
      */
+  }
+
+  @Nested
+  inner class BookingStatusEvents {
+    @Test
+    fun `BOOKING_STATUS-INSERTED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<BookingStatusEvent>(
+        Xtag(
+          eventType = "BOOKING_STATUS-INSERTED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_booking_seq" to "1",
+              "p_audit_module_name" to "OIDADMIS",
+              "p_offender_book_id" to "12345",
+              "p_nomis_timestamp" to "20261111112142.396239000",
+              "p_offender_id_display" to "A1234BC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("BOOKING_STATUS-INSERTED")
+        assertThat(auditModuleName).isEqualTo("OIDADMIS")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(bookingId).isEqualTo(12345)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(bookingSequence).isEqualTo(1)
+        assertThat(oldBookingSequence).isNull()
+      }
+    }
+
+    @Test
+    fun `BOOKING_STATUS-UPDATED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<BookingStatusEvent>(
+        Xtag(
+          eventType = "BOOKING_STATUS-UPDATED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_booking_seq" to "1",
+              "p_old_booking_seq" to "2",
+              "p_audit_module_name" to "OIDADMIS",
+              "p_offender_book_id" to "12345",
+              "p_nomis_timestamp" to "20261111112142.396239000",
+              "p_offender_id_display" to "A1234BC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("BOOKING_STATUS-UPDATED")
+        assertThat(auditModuleName).isEqualTo("OIDADMIS")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(bookingId).isEqualTo(12345)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(bookingSequence).isEqualTo(1)
+        assertThat(oldBookingSequence).isEqualTo(2)
+      }
+    }
+
+    @Test
+    fun `BOOKING_STATUS-DELETED is mapped`() {
+      val now = LocalDateTime.now()
+      withCallTransformer<BookingStatusEvent>(
+        Xtag(
+          eventType = "BOOKING_STATUS-DELETED",
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_booking_seq" to "1",
+              "p_audit_module_name" to "OIDADMIS",
+              "p_offender_book_id" to "12345",
+              "p_nomis_timestamp" to "20261111112142.396239000",
+              "p_offender_id_display" to "A1234BC",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo("BOOKING_STATUS-DELETED")
+        assertThat(auditModuleName).isEqualTo("OIDADMIS")
+        assertThat(eventDatetime).isEqualTo(now)
+        assertThat(bookingId).isEqualTo(12345)
+        assertThat(offenderIdDisplay).isEqualTo("A1234BC")
+        assertThat(bookingSequence).isEqualTo(1)
+        assertThat(oldBookingSequence).isNull()
+      }
+    }
   }
 }
