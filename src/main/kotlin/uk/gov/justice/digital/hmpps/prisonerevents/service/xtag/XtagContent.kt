@@ -233,6 +233,8 @@ class XtagContent(private val map: Map<String, String>) {
   val p_agency_visit_slot_id by m
   val p_offender_visit_visitor_id by m
   val p_property_container_id by m
+  val p_booking_seq by m
+  val p_old_booking_seq by m
 
   override fun toString(): String = map.toString()
 }
