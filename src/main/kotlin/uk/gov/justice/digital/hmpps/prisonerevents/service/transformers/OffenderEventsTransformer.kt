@@ -226,7 +226,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "OFF_SENT_OASYS" -> sentenceCalculationDateChangedEventOf(xtag)
         "IEDT_OUT" -> offenderTransferOutOfLidsEventOf(xtag)
-        "BED_ASSIGNMENT_HISTORY-INSERTED" -> offenderBedAssignmentEventOf(xtag)
+        "BED_ASSIGNMENT_HISTORY-INSERTED", "BED_ASSIGNMENT_HISTORY-UPDATED", "BED_ASSIGNMENT_HISTORY-DELETED" -> offenderBedAssignmentEventOf(xtag)
         "CONFIRMED_RELEASE_DATE-CHANGED" -> confirmedReleaseDateOf(xtag)
         "OFFENDER-INSERTED", "OFFENDER-UPDATED", "OFFENDER-DELETED" -> offenderUpdatedOf(xtag)
         "OFF_IDENT_MARKS-CHANGED" -> offenderIdentifyingMarksUpdatedOf(xtag)
@@ -432,11 +432,13 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
   )
 
   private fun offenderBedAssignmentEventOf(xtag: Xtag) = GenericOffenderEvent(
-    eventType = "BED_ASSIGNMENT_HISTORY-INSERTED",
+    eventType = xtag.eventType,
     bookingId = xtag.content.p_offender_book_id?.toLong(),
     bedAssignmentSeq = xtag.content.p_bed_assign_seq?.toInt(),
+    offenderIdDisplay = xtag.content.p_offender_id_display,
     livingUnitId = xtag.content.p_living_unit_id?.toLong(),
     eventDatetime = xtag.nomisTimestamp,
+    auditModuleName = xtag.content.p_audit_module_name,
     nomisEventType = xtag.eventType,
   )
 
