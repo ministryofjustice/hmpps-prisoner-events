@@ -1994,7 +1994,7 @@ class OffenderEventsTransformerTest {
               "p_audit_module_name" to "module_name",
               "p_offender_id_display" to "A2435CD",
 
-              ),
+            ),
           ),
         ),
       ) {
@@ -2029,7 +2029,7 @@ class OffenderEventsTransformerTest {
               "p_audit_module_name" to "module_name",
               "p_offender_id_display" to "A2435CD",
 
-              ),
+            ),
           ),
         ),
       ) {
