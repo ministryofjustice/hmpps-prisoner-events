@@ -276,27 +276,32 @@ class OffenderEventsTransformerTest {
     }
   }
 
-  @Test
-  fun bedAssignmentCorrectlyMapped() {
+  @ParameterizedTest
+  @ValueSource(strings = ["BED_ASSIGNMENT_HISTORY-INSERTED", "BED_ASSIGNMENT_HISTORY-UPDATED", "BED_ASSIGNMENT_HISTORY-DELETED"])
+  fun bedAssignmentCorrectlyMapped(eventType: String) {
     val now = LocalDateTime.now()
     withCallTransformer<GenericOffenderEvent>(
       Xtag(
-        eventType = "BED_ASSIGNMENT_HISTORY-INSERTED",
+        eventType = eventType,
         nomisTimestamp = now,
         content = XtagContent(
           mapOf(
             "p_offender_book_id" to "99",
             "p_bed_assign_seq" to "1",
             "p_living_unit_id" to "34123412",
+            "p_offender_id_display" to "A1234AB",
+            "p_audit_module_name" to "OIDSTUFF",
           ),
         ),
       ),
     ) {
-      assertThat(eventType).isEqualTo("BED_ASSIGNMENT_HISTORY-INSERTED")
+      assertThat(eventType).isEqualTo(eventType)
       assertThat(bookingId).isEqualTo(99L)
       assertThat(bedAssignmentSeq).isEqualTo(1)
       assertThat(livingUnitId).isEqualTo(34123412L)
-      assertThat(nomisEventType).isEqualTo("BED_ASSIGNMENT_HISTORY-INSERTED")
+      assertThat(offenderIdDisplay).isEqualTo("A1234AB")
+      assertThat(auditModuleName).isEqualTo("OIDSTUFF")
+      assertThat(nomisEventType).isEqualTo(eventType)
       assertThat(eventDatetime).isEqualTo(now)
     }
   }
