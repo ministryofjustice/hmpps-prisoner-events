@@ -44,6 +44,7 @@ import uk.gov.justice.digital.hmpps.prisonerevents.model.HealthEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.IWPDocumentOffenderEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.InternetAddressAgencyEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.LaaAdministratorEvent
+import uk.gov.justice.digital.hmpps.prisonerevents.model.LaaGeneralUserEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.LanguageEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MilitaryEvent
 import uk.gov.justice.digital.hmpps.prisonerevents.model.MovementApplicationEvent
@@ -7165,6 +7166,37 @@ class OffenderEventsTransformerTest {
     fun `events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<LaaAdministratorEvent>(
+        Xtag(
+          eventType = eventType,
+          nomisTimestamp = now,
+          content = XtagContent(
+            mapOf(
+              "p_staff_id" to "4730074",
+              "p_username" to "FRED_ADM",
+              "p_local_authority_code" to "ASI",
+              "p_audit_module_name" to "module_name",
+            ),
+          ),
+        ),
+      ) {
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(staffId).isEqualTo(4730074)
+        assertThat(username).isEqualTo("FRED_ADM")
+        assertThat(caseloadId).isEqualTo("ASI")
+        assertThat(nomisEventType).isEqualTo(eventType)
+        assertThat(auditModuleName).isEqualTo("module_name")
+      }
+    }
+  }
+
+  @Nested
+  inner class LaaGeneralUserEvents {
+
+    @ParameterizedTest
+    @ValueSource(strings = ["LAA_GENERAL_USERS-INSERTED", "LAA_GENERAL_USERS-UPDATED", "LAA_GENERAL_USERS-DELETED"])
+    fun `events mapped correctly`(eventType: String) {
+      val now = LocalDateTime.now()
+      withCallTransformer<LaaGeneralUserEvent>(
         Xtag(
           eventType = eventType,
           nomisTimestamp = now,

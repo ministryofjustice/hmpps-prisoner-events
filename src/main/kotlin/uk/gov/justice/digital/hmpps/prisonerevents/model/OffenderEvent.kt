@@ -1083,6 +1083,20 @@ class LaaAdministratorEvent(
   eventDatetime = eventDatetime,
   nomisEventType = nomisEventType,
 )
+@JsonInclude(JsonInclude.Include.NON_NULL)
+class LaaGeneralUserEvent(
+  eventType: String?,
+  eventDatetime: LocalDateTime?,
+  nomisEventType: String?,
+  val auditModuleName: String,
+  val staffId: Long,
+  val username: String,
+  val caseloadId: String,
+) : OffenderEvent(
+  eventType = eventType,
+  eventDatetime = eventDatetime,
+  nomisEventType = nomisEventType,
+)
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class OffenderFixedTermRecallEvent(
