@@ -1083,6 +1083,7 @@ class LaaAdministratorEvent(
   eventDatetime = eventDatetime,
   nomisEventType = nomisEventType,
 )
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 class LaaGeneralUserEvent(
   eventType: String?,

@@ -409,7 +409,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
         "USER_ACCESSIBLE_CASELOADS-INSERTED", "USER_ACCESSIBLE_CASELOADS-DELETED" -> userAccessibleCaseloadEventOf(xtag)
         "USER_CASELOAD_ROLES-INSERTED", "USER_CASELOAD_ROLES-DELETED" -> userCaseloadRoleEventOf(xtag)
         "LAA_ADMINISTRATORS-INSERTED", "LAA_ADMINISTRATORS-UPDATED" -> laaAdministratorsEventOf(xtag)
-        "LAA_GENERAL_USERS-INSERTED", "LAA_GENERAL_USERS-UPDATED","LAA_GENERAL_USERS-DELETED" -> laaGeneralUsersEventOf(xtag)
+        "LAA_GENERAL_USERS-INSERTED", "LAA_GENERAL_USERS-UPDATED", "LAA_GENERAL_USERS-DELETED" -> laaGeneralUsersEventOf(xtag)
 
         "PRISONER_PROPERTY-INSERTED", "PRISONER_PROPERTY-UPDATED", "PRISONER_PROPERTY-DELETED" -> propertyEventOf(xtag)
 
