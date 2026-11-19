@@ -405,6 +405,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
 
         "STAFF_MEMBERS-INSERTED", "STAFF_MEMBERS-UPDATED", "STAFF_MEMBERS-DELETED" -> staffEventOf(xtag)
         "STAFF_USER_ACCOUNTS-INSERTED", "STAFF_USER_ACCOUNTS-UPDATED", "STAFF_USER_ACCOUNTS-DELETED" -> staffUserAccountEventOf(xtag)
+        "STAFF_USER_ACCOUNT-LOCKED", "STAFF_USER_ACCOUNT-UNLOCKED" -> staffUserAccountEventOf(xtag)
         "INTERNET_ADDRESSES_STAFF-INSERTED", "INTERNET_ADDRESSES_STAFF-UPDATED", "INTERNET_ADDRESSES_STAFF-DELETED" -> staffInternetAddressEventOf(xtag)
         "USER_ACCESSIBLE_CASELOADS-INSERTED", "USER_ACCESSIBLE_CASELOADS-DELETED" -> userAccessibleCaseloadEventOf(xtag)
         "USER_CASELOAD_ROLES-INSERTED", "USER_CASELOAD_ROLES-DELETED" -> userCaseloadRoleEventOf(xtag)
@@ -979,6 +980,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     entrySequence = xtag.content.p_txn_entry_seq!!.toInt(),
     transactionType = xtag.content.p_txn_type!!,
     caseload = xtag.content.p_caseload_id!!,
+    postingType = xtag.content.p_txn_posting_type!!,
     auditModuleName = xtag.content.p_audit_module_name,
   )
 
@@ -993,6 +995,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     gLEntrySequence = xtag.content.p_gl_entry_seq?.toInt(),
     transactionType = xtag.content.p_txn_type!!,
     caseload = xtag.content.p_caseload_id!!,
+    postingType = xtag.content.p_txn_post_usage!!,
     deductionId = xtag.content.p_deduction_id?.toLong(),
     auditModuleName = xtag.content.p_audit_module_name,
   )

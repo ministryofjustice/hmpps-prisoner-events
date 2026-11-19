@@ -1842,12 +1842,14 @@ class OffenderEventsTransformerTest {
 
   @Nested
   inner class TransactionEvents {
-    @Test
-    fun `GL transaction mapped correctly`() {
+
+    @ParameterizedTest
+    @ValueSource(strings = ["GL_TRANSACTIONS-INSERTED", "GL_TRANSACTIONS-UPDATED"])
+    fun `GL transaction events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<GLTransactionEvent>(
         Xtag(
-          eventType = "GL_TRANSACTIONS-INSERTED",
+          eventType = eventType,
           nomisTimestamp = now,
           content = XtagContent(
             // A lot of fields come in from the trigger but we dont need most of them
@@ -1863,7 +1865,7 @@ class OffenderEventsTransformerTest {
               "p_account_code" to "xxxxx",
               "p_txn_entry_date" to "YYYY-MM-DD HH24:MI",
               "p_txn_type" to "DED",
-              "p_txn_post_usage" to "xxxxx",
+              "p_txn_post_usage" to "DR",
               "p_txn_entry_amount" to "xxxxx",
               "p_txn_entry_desc" to "xxxxx",
               "p_txn_reference_number" to "xxxxx",
@@ -1892,8 +1894,8 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ) {
-        assertThat(eventType).isEqualTo("GL_TRANSACTIONS-INSERTED")
-        assertThat(nomisEventType).isEqualTo("GL_TRANSACTIONS-INSERTED")
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(nomisEventType).isEqualTo(eventType)
         assertThat(bookingId).isEqualTo(434L)
         assertThat(offenderIdDisplay).isEqualTo("A2468ZZ")
         assertThat(transactionId).isEqualTo(1234567890123L)
@@ -1901,17 +1903,19 @@ class OffenderEventsTransformerTest {
         assertThat(entrySequence).isEqualTo(5)
         assertThat(gLEntrySequence).isEqualTo(17)
         assertThat(caseload).isEqualTo("RMI")
+        assertThat(postingType).isEqualTo("DR")
         assertThat(deductionId).isEqualTo(9876L)
         assertThat(auditModuleName).isEqualTo("MODULE")
       }
     }
 
-    @Test
-    fun `offender transaction mapped correctly`() {
+    @ParameterizedTest
+    @ValueSource(strings = ["OFFENDER_TRANSACTIONS-INSERTED", "OFFENDER_TRANSACTIONS-UPDATED"])
+    fun `Offender transaction events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<TransactionOffenderEvent>(
         Xtag(
-          eventType = "OFFENDER_TRANSACTIONS-INSERTED",
+          eventType = eventType,
           nomisTimestamp = now,
           content = XtagContent(
             // A lot of fields come in from the trigger but we dont need most of them
@@ -1922,7 +1926,7 @@ class OffenderEventsTransformerTest {
               "p_offender_id" to "xxxxx",
               "p_offender_book_id" to "434",
               "p_offender_id_display" to "A2468ZZ",
-              "p_txn_posting_type" to "xxxxx",
+              "p_txn_posting_type" to "CR",
               "p_txn_type" to "DED",
               "p_txn_entry_desc" to "xxxxx",
               "p_txn_entry_amount" to "xxxxx",
@@ -1966,13 +1970,14 @@ class OffenderEventsTransformerTest {
           ),
         ),
       ) {
-        assertThat(eventType).isEqualTo("OFFENDER_TRANSACTIONS-INSERTED")
-        assertThat(nomisEventType).isEqualTo("OFFENDER_TRANSACTIONS-INSERTED")
+        assertThat(eventType).isEqualTo(eventType)
+        assertThat(nomisEventType).isEqualTo(eventType)
         assertThat(bookingId).isEqualTo(434L)
         assertThat(offenderIdDisplay).isEqualTo("A2468ZZ")
         assertThat(transactionId).isEqualTo(123456789L)
         assertThat(entrySequence).isEqualTo(5)
         assertThat(caseload).isEqualTo("RMI")
+        assertThat(postingType).isEqualTo("CR")
         assertThat(transactionType).isEqualTo("DED")
         assertThat(auditModuleName).isEqualTo("MODULE")
       }

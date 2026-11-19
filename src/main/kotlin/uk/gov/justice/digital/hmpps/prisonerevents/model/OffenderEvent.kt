@@ -1318,13 +1318,13 @@ class GLTransactionEvent(
   nomisEventType: String?,
   offenderIdDisplay: String?,
   bookingId: Long?,
-
   val transactionId: Long,
   val entrySequence: Int?,
   val gLEntrySequence: Int?,
   val caseload: String,
   val deductionId: Long?,
   val transactionType: String,
+  val postingType: String,
   val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
@@ -1346,6 +1346,7 @@ class TransactionOffenderEvent(
   val entrySequence: Int,
   val caseload: String,
   val transactionType: String,
+  val postingType: String,
   val auditModuleName: String?,
 ) : OffenderEvent(
   eventType = eventType,
