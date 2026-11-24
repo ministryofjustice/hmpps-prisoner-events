@@ -7038,7 +7038,7 @@ class OffenderEventsTransformerTest {
   @Nested
   inner class StaffUserAccountsEvents {
     @ParameterizedTest
-    @ValueSource(strings = ["STAFF_USER_ACCOUNTS-INSERTED", "STAFF_USER_ACCOUNTS-UPDATED", "STAFF_USER_ACCOUNTS-DELETED"])
+    @ValueSource(strings = ["STAFF_USER_ACCOUNTS-INSERTED", "STAFF_USER_ACCOUNTS-UPDATED", "STAFF_USER_ACCOUNTS-DELETED", "STAFF_USER_ACCOUNTS-LOCKED", "STAFF_USER_ACCOUNTS-UNLOCKED"])
     fun `events mapped correctly`(eventType: String) {
       val now = LocalDateTime.now()
       withCallTransformer<StaffUserAccountEvent>(
