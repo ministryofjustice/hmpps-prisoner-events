@@ -1048,6 +1048,7 @@ class OffenderEventsTransformer(@Value("\${aq.timezone.daylightsavings}") val aq
     eventDatetime = xtag.nomisTimestamp,
     offenderId = xtag.content.p_offender_id?.toLong(),
     offenderIdDisplay = xtag.content.p_offender_id_display,
+    auditModuleName = xtag.content.p_audit_module_name,
   )
 
   private fun offenderIdentifyingMarksUpdatedOf(xtag: Xtag) = OffenderIdentifyingMarksEvent(
